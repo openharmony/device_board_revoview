@@ -1,0 +1,59 @@
+# Copyright (C) 2023 HiHope Open Source Organization.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("device.gni")
+
+print("wukong100group in")
+group("wukong100_group") {
+  deps = [
+    "cfg:init_configs",
+    "distributedhardware:distributedhardware",
+    #"lk:lk",
+    "kernel:kernel",
+    "//vendor/revoview/wukong100/modules:modules",
+    #"updater:updater_files",
+    "//third_party/alsa-lib:libasound",
+    "//third_party/alsa-utils:alsa-utils",
+  ]
+}
+
+# build a pac package
+action("make_custom_image") {
+  script = "pac/uis7885_pac.sh"
+  package_path = "${root_out_dir}/packages/phone/images"
+  target_path = "always.build"
+  script_path = "//unisoc_p7885_property/pac/ImageFiles"
+  if (defined(global_parts_info.startup_hvb)) {
+    args = [
+      rebase_path(package_path),
+      rebase_path(script_path),
+      "secboot"
+    ]
+  }
+  else {
+    args = [
+      rebase_path(package_path),
+      rebase_path(script_path)
+    ]
+  }
+  outputs = [ "${package_path}/${target_path}" ]
+
+  # must build after make_images
+  deps = [
+    "//build/ohos/images:make_images",
+    # also must wait make boot image
+    "kernel:make_boot_image",
+    #"kernel:make_boot_updater_image"
+  ]
+}
