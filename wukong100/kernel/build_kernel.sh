@@ -24,7 +24,7 @@ export TARGET_BUILD_VARIANT=${4}
 KERNEL_SRC_TMP_PATH=${ROOT_BUILD_DIR}/kernel/src_tmp/linux-5.15
 KERNEL_SOURCE=${ROOT_DIR}/kernel_unisoc_p7885
 KERNEL_PATCH_PATH=${ROOT_DIR}/kernel/linux/patches/linux-5.15
-HDF_PATCH=${ROOT_DIR}/device/board/revoview/${2}/kernel/hdf.patch
+HDF_PATCH=${ROOT_DIR}/device/board/revoview/${2}/kernel
 HCS_HCB=${ROOT_DIR}/${PRODUCT_PATH}/hdf_config/khdf/hdf_hcs.hcb
 
 NEWIP_PATCH_FILE=${ROOT_DIR}/kernel/linux/common_modules/newip/apply_newip.sh
@@ -62,7 +62,7 @@ cp -rf ${ROOT_DIR}/device/board/revoview/${2}/kernel/make-build.sh ${KERNEL_SRC_
 mkdir -p ${KERNEL_SRC_TMP_PATH}/mkboot/dist
 
 #HDF patch
-#bash ${ROOT_DIR}/drivers/hdf_core/adapter/khdf/linux/patch_hdf.sh ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${KERNEL_PATCH_PATH} uis7885
+bash ${ROOT_DIR}/drivers/hdf_core/adapter/khdf/linux/patch_hdf.sh ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${HDF_PATCH} wukong100
 
 #newip
 #if [ -f $NEWIP_PATCH_FILE ]; then
