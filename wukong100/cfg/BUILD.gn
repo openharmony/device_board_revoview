@@ -48,11 +48,20 @@ ohos_prebuilt_etc("init.uis7885.gnss.cfg") {
   install_enable = true
 }
 
+ohos_prebuilt_executable("insmod_modules.sh") {
+  source = "insmod_modules.sh"
+  part_name = "device_wukong100"
+  subsystem_name = "device_wukong100"
+  install_images = [ chipset_base_dir ]
+  install_enable = true
+}
+
 group("init_configs") {
   deps = [
     ":fstab.uis7885",
     ":init.uis7885.cfg",
     ":init.uis7885.usb.cfg",
-    ":init.uis7885.gnss.cfg"
+    ":init.uis7885.gnss.cfg",
+    ":insmod_modules.sh"
   ]
 }
