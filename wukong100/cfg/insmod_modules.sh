@@ -22,3 +22,8 @@ chown blue_host:blue_host /dev/ttyBT1
 chown blue_host:blue_host /proc/bluetooth/sleep/lpm
 chown blue_host:blue_host /proc/bluetooth/sleep/btwrite
 chown bluetooth:bluetooth /dev/uhid
+
+insmod /vendor/modules/plat_soc.ko
+insmod /vendor/modules/sle_soc.ko
+
+chmod 666 /dev/hwsle
