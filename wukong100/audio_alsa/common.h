@@ -30,7 +30,7 @@
 #ifndef ALSA_SND_COMMON_H
 #define ALSA_SND_COMMON_H
 
-/* Different scenarios correspond to different devices */ 
+/* Different scenarios correspond to different devices */
 #define     SND_DEFAULT_PCM_DEV             -1
 #define     SND_CALL_RENDER_DEV             4
 #define     SND_CALL_CAPTURE_DEV            5
@@ -49,7 +49,7 @@
 #define OPEN_MIC                            "1"
 #define CLOSE_MIC                           "0"
 
-/* params */ 
+/* params */
 #define BUFFER_SIZE_DEFAULT                 9600
 #define PERIOD_SIZE_DEFAULT                 2400
 #define BUFFER_SIZE_CALL                    2560
@@ -58,12 +58,12 @@
 #define CAPTURE_PERIOD_SIZE_DEFAULT         640
 #define CAPTURE_BUFFER_SIZE_CALL            320
 #define CAPTURE_PERIOD_SIZE_CALL            160
-#define ALSA_CAP_BUFFER_SIZE                (2 * 2 * (CAPTURE_PERIOD_SIZE_DEFAULT))        // format(S16LE) * channels(2) * period.
+#define ALSA_CAP_BUFFER_SIZE                (2 * 2 * (CAPTURE_PERIOD_SIZE_DEFAULT))
 #define RATE_CALL                           8000
 #define CHANNEL_CALL                        1
 
 /* mute path */
-#define MIXER_MUTE_PATH_NUM                 4 
+#define MIXER_MUTE_PATH_NUM                 4
 #define MIXER_MUTE_PATH_OFF                 "1 1024"
 #define MIXER_MUTE_PATH_ON                  "0 1024"                    
 

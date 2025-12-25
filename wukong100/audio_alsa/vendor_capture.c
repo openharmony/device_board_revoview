@@ -231,7 +231,7 @@ static int32_t CaptureSelectSceneImpl(struct AlsaCapture *captureIns, const stru
                     }
                 }
             }
-        } 
+        }
     } else {
         g_currentScene = scene;
         if (scene == AUDIO_IN_CALL) {
@@ -463,9 +463,9 @@ static int32_t CapturePcmReadiVdi(snd_pcm_t *pcm, uint64_t *frameCnt, char *data
 
     while (bufSize > 0) {
         /* Read interleaved frames to a PCM. */
-        AUDIO_FUNC_LOGI("snd_pcm_mmap_readi begin bufSize: %{public}ld",bufSize);
+        AUDIO_FUNC_LOGI("snd_pcm_mmap_readi begin bufSize: %{public}ld", bufSize);
         frames = snd_pcm_mmap_readi(pcm, dataBuf, bufSize);
-        AUDIO_FUNC_LOGI("snd_pcm_mmap_readi end frames: %{public}ld",frames);
+        AUDIO_FUNC_LOGI("snd_pcm_mmap_readi end frames: %{public}ld", frames);
         if (frames > 0) {
             *frameCnt = (uint64_t)frames;
             bufSize -= frames;
@@ -754,7 +754,7 @@ static int32_t SetHWParamsSubVdi(
     }
 
     /* set the count of channels */
-    AUDIO_FUNC_LOGI("SetHWParamsSubVdi channels:%{public}d",cardIns->hwParams.channels);
+    AUDIO_FUNC_LOGI("SetHWParamsSubVdi channels:%{public}d", cardIns->hwParams.channels);
     ret = snd_pcm_hw_params_set_channels(handle, params, CHANNEL_CALL);
     if (ret < 0) {
         AUDIO_FUNC_LOGE("Channels count (%{public}u) not available for capture: %{public}s", cardIns->hwParams.channels,
@@ -808,7 +808,6 @@ static int32_t SetHWBufferAndPeriod(struct AlsaSoundCard *cardIns, snd_pcm_hw_pa
 
     captureIns->periodSize = CAPTURE_PERIOD_SIZE_DEFAULT;
     captureIns->bufferSize = CAPTURE_BUFFER_SIZE_DEFAULT;
-    AUDIO_FUNC_LOGI("first  SetHWParamsCall captureIns->bufferSize: %{public}lu ,captureIns->periodSize:%{public}lu ", captureIns->bufferSize, captureIns->periodSize);
     size = captureIns->periodSize;
     ret = snd_pcm_hw_params_set_period_size_near(cardIns->pcmHandle, params, &size, 0);
     if (ret != HDF_SUCCESS) {
@@ -880,7 +879,7 @@ static int32_t SetSWParams(struct AlsaSoundCard *cardIns)
     int32_t ret;
     /* The time when the application starts reading data */ 
     snd_pcm_sframes_t startThresholdSize = 1; 
-    snd_pcm_sframes_t stopThresholdSize = -1; 
+    snd_pcm_sframes_t stopThresholdSize = -1;
     snd_pcm_sw_params_t *swParams = NULL;
     snd_pcm_t *handle = cardIns->pcmHandle;
     struct AlsaCapture *captureIns = (struct AlsaCapture *)cardIns;
