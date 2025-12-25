@@ -33,7 +33,7 @@ typedef struct _RENDER_DATA_ {
     long tempVolume;
 }RenderData;
 
-static const char * mixer_mute_paths[MIXER_MUTE_PATH_NUM] = {
+static const char* g_mixerMutePaths[MIXER_MUTE_PATH_NUM] = {
     "VBC DAC0 AUD MDG Set",
     "VBC DAC0 DSP MDG Set",
     "VBC DAC1 DSP MDG Set",
@@ -47,11 +47,11 @@ static int32_t AudioMixerSetMuteOff(struct AlsaRender *renderIns)
     CHECK_NULL_PTR_RETURN_DEFAULT(cardIns);
     int32_t ret;
     struct AlsaMixerCtlElement elems[MIXER_MUTE_PATH_NUM];
-    for(int i = 0; i < MIXER_MUTE_PATH_NUM; i++) {
+    for (int i = 0; i < MIXER_MUTE_PATH_NUM; i++) {
         SndElementItemInit(&elems[i]);
 
         elems[i].numid = 0;
-        elems[i].name = mixer_mute_paths[i];
+        elems[i].name = g_mixerMutePaths[i];
         elems[i].value = MIXER_MUTE_PATH_OFF;
     }
     ret = SndElementGroupWrite(cardIns, elems, MIXER_MUTE_PATH_NUM);
@@ -73,7 +73,7 @@ static int32_t AudioMixerSetMuteOn(struct AlsaRender *renderIns)
         SndElementItemInit(&elems[i]);
 
         elems[i].numid = 0;
-        elems[i].name = mixer_mute_paths[i];
+        elems[i].name = g_mixerMutePaths[i];
         elems[i].value = MIXER_MUTE_PATH_ON;
     }
     ret = SndElementGroupWrite(cardIns, elems, MIXER_MUTE_PATH_NUM);
@@ -356,7 +356,7 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
             }
         }
     } else {
-        g_currentScene = scene; 
+        g_currentScene = scene;
         AUDIO_FUNC_LOGI("RenderSelectSceneImpl not need change scene");
         if (scene == AUDIO_IN_CALL) {
             AUDIO_FUNC_LOGI("RenderSelectSceneImpl change device");
@@ -374,8 +374,8 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
 static int32_t RenderGetVolThresholdImpl(struct AlsaRender *renderIns, long *volMin, long *volMax)
 {
     int32_t ret;
-    long _volMin = 0;
-    long _volMax = 0;
+    long volMin_ = 0;
+    long volMax_ = 0;
     struct AlsaSoundCard *cardIns = (struct AlsaSoundCard *)renderIns;
     RenderData *priData = RenderGetPriData(renderIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(cardIns);
@@ -386,8 +386,8 @@ static int32_t RenderGetVolThresholdImpl(struct AlsaRender *renderIns, long *vol
         AUDIO_FUNC_LOGE("SndElementReadRange fail!");
         return HDF_FAILURE;
     }
-    *volMin = _volMin;
-    *volMax = _volMax;
+    *volMin = volMin_;
+    *volMax = volMax_;
     
     return HDF_SUCCESS;
 }
@@ -486,7 +486,7 @@ static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioH
             ret = snd_pcm_start(cardIns->pcmHandle);
             AUDIO_FUNC_LOGI("RenderStartImpl use snd_pcm_start ret:%{public}d", ret);
             if (ret < 0) {
-                AUDIO_FUNC_LOGE("snd_pcm_start fail: %{public}s, ret:%{public}d", snd_strerror(ret), ret);   
+                AUDIO_FUNC_LOGE("snd_pcm_start fail: %{public}s, ret:%{public}d", snd_strerror(ret), ret);
                 return HDF_FAILURE;
             }
 
@@ -616,7 +616,7 @@ static int32_t SetHWParamsCapture(snd_pcm_t *pcmHandle)
     snd_pcm_hw_params_alloca(&hwParams);
     ret = snd_pcm_hw_params_any(handle, hwParams); // choose all parameters
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("Broken configuration for capture: no configurations available: %{public}s.", snd_strerror(ret));
+        AUDIO_FUNC_LOGE("Broken configuration for capture: %{public}s.", snd_strerror(ret));
         return HDF_FAILURE;
     }
 
@@ -874,15 +874,12 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
 
-    AUDIO_FUNC_LOGI("time bufferTime:%{public}ud, periodTime:%{public}ud", renderIns->bufferTime, renderIns->periodTime);
+    AUDIO_FUNC_LOGI("bufferTime:%{public}ud, periodTime:%{public}ud", renderIns->bufferTime, renderIns->periodTime);
     if (g_currentScene != AUDIO_IN_CALL) {
-
         /* default time bufferTime:500000d, periodTime:125000d */
         /* default size bufferSize:24000, periodSize:6000 */
-
         renderIns->periodSize = PERIOD_SIZE_DEFAULT;
         renderIns->bufferSize = BUFFER_SIZE_DEFAULT;
-
         size = renderIns->periodSize;
         if (snd_pcm_hw_params_set_period_size_near(cardIns->pcmHandle, hwParams, &size, 0) < 0) {
             AUDIO_FUNC_LOGE("call snd_pcm_hw_params_set_period_size_near failed");
@@ -911,7 +908,7 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
         }
     }
      
-    AUDIO_FUNC_LOGI("size bufferSize:%{public}ld, periodSize:%{public}ld",renderIns->bufferSize, renderIns->periodSize);
+    AUDIO_FUNC_LOGI("size bufferSize:%{public}ld, periodSize:%{public}ld", renderIns->bufferSize, renderIns->periodSize);
 
     if (snd_pcm_hw_params(cardIns->pcmHandle, hwParams) < 0) {
         AUDIO_FUNC_LOGE("Unable to set hw params for playback");
@@ -926,7 +923,7 @@ static int32_t SetSWParamsVdi(struct AlsaSoundCard *cardIns)
 {
     int32_t ret;
     int32_t val = 1; /* val 0 = disable period event, 1 = enable period event */
-    snd_pcm_sframes_t stopThresholdSize = -1; 
+    snd_pcm_sframes_t stopThresholdSize = -1;
     snd_pcm_sw_params_t *swParams = NULL;
     snd_pcm_t *handle = cardIns->pcmHandle;
     struct AlsaRender *renderIns = (struct AlsaRender *)cardIns;
@@ -953,13 +950,15 @@ static int32_t SetSWParamsVdi(struct AlsaSoundCard *cardIns)
         ret = snd_pcm_sw_params_set_silence_size(handle, swParams, 0);
         ret = snd_pcm_sw_params_set_silence_threshold(handle, swParams, 0);
     } else {
-        ret = snd_pcm_sw_params_set_avail_min(handle, swParams, renderIns->periodEvent ? renderIns->bufferSize : renderIns->periodSize);
+        ret = snd_pcm_sw_params_set_avail_min(handle, swParams, renderIns->periodEvent ? renderIns->bufferSize : 
+            renderIns->periodSize);
         AUDIO_FUNC_LOGI("SetSWParams use snd_pcm_sw_params_set_avail_min");
         if (ret < 0) {
             AUDIO_FUNC_LOGE("Unable to set avail min for playback: %{public}s", snd_strerror(ret));
             return HDF_FAILURE;
         }
-        ret = snd_pcm_sw_params_set_start_threshold(handle, swParams, (renderIns->bufferSize / renderIns->periodSize) * renderIns->periodSize);
+        ret = snd_pcm_sw_params_set_start_threshold(handle, swParams, (renderIns->bufferSize / renderIns->periodSize)
+            * renderIns->periodSize);
     }
 
     if (ret < 0) {
@@ -1084,7 +1083,6 @@ static int32_t RenderWriteiVdi(snd_pcm_t *pcm, const struct AudioHwRenderParam *
         AUDIO_FUNC_LOGI("RenderWriteiVdi scene is call, no need write");
         return HDF_FAILURE;
     }
-    /* Check whether the PCM status is normal */
     state = snd_pcm_state(pcm);
     if (state == SND_PCM_STATE_SETUP) {
         ret = snd_pcm_prepare(pcm);
@@ -1110,7 +1108,6 @@ static int32_t RenderWriteiVdi(snd_pcm_t *pcm, const struct AudioHwRenderParam *
                 return HDF_SUCCESS;
             }
         } else if (frames == -EBADFD) {
-            /* not #SND_PCM_STATE_PREPARED or #SND_PCM_STATE_RUNNING */
             AUDIO_FUNC_LOGE("render PCM is not in the right state: %{public}s", snd_strerror(frames));
             snd_pcm_prepare(pcm);
             return HDF_FAILURE;

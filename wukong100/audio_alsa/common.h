@@ -42,7 +42,7 @@
 #define AUDIO_VOLUME_TO_HDI_FLOAT_DIVISOR   15
 #define AUDIO_VOLUME_TO_HDI_DIVISOR         7
 #define VOLUME_LEN                          3
-#define VOICE_VOLUME_PATH                   "VBC_VOLUME"  
+#define VOICE_VOLUME_PATH                   "VBC_VOLUME"
 #define VOICE_VOLUME_ID                     97
 #define CAPTURE_MUTE_PATH                   "VBC_UL_MUTE"
 #define CAPTURE_MUTE_NUMID                  90
@@ -65,7 +65,7 @@
 /* mute path */
 #define MIXER_MUTE_PATH_NUM                 4
 #define MIXER_MUTE_PATH_OFF                 "1 1024"
-#define MIXER_MUTE_PATH_ON                  "0 1024"                    
+#define MIXER_MUTE_PATH_ON                  "0 1024"
 
 /* DACL Playback Volume  */
 #define     SND_NUMID_DACL_PLAYBACK_VOL      355
