@@ -252,20 +252,20 @@ static int32_t CaptureSelectSceneImpl(struct AlsaCapture *captureIns, const stru
 static int32_t CaptureGetVolThresholdImpl(struct AlsaCapture *captureIns, long *volMin, long *volMax)
 {
     int32_t ret;
-    long volMin_ = 0;
-    long volMax_ = 0;
+    long volMinVal = 0;
+    long volMaxVal = 0;
     struct AlsaSoundCard *cardIns = (struct AlsaSoundCard *)captureIns;
     CaptureData *priData = CaptureGetPriData(captureIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(cardIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(priData);
 
-    ret = SndElementReadRange(cardIns, &priData->ctrlLeftVolume, &_volMin, &_volMax);
+    ret = SndElementReadRange(cardIns, &priData->ctrlLeftVolume, &volMinVal, &volMaxVal);
     if (ret != HDF_SUCCESS) {
         AUDIO_FUNC_LOGE("SndElementReadRange fail!");
         return HDF_FAILURE;
     }
-    *volMin = volMin_;
-    *volMax = volMax_;
+    *volMin = volMinVal;
+    *volMax = volMaxVal;
     
     return HDF_SUCCESS;
 }
@@ -597,11 +597,6 @@ static int32_t CaptureReadImpl(struct AlsaCapture *captureIns, struct AudioHwCap
         return ret;
     }
     ret = CaptureDataCopyVdi(handleData, buffer, frames);
-    if (frames > 8) {
-        AUDIO_FUNC_LOGI("CaptureDataCopyVdi size:%{public}lu, data: 
-                        %{public}#X %{public}#X %{public}#X %{public}#X %{public}#X %{public}#X %{public}#X %{public}#X", 
-                        frames, *(buffer+0), *(buffer+1), *(buffer+2), *(buffer+3), *(buffer+4), *(buffer+5), *(buffer+6), *(buffer+7));
-    }
     if (ret != HDF_SUCCESS) {
         AUDIO_FUNC_LOGE("Failed to copy data. It may be paused. Check the status!");
         AudioMemFree((void **)&buffer);
@@ -656,7 +651,7 @@ static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
 
-    snd_pcm_access_mask_t *mask = alloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
@@ -727,7 +722,7 @@ static int32_t SetHWParamsSubVdi(
         return HDF_FAILURE;
     }
 
-    snd_pcm_access_mask_t *mask = alloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
@@ -869,7 +864,7 @@ static int32_t SetSWParams(struct AlsaSoundCard *cardIns)
 {
     int32_t ret;
     /* The time when the application starts reading data */
-    snd_pcm_sframes_t startThresholdSize = 1; 
+    snd_pcm_sframes_t startThresholdSize = 1;
     snd_pcm_sframes_t stopThresholdSize = -1;
     snd_pcm_sw_params_t *swParams = NULL;
     snd_pcm_t *handle = cardIns->pcmHandle;

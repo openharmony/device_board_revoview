@@ -374,20 +374,20 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
 static int32_t RenderGetVolThresholdImpl(struct AlsaRender *renderIns, long *volMin, long *volMax)
 {
     int32_t ret;
-    long volMin_ = 0;
-    long volMax_ = 0;
+    long volMinVal = 0;
+    long volMaxVal = 0;
     struct AlsaSoundCard *cardIns = (struct AlsaSoundCard *)renderIns;
     RenderData *priData = RenderGetPriData(renderIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(cardIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(priData);
 
-    ret = SndElementReadRange(cardIns, &priData->ctrlLeftVolume, &_volMin, &_volMax);
+    ret = SndElementReadRange(cardIns, &priData->ctrlLeftVolume, &volMaxVal, &volMaxVal);
     if (ret != HDF_SUCCESS) {
         AUDIO_FUNC_LOGE("SndElementReadRange fail!");
         return HDF_FAILURE;
     }
-    *volMin = volMin_;
-    *volMax = volMax_;
+    *volMin = volMinVal;
+    *volMax = volMaxVal;
     
     return HDF_SUCCESS;
 }
@@ -908,7 +908,7 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
         }
     }
      
-    AUDIO_FUNC_LOGI("size bufferSize:%{public}ld, periodSize:%{public}ld", renderIns->bufferSize, renderIns->periodSize);
+    AUDIO_FUNC_LOGI("bufferSize:%{public}ld, periodSize:%{public}ld", renderIns->bufferSize, renderIns->periodSize);
 
     if (snd_pcm_hw_params(cardIns->pcmHandle, hwParams) < 0) {
         AUDIO_FUNC_LOGE("Unable to set hw params for playback");

@@ -31,7 +31,7 @@
 #define ALSA_SND_COMMON_H
 
 /* Different scenarios correspond to different devices */
-#define     SND_DEFAULT_PCM_DEV             -1
+#define     SND_DEFAULT_PCM_DEV             (-1)
 #define     SND_CALL_RENDER_DEV             4
 #define     SND_CALL_CAPTURE_DEV            5
 
@@ -84,7 +84,7 @@
 #define     SND_ELEM_DACR_CAPTURE_VOL        "ADC_2 Gain ADC_2 Capture Volume"
 
 /* voice volume */
-#define     VOICE_VOLUME_PATH                "VBC_VOLUME"   
+#define     VOICE_VOLUME_PATH                "VBC_VOLUME"
 
 #endif /* ALSA_SND_COMMON_H */
 #endif /* COMMON_H */
