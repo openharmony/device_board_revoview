@@ -125,7 +125,7 @@ RetCode CodecNode::Flush(const int32_t streamId)
 
 unsigned char CodecNode::Clip(int value) {
     const int BYTEMAXVAL = 255;
-    return (unsigned char)(value > BYTEMAXVAL ? BYTEMAXVAL : value < 0 ? 0 : value);
+    return static_cast<unsigned char>(value > BYTEMAXVAL ? BYTEMAXVAL : value < 0 ? 0 : value);
 }
 
 void CodecNode::YUVToRGB(int Y, int U, int V, unsigned char* Red, unsigned char* Green, unsigned char* Blue, unsigned char*Alapha)
@@ -577,7 +577,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, uint32_t
         const int BITRATE = 3000000;
         input.bitrate = BITRATE;
         const int QP = 8;
-        input.qp = 8;
+        input.qp = QP;
         input.frames = 0;
         input.eis = 0;
         input.yuv_format = MMENC_YUV420SP_NV21;
@@ -627,7 +627,7 @@ static uint64_t GetPts()
     constexpr uint32_t SEC_TO_NS = 1000000000;
     struct timespec timestamp = {0, 0};
     clock_gettime(CLOCK_MONOTONIC, &timestamp);
-    uint64_t time = (uint64_t)timestamp.tv_sec * SEC_TO_NS + (uint64_t)timestamp.tv_nsec;
+    uint64_t time = static_cast<uint64_t>(timestamp.tv_sec) * SEC_TO_NS + static_cast<uint64_t>(timestamp.tv_nsec);
     return time;
 }
 
