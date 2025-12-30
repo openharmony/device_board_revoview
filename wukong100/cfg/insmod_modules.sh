@@ -31,3 +31,5 @@ insmod /vendor/modules/unisoc_gnss_dbg.ko
 insmod /vendor/modules/unisoc_gnss_pmnotify_ctl.ko
 
 chmod 666 /dev/hwsle
+chown camera_host camera_host /dev/vpu_enc0
+chown camera_host camera_host /dev/vpu_enc1
