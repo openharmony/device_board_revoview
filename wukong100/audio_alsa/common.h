@@ -33,7 +33,7 @@
 /* Different scenarios correspond to different devices */
 #define     SND_DEFAULT_PCM_DEV             (-1)
 #define     SND_CALL_RENDER_DEV             4
-#define     SND_CALL_CAPTURE_DEV            5
+#define     SND_CALL_CAPTURE_DEV            "hw:0,5"
 
 #define BIT_COUNT_OF_BYTE                   8
 #define PCM_WAIT_TIMEOUT_MS                 100

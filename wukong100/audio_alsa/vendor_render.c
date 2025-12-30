@@ -763,7 +763,7 @@ static int32_t SetHWParamsSubVdi(
         return HDF_FAILURE;
     }
     /* set the interleaved read/write format */
-    snd_pcm_access_mask_t *mask = alloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
