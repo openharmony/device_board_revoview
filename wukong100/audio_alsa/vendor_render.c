@@ -482,7 +482,7 @@ static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioH
     CHECK_NULL_PTR_RETURN_DEFAULT(cardIns);
 
     if (g_currentScene == AUDIO_IN_CALL) {
-        if (cardIns->pcmHandle) {
+        if (cardIns->pcmHandle && CaptureHandle) {
             ret = snd_pcm_start(cardIns->pcmHandle);
             AUDIO_FUNC_LOGI("RenderStartImpl use snd_pcm_start ret:%{public}d", ret);
             if (ret < 0) {
@@ -490,13 +490,11 @@ static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioH
                 return HDF_FAILURE;
             }
 
-            if (CaptureHandle) {
-                ret = snd_pcm_start(CaptureHandle);
-                AUDIO_FUNC_LOGI("CaptureStartImpl use snd_pcm_start ret:%{public}d", ret);
-                if (ret < 0) {
-                    AUDIO_FUNC_LOGE("snd_pcm_start fail: %{public}s, ret: %{public}d", snd_strerror(ret), ret);
-                    return HDF_FAILURE;
-                }
+            ret = snd_pcm_start(CaptureHandle);
+            AUDIO_FUNC_LOGI("CaptureStartImpl use snd_pcm_start ret:%{public}d", ret);
+            if (ret < 0) {
+                AUDIO_FUNC_LOGE("snd_pcm_start fail: %{public}s, ret: %{public}d", snd_strerror(ret), ret);
+                return HDF_FAILURE;
             }
 
             ret = UpdateAudioRenderRoute(renderIns, handleData);
@@ -950,7 +948,7 @@ static int32_t SetSWParamsVdi(struct AlsaSoundCard *cardIns)
         ret = snd_pcm_sw_params_set_silence_size(handle, swParams, 0);
         ret = snd_pcm_sw_params_set_silence_threshold(handle, swParams, 0);
     } else {
-        ret = snd_pcm_sw_params_set_avail_min(handle, swParams, renderIns->periodEvent ? renderIns->bufferSize : 
+        ret = snd_pcm_sw_params_set_avail_min(handle, swParams, renderIns->periodEvent ? renderIns->bufferSize :
             renderIns->periodSize);
         AUDIO_FUNC_LOGI("SetSWParams use snd_pcm_sw_params_set_avail_min");
         if (ret < 0) {

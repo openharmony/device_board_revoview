@@ -223,13 +223,6 @@ static int32_t CaptureSelectSceneImpl(struct AlsaCapture *captureIns, const stru
             if (!SndisBusy(&captureIns->soundCard)) {
                 AUDIO_FUNC_LOGI("CaptureSelectSceneImpl pcm is NULL");
                 g_currentScene = scene;
-                if (scene == AUDIO_IN_CALL) {
-                    ret = ReOpenPcmAndSetParams(captureIns, handleData);
-                    if (ret < 0) {
-                        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams fail");
-                        return HDF_FAILURE;
-                    }
-                }
             }
         }
     } else {
