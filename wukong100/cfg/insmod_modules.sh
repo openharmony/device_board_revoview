@@ -26,8 +26,8 @@ chown bluetooth:bluetooth /dev/uhid
 insmod /vendor/modules/plat_soc.ko
 insmod /vendor/modules/sle_soc.ko
 
-insmod /vendor/modules/unisoc_gnss_common_ctl_all.ko
-insmod /vendor/modules/unisoc_gnss_dbg.ko
-insmod /vendor/modules/unisoc_gnss_pmnotify_ctl.ko
+chmod 777 /sys/class/misc/gnss_common_ctl/gnss_subsys
+chmod 777 /dev/gnss_common_ctl
+chmod 777 /sys/class/misc/gnss_common_ctl/gnss_power_enable
 
 chmod 666 /dev/hwsle
