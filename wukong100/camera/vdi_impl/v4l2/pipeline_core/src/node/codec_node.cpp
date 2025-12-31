@@ -154,9 +154,9 @@ static void Yuv420_Rot_Right_90(u_char* dst, u_char* src, int width, int height)
     int pos = 0;
     int n = 0;
 
-    for(int j = 0; j < width; j++) {
+    for (int j = 0; j < width; j++) {
         pos = size;
-        for(int i = 0; i < height; i++) {
+        for (int i = 0; i < height; i++) {
             pos -= width;
             dst[n] = src[pos + j];
             n++;
@@ -168,9 +168,9 @@ static void Yuv420_Rot_Right_90(u_char* dst, u_char* src, int width, int height)
 
     u_char* temp = src + size;
 
-    for(int j = 0; j < width; j += INTERVAL) {
+    for (int j = 0; j < width; j += INTERVAL) {
         pos = width * hheight;
-        for(int i = 0; i < hheight; i++) {
+        for (int i = 0; i < hheight; i++) {
             pos -= width;
             dst[n] = temp[pos + j];
             dst[n+1] = temp[pos + j + 1];
@@ -186,9 +186,9 @@ static void Yuv420_Rot_left_90(u_char* dst, u_char* src, int width, int height)
     int pos = 0;
     int n = 0;
 
-    for(int j = 0; j < width; j++) {
+    for (int j = 0; j < width; j++) {
         pos = 0;
-        for(int i = 0; i < height; i++) {
+        for (int i = 0; i < height; i++) {
             pos += width;
             dst[n] = src[pos - j - 1];
             n++;
@@ -200,9 +200,9 @@ static void Yuv420_Rot_left_90(u_char* dst, u_char* src, int width, int height)
 
     u_char* temp = src + size;
 
-    for(int j = 0; j < width; j += INTERVAL) {
+    for (int j = 0; j < width; j += INTERVAL) {
         pos = 0;
-        for(int i = 0; i < hheight; i++) {
+        for (int i = 0; i < hheight; i++) {
             pos += width;
             dst[n] = temp[pos - j - INTERVAL];
             dst[n+1] = temp[pos - j - 1];
@@ -219,8 +219,8 @@ static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height)
     int n = 0;
 
     pos = size;
-    for(int j = 0; j < height; j++) {
-        for(int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
             dst[n] = src[pos - i - 1];
             n++;
         }
@@ -232,8 +232,8 @@ static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height)
 
     u_char* temp = src + size;
     pos = width * hheight ;
-    for(int j = 0; j < hheight; j++) {
-        for(int i = 0; i < width; i += INTERVAL) {
+    for (int j = 0; j < hheight; j++) {
+        for (int i = 0; i < width; i += INTERVAL) {
             dst[n + 1] = temp[pos - i - 1];
             dst[n] = temp[pos - i - INTERVAL];
             n += INTERVAL;
@@ -250,8 +250,8 @@ static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height)
     int n = 0;
 
     pos = size;
-    for(int j = 0; j < height; j++) {
-        for(int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
             dst[n] = src[pos - i - 1];
             n++;
         }
@@ -263,8 +263,8 @@ static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height)
 
     u_char* temp = src + size;
     pos = width * hheight ;
-    for(int j = 0; j < hheight; j++) {
-        for(int i = 0; i < width; i += INTERVAL) {
+    for (int j = 0; j < hheight; j++) {
+        for (int i = 0; i < width; i += INTERVAL) {
             dst[n + 1] = temp[pos - i - 1];
             dst[n] = temp[pos - i - INTERVAL];
             n += INTERVAL;
@@ -281,8 +281,8 @@ static void Yuv420_Rot_HMirror(u_char* dst, u_char* src, int width, int height)
     int n = 0;
 
     pos = 0;
-    for(int j = 0; j < height; j++) {
-        for(int i = width; i > 0; i--) {
+    for (int j = 0; j < height; j++) {
+        for (int i = width; i > 0; i--) {
             dst[n] = src[pos + i - 1];
             n++;
         }
@@ -294,8 +294,8 @@ static void Yuv420_Rot_HMirror(u_char* dst, u_char* src, int width, int height)
 
     u_char* temp = src + size;
     pos = 0;
-    for(int j = 0; j < hheight; j++) {
-        for(int i = width; i > 0; i -= INTERVAL) {
+    for (int j = 0; j < hheight; j++) {
+        for (int i = width; i > 0; i -= INTERVAL) {
             dst[n] = temp[pos + i - INTERVAL];
             dst[n+1] = temp[pos + i - 1];
             n += INTERVAL;
@@ -311,9 +311,9 @@ static void Yuv420_Rot_VMirror(u_char* dst, u_char* src, int width, int height)
     int pos = size;
     int n = 0;
 
-    for(int j = 0; j < height; j++) {
+    for (int j = 0; j < height; j++) {
         pos -= width;
-        for(int i = 0; i < width; i++) {
+        for (int i = 0; i < width; i++) {
             dst[n] = src[pos + i];
             n++;
         }
@@ -324,9 +324,9 @@ static void Yuv420_Rot_VMirror(u_char* dst, u_char* src, int width, int height)
 
     u_char* temp = src + size;
     pos = width * hheight;
-    for(int j = 0; j < hheight; j++) {
+    for (int j = 0; j < hheight; j++) {
         pos -= width;
-        for(int i = 0; i < width; i += INTERVAL) {
+        for (int i = 0; i < width; i += INTERVAL) {
             dst[n] = temp[pos + i];
             dst[n + 1] = temp[pos + i + 1];
             n += INTERVAL;
@@ -505,7 +505,7 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     const int YUV420_SIZE_UP = 3;
     const int YUV420_SIZE_DOWN = 2;
     dst.buf_size = width * height * YUV420_SIZE_UP / YUV420_SIZE_DOWN;
-    if(mean.rotation == 0)
+    if (mean.rotation == 0)
     {
         dst.size.width = width;
         dst.size.height = height;
@@ -522,7 +522,7 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
         CAMERA_LOGE("jpegencodecfunc, ret code = %{public}d", ret);
     } else {
         jpeg_length = dst.buf_size;
-        if(jpeg_length != 0)
+        if (jpeg_length != 0)
         {
             CAMERA_LOGE("buf_vir 0x%lx size %{public}d\n", dst.addr_vir.addr_y,jpeg_length);
             buffer->SetSize(jpeg_length);
@@ -544,7 +544,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, uint32_t
     unsigned int size = width * height * YUV420_SIZE_UP / YUV420_SIZE_DOWN;
     if (bufferRotate_ == nullptr) {
         bufferRotate_ = (u_char* )malloc(size);
-        if(!bufferRotate_) {
+        if (!bufferRotate_) {
             CAMERA_LOGE("malloc memery error!");
             return -1;
         }
@@ -605,7 +605,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, uint32_t
                 buffer->SetEsKeyFrame(1);
                 startflag = 0;
             } else {
-                if(startflag == 1) {
+                if (startflag == 1) {
                     buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
                 }
                 buffer->SetEsKeyFrame(0);
@@ -663,7 +663,7 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         if (cameraId != CAMERA_FIRST) {
             if (bufferRotate_ == nullptr) {
                 bufferRotate_ = (u_char* )malloc(yuv_length);
-                if(!bufferRotate_) {
+                if (!bufferRotate_) {
                     return;
                 }
             }
