@@ -251,7 +251,8 @@ RetCode HosV4L2Dev::DestoryBuffers()
 
 RetCode HosV4L2Dev::QueueBuffer(const std::string& cameraID, const std::shared_ptr<FrameSpec>& frameSpec)
 {
-    int rc, fd;
+    int rc = 0;
+    int fd = 0;
 
     fd = GetCurrentFd(cameraID);
     if (fd < 0) {

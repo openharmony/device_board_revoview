@@ -47,10 +47,10 @@ class V4l2AdapterInterface {
 
     template<class T,int N> int write_i2c(int fd_, T (&array)[N]){
         int count = 0;
-        for(int i=0;i<N;i++) {
-            if(!array)
+        for (int i=0; i<N; i++) {
+            if (!array)
               break;
-            if(!((struct sensor_reg_info)array[i]).reg_addr &&
+            if (!((struct sensor_reg_info)array[i]).reg_addr &&
                !((struct sensor_reg_info)array[i]).reg_value)
               continue;
             count++;

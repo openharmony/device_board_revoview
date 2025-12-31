@@ -23,7 +23,9 @@ HosFileFormat::~HosFileFormat() {}
 
 RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDesc)
 {
-    int i, j, k;
+    int i = 0;
+    int j = 0;
+    int k = 0;
     struct v4l2_fmtdesc enumFmtDesc = {};
     struct v4l2_frmsizeenum frmSize = {};
     struct v4l2_frmivalenum  fraMival = {};

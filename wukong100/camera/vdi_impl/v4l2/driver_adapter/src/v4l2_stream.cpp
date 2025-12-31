@@ -28,11 +28,10 @@ HosV4L2Streams::~HosV4L2Streams() {}
 
 RetCode HosV4L2Streams::V4L2StreamOn(int fd)
 {
-    enum v4l2_buf_type buf_type;
-    int rc;
+    enum v4l2_buf_type buf_type = bufferType_;
+    int rc = 0;
     CAMERA_LOGD("HosV4L2Streams::V4L2StreamOn\n");
 
-    buf_type = bufferType_;
     rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_STREAMON, &buf_type);
     if (rc < 0) {
         CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_STREAMON failed: %{public}s\n", strerror(errno));
@@ -46,11 +45,10 @@ RetCode HosV4L2Streams::V4L2StreamOn(int fd)
 
 RetCode HosV4L2Streams::V4L2StreamOff(int fd)
 {
-    enum v4l2_buf_type buf_type;
-    int rc;
+    enum v4l2_buf_type buf_type = bufferType_;
+    int rc = 0;
     CAMERA_LOGD("HosV4L2Streams::V4L2StreamOff\n");
 
-    buf_type = bufferType_;
     rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_STREAMOFF, &buf_type);
     if (rc < 0) {
         CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_STREAMOFF failed: %{public}s\n", strerror(errno));
@@ -63,7 +61,7 @@ RetCode HosV4L2Streams::V4L2StreamOff(int fd)
 RetCode HosV4L2Streams::V4L2StreamFPSGet(int fd, DeviceFormat& format)
 {
     struct v4l2_streamparm Stream_Parm = {};
-    int rc;
+    int rc = 0;
 
     Stream_Parm.type = bufferType_;
 
@@ -82,7 +80,7 @@ RetCode HosV4L2Streams::V4L2StreamFPSGet(int fd, DeviceFormat& format)
 RetCode HosV4L2Streams::V4L2StreamFPSSet(int fd, DeviceFormat& format)
 {
     struct v4l2_streamparm Stream_Parm = {};
-    int rc;
+    int rc = 0;
 
     Stream_Parm.type = bufferType_;
 

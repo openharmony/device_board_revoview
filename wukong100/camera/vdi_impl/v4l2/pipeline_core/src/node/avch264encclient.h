@@ -23,55 +23,54 @@ namespace OHOS {
 namespace Camera {
 
 typedef enum {
-    ITU_H263 = 0,
-    MPEG4,
-    JPEG,
-    FLV_V1,
-    H264,
-    VP8,
-    VP9,
-    H265,
-    FORMAT_MAX
-}
-VIDEO_STANDARD_E;
+  ITU_H263 = 0,
+  MPEG4,
+  JPEG,
+  FLV_V1,
+  H264,
+  VP8,
+  VP9,
+  H265,
+  FORMAT_MAX
+} VIDEO_STANDARD_E;
 
 typedef enum
 {
-    MMENC_YUV420P_YU12 = 0,
-    MMENC_YUV420P_YV12 = 1,
-    MMENC_YUV420SP_NV12 = 2,
-    MMENC_YUV420SP_NV21 = 3,
-    MMENC_ARGB32 = 4,
-    MMENC_RGBA32 = 5,
+  MMENC_YUV420P_YU12 = 0,
+  MMENC_YUV420P_YV12 = 1,
+  MMENC_YUV420SP_NV12 = 2,
+  MMENC_YUV420SP_NV21 = 3,
+  MMENC_ARGB32 = 4,
+  MMENC_RGBA32 = 5,
 } MMENC_YUV_FORMAT_E;
 
 typedef enum {
-    MMENC_VSP = 0,
-    MMENC_VSP_ENC = 1,
+  MMENC_VSP = 0,
+  MMENC_VSP_ENC = 1,
 } MMENC_VSP_VERSION;
 
 enum FBC_MODE {
-    FBC_NONE,
-    IFBC = 1,
-    AFBC = 2
+  FBC_NONE,
+  IFBC = 1,
+  AFBC = 2
 };
 
 typedef struct {
-    uint32_t org_width;
-    uint32_t org_height;
-    uint32_t width;
-    uint32_t height;
-    int32_t format;
-    uint32_t framerate;
-    uint32_t max_key_interval;
-    uint32_t cbr;
-    uint32_t bitrate;
-    uint32_t qp;
-    uint32_t frames;
-    uint32_t yuv_format;
-    uint32_t vsp;
-    uint32_t eis;
-    uint8_t fbc_mode;
+  uint32_t org_width;
+  uint32_t org_height;
+  uint32_t width;
+  uint32_t height;
+  int32_t format;
+  uint32_t framerate;
+  uint32_t max_key_interval;
+  uint32_t cbr;
+  uint32_t bitrate;
+  uint32_t qp;
+  uint32_t frames;
+  uint32_t yuv_format;
+  uint32_t vsp;
+  uint32_t eis;
+  uint8_t fbc_mode;
 } MMInputParams;
 
 class AvcH264EncInterface {

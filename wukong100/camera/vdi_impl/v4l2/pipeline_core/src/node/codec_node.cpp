@@ -231,7 +231,7 @@ static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height)
     int hheight = height >> 1;
 
     u_char* temp = src + size;
-    pos = width * hheight ;
+    pos = width * hheight;
     for (int j = 0; j < hheight; j++) {
         for (int i = 0; i < width; i += INTERVAL) {
             dst[n + 1] = temp[pos - i - 1];
@@ -262,7 +262,7 @@ static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height)
     int hheight = height >> 1;
 
     u_char* temp = src + size;
-    pos = width * hheight ;
+    pos = width * hheight;
     for (int j = 0; j < hheight; j++) {
         for (int i = 0; i < width; i += INTERVAL) {
             dst[n + 1] = temp[pos - i - 1];

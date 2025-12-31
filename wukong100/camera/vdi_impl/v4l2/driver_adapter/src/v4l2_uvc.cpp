@@ -117,7 +117,8 @@ void HosV4L2UVC::V4L2UvcMatchDev(const std::string name, const std::string v4l2D
 
 RetCode HosV4L2UVC::V4L2UvcGetCap(const std::string v4l2Device, struct v4l2_capability& cap)
 {
-    int fd, rc;
+    int fd = 0;
+    int rc = 0;
     char *devName = nullptr;
     char absPath[PATH_MAX] = {0};
 
@@ -234,7 +235,7 @@ const char* HosV4L2UVC::V4L2GetUsbValue(const char* key, const char* str, int le
 void HosV4L2UVC::V4L2GetUsbString(std::string& action, std::string& subsystem,
     std::string& devnode, char* buf, unsigned int len)
 {
-    int lineLen;
+    int lineLen = 0;
     int pos = 0;
     const char* retVal;
 
@@ -282,7 +283,7 @@ void HosV4L2UVC::V4L2GetUsbString(std::string& action, std::string& subsystem,
 void HosV4L2UVC::loopUvcDevice()
 {
     fd_set fds;
-    int rc;
+    int rc = 0;
     constexpr uint32_t delayTime = 200000;
     CAMERA_LOGD("UVC:loopUVCDevice fd = %{public}d getuid() = %{public}d\n", uDevFd_, getuid());
     V4L2UvcEnmeDevices();
@@ -330,7 +331,7 @@ int HosV4L2UVC::CheckBuf(unsigned int len, char *buf)
 
 void HosV4L2UVC::UpdateV4L2UvcMatchDev(std::string& action, std::string& subsystem, std::string& devnode)
 {
-    int rc;
+    int rc = 0;
     if (subsystem == "video4linux") {
         CAMERA_LOGD("UVC:ACTION = %{public}s, SUBSYSTEM = %{public}s, DEVNAME = %{public}s\n",
                     action.c_str(), subsystem.c_str(), devnode.c_str());
@@ -360,7 +361,7 @@ void HosV4L2UVC::UpdateV4L2UvcMatchDev(std::string& action, std::string& subsyst
 
 void HosV4L2UVC::V4L2UvcDetectUnInit()
 {
-    int rc;
+    int rc = 0;
     constexpr uint32_t delayTime = 300000;
 
     g_uvcDetectEnable = false;
@@ -389,7 +390,7 @@ void HosV4L2UVC::V4L2UvcDetectUnInit()
 
 RetCode HosV4L2UVC::V4L2UvcDetectInit(UvcCallback cb)
 {
-    int rc;
+    int rc = 0;
     struct sockaddr_nl nls;
 
     CAMERA_LOGD("UVC:V4L2Detect enter\n");
