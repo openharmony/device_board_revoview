@@ -145,7 +145,7 @@ RetCode HosV4L2Control::V4L2GetCtrl(int fd, unsigned int id, int& value)
 RetCode HosV4L2Control::V4L2SetCtrl(int fd, unsigned int id, int value)
 {
     struct v4l2_control ctrl;
-    int rc;
+    int rc = 0;
 
     CAMERA_LOGD("HosV4L2Control::V4L2SetCtrl value = %{public}d\n", value);
 
@@ -179,7 +179,8 @@ int HosV4L2Control::ExtControl(int fd, struct v4l2_queryctrl *ctrl)
 void HosV4L2Control::V4L2SetValue(int fd, std::vector<DeviceControl>& control,
     DeviceControl& ctrl, v4l2_queryctrl& qCtrl)
 {
-    int value, rc;
+    int value = 0;
+    int rc = 0;
 
     ctrl.id = qCtrl.id;
     ctrl.ctrl_class = V4L2_CTRL_ID2CLASS(qCtrl.id);
@@ -211,7 +212,7 @@ void HosV4L2Control::V4L2EnumExtControls(int fd, std::vector<DeviceControl>& con
 {
     struct v4l2_queryctrl qCtrl = {};
     DeviceControl ctrl = {};
-    int rc;
+    int rc = 0;
 
     qCtrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
     while (!ExtControl(fd, &qCtrl)) {
@@ -251,7 +252,7 @@ int HosV4L2Control::V4L2GetControl(int fd, std::vector<DeviceControl>& control, 
 {
     struct v4l2_queryctrl queryCtrl = {};
     DeviceControl ctrl = {};
-    int rc;
+    int rc = 0;
 
     queryCtrl.id = id;
     rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_QUERYCTRL, &queryCtrl);
@@ -295,7 +296,7 @@ int HosV4L2Control::V4L2GetControl(int fd, std::vector<DeviceControl>& control, 
 
 void HosV4L2Control::V4L2EnumControls(int fd, std::vector<DeviceControl>& control)
 {
-    int rc;
+    int rc = 0;
     constexpr uint32_t max = V4L2_CID_PRIVATE_BASE + 100;
 
     for (unsigned int id = V4L2_CID_BASE; id < V4L2_CID_LASTP1; id++) {
@@ -313,7 +314,7 @@ void HosV4L2Control::V4L2EnumControls(int fd, std::vector<DeviceControl>& contro
 
 RetCode HosV4L2Control::V4L2GetControls(int fd, std::vector<DeviceControl>& control)
 {
-    int rc;
+    int rc = 0;
     struct v4l2_queryctrl qCtrl = {};
 
     std::vector<DeviceControl>().swap(control);

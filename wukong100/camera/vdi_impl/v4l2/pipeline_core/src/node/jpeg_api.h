@@ -21,8 +21,6 @@ extern "C"
 {
 #endif
 
-
-
 typedef unsigned long   jpg_uint;
 typedef long            jpg_int;
 typedef uint64_t        jpg_u64;
