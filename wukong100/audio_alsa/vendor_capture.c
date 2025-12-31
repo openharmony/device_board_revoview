@@ -644,7 +644,7 @@ static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
 
-    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloc(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
@@ -715,7 +715,7 @@ static int32_t SetHWParamsSubVdi(
         return HDF_FAILURE;
     }
 
-    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloc(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
@@ -996,7 +996,7 @@ int32_t CaptureGetSceneDev(enum AudioCategory scene)
         scene = AUDIO_IN_MEDIA;
     }
     if (scene == AUDIO_IN_CALL) {
-        return SND_CALL_CAPTURE_DEV;
+        return SND_CALL_PCM_DEV;
     } else {
         return SND_DEFAULT_PCM_DEV;
     }
