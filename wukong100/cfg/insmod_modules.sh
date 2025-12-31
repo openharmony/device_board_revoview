@@ -31,3 +31,5 @@ chmod 777 /dev/gnss_common_ctl
 chmod 777 /sys/class/misc/gnss_common_ctl/gnss_power_enable
 
 chmod 666 /dev/hwsle
+chown camera_host camera_host /dev/vpu_enc0
+chown camera_host camera_host /dev/vpu_enc1

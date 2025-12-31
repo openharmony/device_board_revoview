@@ -1,0 +1,168 @@
+# Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import("//build/ohos.gni")
+import("//device/board/${product_company}/${device_name}/device.gni")
+import("//drivers/hdf_core/adapter/uhdf2/uhdf.gni")
+import("//drivers/peripheral/camera/camera.gni")
+
+config("pipe_config") {
+  visibility = [ ":*" ]
+
+  cflags_cc = [
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-error",
+    "-DGST_DISABLE_DEPRECATED",
+    "-DHAVE_CONFIG_H",
+    "-DCOLORSPACE=\"videoconvert\"",
+    "-D_VSP_LINUX_",
+    "-D_VSP_",
+    "-fno-strict-aliasing",
+    "-Wno-sign-compare",
+    "-Wno-builtin-requires-header",
+    "-Wno-unused-variable",
+    "-Wno-unused-label",
+    "-Wno-implicit-function-declaration",
+    "-Wno-format",
+    "-Wno-int-conversion",
+    "-Wno-unused-function",
+    "-Wno-thread-safety-attributes",
+    "-Wno-inconsistent-missing-override",
+    "-fno-rtti",
+    "-fno-exceptions",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fno-lto",
+  ]
+}
+
+ohos_shared_library("camera_pipeline_core") {
+  defines = []
+  if (drivers_peripheral_camera_feature_usb) {
+    defines += [ "CAMERA_BUILT_ON_USB" ]
+  }
+  sources = [
+    "$board_camera_path/pipeline_core/src/node/codec_node.cpp",
+    "$board_camera_path/pipeline_core/src/node/exif_node.cpp",
+    "$board_camera_path/pipeline_core/src/node/face_node.cpp",
+    #"$board_camera_path/pipeline_core/src/node/ion/ion.c",
+    #"$board_camera_path/pipeline_core/src/node/MemDmabuf2.cpp",
+    #"$board_camera_path/pipeline_core/src/node/MemObject2.cpp",
+    #"$board_camera_path/pipeline_core/src/node/avch264enc.cpp",
+    #"$board_camera_path/pipeline_core/src/node/util.cpp",
+    #"$board_camera_path/pipeline_core/src/node/md5.c",
+    "$camera_path/pipeline_core/src/pipeline_core.cpp",
+  ]
+  include_dirs = [
+    "../device_manager/include",
+    "//commonlibrary/c_utils/base/include",
+    "src/node",
+    "$board_camera_path/device_manager/include",
+    "$board_camera_path/driver_adapter/include",
+    
+    "$camera_path/include",
+    "$camera_path/../interfaces",
+    "$camera_path/../v4l2/include",
+    "$camera_path/device_manager/include",
+    "//drivers/interface/camera/metadata/include",
+    "$camera_path/../interfaces/v1_0",
+    "//third_party/libexif",
+    #"//third_party/libjpeg",
+    "$camera_path/utils/exif",
+    #"//base/startup/init/interfaces/innerkits/include/syspara/",
+
+    # hcs parser
+    #"//unisoc_p7885_property/third_kit/system/memory/libdmabufheap/include",
+    #"//unisoc_p7885_property/third_kit/system/memory/libvideosharememory/include",
+  ]
+
+  deps = [
+    "$board_camera_path:config.c",
+    "$board_camera_path:params.c",
+    "$board_camera_path/device_manager:camera_device_manager",
+    #"//device/soc/sprd/common/camera:jpeg_hw_sprd",
+    #"//device/soc/sprd/common/hardware/omx_il/components/video/avc/dec/hw:libomx_avcenc_hw_sprd",
+    "//third_party/libjpeg-turbo:turbojpeg_static",
+    #"//device/soc/sprd/uis7885/hardware/aosp/system/memory/libdmabufheap:libaosp_dmabufheap",
+    #"//device/platform/board/oriole/modules/video/memory/videosharememory:libvideo_share_memory",
+    #"//base/startup/init/interfaces/innerkits:libbegetutil",
+  ]
+
+  if (is_standard_system) {
+    external_deps = [
+      "drivers_peripheral_camera:peripheral_camera_buffer_manager",
+      "drivers_peripheral_camera:peripheral_camera_device_manager",
+      "drivers_peripheral_camera:peripheral_camera_metadata_manager",
+      "drivers_peripheral_camera:peripheral_camera_pipeline_core",
+      "drivers_peripheral_camera:peripheral_camera_utils",
+      "drivers_peripheral_camera:peripheral_camera_v4l2_adapter",
+      "hdf_core:libhdf_utils",
+      "hilog:libhilog",
+      #"platform_common:jpeg_hw_sprd",
+      #"platform_common:libomx_avcenc_hw_sprd",
+      #"platform_common:libaosp_dmabufheap",
+      #"platform_board:libvideo_share_memory",
+      "init:libbegetutil",
+    ]
+  } else {
+    external_deps = [ "hilog:libhilog" ]
+  }
+  external_deps += [
+    "c_utils:utils",
+    "drivers_interface_camera:libbuffer_producer_sequenceable_1.0",
+    "drivers_interface_camera:metadata",
+    "graphic_surface:surface",
+    "hdf_core:libhdf_host",
+    "ipc:ipc_single",
+  ]
+  cflags = [
+    "-Wno-deprecated-pragma",
+    "-fno-lto",
+  ]
+
+  ldflags = [
+    "-fno-lto",
+  ]
+
+  public_configs = [ ":pipe_config" ]
+  install_images = [ chipset_base_dir ]
+  install_enable = true
+  part_name = "device_wukong100"
+  subsystem_name = "device_wukong100"
+}
+
+config("example_config") {
+  visibility = [ ":*" ]
+
+  cflags = [
+    "-Wno-error",
+    "-Wno-unused-function",
+    "-Wno-unused-parameter",
+  ]
+}
+
+ohos_shared_library("camera_ipp_algo_example") {
+  sources = [ "src/ipp_algo_example/ipp_algo_example.c" ]
+
+  include_dirs = [
+    "$camera_path/pipeline_core/ipp/include",
+    "//commonlibrary/c_utils/base/include",
+  ]
+  external_deps = [ "c_utils:utils" ]
+  public_configs = [ ":example_config" ]
+  install_images = [ chipset_base_dir ]
+  install_enable = true
+  part_name = "device_wukong100"
+  subsystem_name = "device_wukong100"
+}

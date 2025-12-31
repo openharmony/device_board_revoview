@@ -23,6 +23,7 @@ group("wukong100_group") {
     "kernel:kernel",
     "//vendor/revoview/wukong100/modules:modules",
     #"updater:updater_files",
+    #"//device/board/revoview/wukong100/camera/vdi_impl/v4l2:camera_board_vdi_impl",
     "//third_party/alsa-lib:libasound",
     "//third_party/alsa-utils:alsa-utils",
   ]
