@@ -222,9 +222,9 @@ static int32_t OpenCapturePcmAndSetParams()
 {
     int32_t ret;
     AUDIO_FUNC_LOGI("snd_pcm_open capture hw:0,5 !");
-    ret = snd_pcm_open(&CaptureHandle, "hw:0,5", SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
+    ret = snd_pcm_open(&CaptureHandle, SND_CALL_CAPTURE_DEV, SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("Open hw:0,5 fail");
+        AUDIO_FUNC_LOGE("Open Capture hw:0,5 fail");
         return HDF_FAILURE;
     }
 
@@ -618,7 +618,7 @@ static int32_t SetHWParamsCapture(snd_pcm_t *pcmHandle)
         return HDF_FAILURE;
     }
 
-    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloc(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
@@ -761,7 +761,7 @@ static int32_t SetHWParamsSubVdi(
         return HDF_FAILURE;
     }
     /* set the interleaved read/write format */
-    snd_pcm_access_mask_t *mask = malloca(snd_pcm_access_mask_sizeof());
+    snd_pcm_access_mask_t *mask = malloc(snd_pcm_access_mask_sizeof());
     snd_pcm_access_mask_none(mask);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_INTERLEAVED);
     snd_pcm_access_mask_set(mask, SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
@@ -1147,6 +1147,22 @@ int32_t RenderWriteVdiImpl(struct AlsaRender *renderIns, const struct AudioHwRen
     return HDF_SUCCESS;
 }
 
+int32_t RenderUpdateRouterImpl(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData)
+{
+    int32_t ret;
+    struct AlsaSoundCard *cardIns = (struct AlsaSoundCard*)renderIns;
+    CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
+    CHECK_NULL_PTR_RETURN_DEFAULT(cardIns->pcmHandle);
+
+    ret = UpdateAudioRenderRoute(renderIns, handleData);
+    if (ret != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("RenderUpdateRouterImpl failed!");
+        return HDF_FAILURE;
+    }
+
+    return HDF_SUCCESS;
+}
+
 int32_t RenderOverrideFunc(struct AlsaRender *renderIns)
 {
     struct AlsaSoundCard *cardIns = (struct AlsaSoundCard *)renderIns;
@@ -1167,6 +1183,7 @@ int32_t RenderOverrideFunc(struct AlsaRender *renderIns)
         renderIns->SetMute = RenderSetMuteImpl;
         renderIns->GetChannelMode = RenderGetChannelModeImpl;
         renderIns->SetChannelMode = RenderSetChannelModeImpl;
+        renderIns->UpdateRouter = RenderUpdateRouterImpl;
 
         renderIns->SetParams = RenderSetHwParamsImpl;
         renderIns->SetVoiceVolume = RenderSetVoiceVolumeImpl;
@@ -1182,7 +1199,7 @@ int32_t RenderGetSceneDev(enum AudioCategory scene)
         scene = AUDIO_IN_MEDIA;
     }
     if (scene == AUDIO_IN_CALL) {
-        return SND_CALL_RENDER_DEV;
+        return SND_CALL_PCM_DEV;
     } else {
         return SND_DEFAULT_PCM_DEV;
     }
