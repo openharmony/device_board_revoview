@@ -19,6 +19,11 @@
 #define HDF_LOG_TAG HDF_AUDIO_HAL_RENDER
 
 static enum AudioCategory g_currentScene = AUDIO_MMAP_NOIRQ; // render the current scene
+void *g_dlHandle;
+typedef int32_t (*InitFunc)(const char *);
+typedef int32_t (*UploadFunc)(void);
+typedef int32_t (*UpdateFunc)(int);
+typedef void (*CloseFunc)(void);
 static snd_pcm_t *CaptureHandle = NULL;
 
 static int32_t RenderSetHwParamsImpl(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData);
@@ -365,6 +370,20 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
                 AUDIO_FUNC_LOGE("render UpdateAudioRenderRoute fail");
                 return HDF_FAILURE;
             }
+            if (!g_dlHandle) {
+                AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
+                return HDF_FAILURE;
+            }
+            UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "update_device");
+            if (updateDevice == NULL) {
+                AUDIO_FUNC_LOGE("update_device not defined or exported!");
+                return HDF_FAILURE;
+            }
+            ret = updateDevice(handleData->renderMode.hwInfo.deviceDescript.pins);
+            if (ret < 0) {
+                AUDIO_FUNC_LOGE("render update_device failed");
+                return HDF_FAILURE;
+            }
         }
     }
     AUDIO_FUNC_LOGI("RenderSelectSceneImpl end");
@@ -500,6 +519,21 @@ static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioH
             ret = UpdateAudioRenderRoute(renderIns, handleData);
             if (ret < 0) {
                 AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams UpdateAudioRenderRoute fail");
+                return HDF_FAILURE;
+            }
+
+            if (!g_dlHandle) {
+                AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
+                return HDF_FAILURE;
+            }
+            UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "update_device");
+            if (updateDevice == NULL) {
+                AUDIO_FUNC_LOGE("update_device not defined or exported!");
+                return HDF_FAILURE;
+            }
+            ret = updateDevice(renderIns->descPins);
+            if (ret < 0) {
+                AUDIO_FUNC_LOGE("render update_device faild");
                 return HDF_FAILURE;
             }
 
@@ -1037,6 +1071,74 @@ static int32_t RenderSetHwParamsImpl(struct AlsaRender *renderIns, const struct 
     return HDF_SUCCESS;
 }
 
+static int32_t RenderSetTurningImpl()
+{
+    AUDIO_FUNC_LOGI("RenderSetTurningImpl enter");
+    int32_t ret;
+    g_dlHandle = dlopen(SPRD_EFFECT_SO_PATH, RTLD_LAZY);
+    if (!g_dlHandle) {
+        AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
+        return HDF_FAILURE;
+    }
+    UploadFunc uploadAudio = (UploadFunc)dlsym(g_dlHandle, "upload_audio_profile_param_from_turnings");
+    if (uploadAudio == NULL) {
+        AUDIO_FUNC_LOGE("upload_audio_profile_param_from_turnings not defined or exported!");
+        return HDF_FAILURE;
+    }
+    ret = uploadAudio();
+    if (ret != AUDIO_SUCCESS) {
+        AUDIO_FUNC_LOGE("load profile param from turnings failed!");
+        return HDF_FAILURE;
+    }
+
+    return HDF_SUCCESS;
+}
+
+static int32_t RenderReadFromVoiceImpl(struct AlsaRender *renderIns, const char *adapterName)
+{
+    AUDIO_FUNC_LOGI("RenderReadFromVoiceImpl enter");
+    int32_t ret;
+    if (adapterName == NULL || strlen(adapterName) == 0) {
+        AUDIO_FUNC_LOGE("Invalid adapterName!");
+        return HDF_FAILURE;
+    }
+
+    if (!g_dlHandle) {
+        AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
+        return HDF_FAILURE;
+    }
+    InitFunc deviceInit = (InitFunc)dlsym(g_dlHandle, "device_init");
+    if (deviceInit == NULL) {
+        AUDIO_FUNC_LOGE("device_init not defined or exported!");
+        return HDF_FAILURE;
+    }
+
+    ret = deviceInit(adapterName);
+    if (ret != AUDIO_SUCCESS) {
+        AUDIO_FUNC_LOGE("read voice param from dev/audio_pipe_voice failed!");
+        return HDF_FAILURE;
+    }
+
+    return HDF_SUCCESS;
+}
+
+static int32_t RenderCloseVoiceImpl(struct AlsaRender *renderIns)
+{
+    AUDIO_FUNC_LOGE("RenderCloseVoiceImpl enter");
+    if (!g_dlHandle) {
+        AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
+        return HDF_FAILURE;
+    }
+    CloseFunc deviceClose = (CloseFunc)dlsym(g_dlHandle, "device_close");
+    if (deviceClose == NULL) {
+        AUDIO_FUNC_LOGE("device_close not defined or exported!");
+        return HDF_FAILURE;
+    }
+    deviceClose();
+    AUDIO_FUNC_LOGE("RenderCloseVoiceImpl end");
+    return HDF_SUCCESS;
+}
+
 static int32_t RenderSetVoiceVolumeImpl(struct AlsaRender *renderIns, float volume)
 {
     AUDIO_FUNC_LOGE("RenderSetVoiceVolumeImpl enter");
@@ -1186,6 +1288,9 @@ int32_t RenderOverrideFunc(struct AlsaRender *renderIns)
         renderIns->UpdateRouter = RenderUpdateRouterImpl;
 
         renderIns->SetParams = RenderSetHwParamsImpl;
+        renderIns->SetTurning = RenderSetTurningImpl;
+        renderIns->ReadFromVoice = RenderReadFromVoiceImpl;
+        renderIns->CloseVoice = RenderCloseVoiceImpl;
         renderIns->SetVoiceVolume = RenderSetVoiceVolumeImpl;
         renderIns->Write = RenderWriteVdiImpl;
     }

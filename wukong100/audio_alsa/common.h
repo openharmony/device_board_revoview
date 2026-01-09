@@ -86,5 +86,8 @@
 /* voice volume */
 #define     VOICE_VOLUME_PATH                "VBC_VOLUME"
 
+/* sprd effect so path */
+#define     SPRD_EFFECT_SO_PATH              "/vendor/lib64/libsprd_mock_effect_lib.z.so"
+
 #endif /* ALSA_SND_COMMON_H */
 #endif /* COMMON_H */
