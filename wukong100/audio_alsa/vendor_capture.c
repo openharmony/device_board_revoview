@@ -499,7 +499,7 @@ static int32_t CheckPcmStatus(struct AlsaCapture *captureIns, struct AudioHwCapt
 {
     int32_t ret;
     CHECK_NULL_PTR_RETURN_DEFAULT(captureIns);
-    ret = snd_pcm_wait(captureIns->soundCard.pcmHandle, -1); /* -1 for timeout, Waiting forever */
+    ret = snd_pcm_wait(captureIns->soundCard.pcmHandle, PCM_WAIT_TIMEOUT_MS); /* -1 for timeout, Waiting forever */
     if (ret < 0) {
         AUDIO_FUNC_LOGE("snd_pcm_wait failed: %{public}s.", snd_strerror(ret));
 
