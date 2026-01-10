@@ -1,0 +1,13 @@
+{
+    "subsystem": "device_wukong100",
+    "parts": {
+        "device_wukong100": {
+            "module_list": [
+                 "//device/board/revoview/wukong100:wukong100_group"
+            ],
+            "test_list": [
+                "//kernel/linux/build/test:linuxkerneltest"
+            ]
+        }
+    }
+}

@@ -1,0 +1,60 @@
+# Copyright (C) 2023 HiHope Open Source Organization.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/config/clang/clang.gni")
+import("//build/ohos.gni")
+kernel_build_script_dir = "//kernel_unisoc_p7885"
+kernel_source_dir = "//kernel_unisoc_p7885"
+
+action("kernel") {
+  script = "build_kernel.sh"
+  sources = [ kernel_source_dir ]
+  outputs = [
+    "$root_build_dir/kernel/OBJ/linux-5.15/arch/arm64/boot/Image"
+ ]
+  args = [
+    rebase_path(kernel_build_script_dir, root_build_dir),
+    product_name,
+    rebase_path("$root_build_dir"),
+  ]
+  if (build_variant == "root") {
+    args += [ "userdebug" ]
+  } else {
+    args += [ "user" ]
+  }
+}
+
+action("make_boot_image") {
+  script = "make-build.sh"
+  sources = [ kernel_source_dir ]
+  outputs = [ "$root_build_dir/packages/phone/images/boot.img" ]
+  args = [
+    rebase_path("$root_build_dir"),
+    "ramdisk",
+  ]
+  # must wait ramdisk image build
+  deps = [ "//build/ohos/images:make_images" ]
+}
+
+action("make_boot_updater_image") {
+  script = "make-build.sh"
+  sources = [ kernel_source_dir ]
+  outputs = [ "$root_build_dir/packages/phone/images/boot-updater.img" ]
+  args = [
+    rebase_path("$root_build_dir"),
+    "updater",
+  ]
+  # must wait ramdisk image build
+  deps = [ "//build/ohos/images:make_images" ]
+}
+

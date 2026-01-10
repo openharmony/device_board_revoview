@@ -1,0 +1,55 @@
+{
+    "name": "@ohos/device_wukong100",
+    "description": "device board",
+    "version": 3.2,
+    "license": "Apache License 2.0",
+    "publishAs": "code-segment",
+    "segment": {
+      "destPath": "device/board/revoview/wukong100"
+    },
+    "dirs": {},
+    "scripts": {},
+    "component": {
+      "name": "device_wukong100",
+      "subsystem": "device_wukong100",
+      "syscap": [],
+      "features": [
+        "device_wukong100_feature_preview_buffer_num",
+        "device_wukong100_feature_photo_buffer_num",
+        "device_wukong100_feature_buffer_partial_usage",
+        "device_wukong100_feature_return_timeout"
+      ],
+      "adapted_system_type": [ "standard" ],
+      "hisysevent_config": [],
+      "rom": "",
+      "ram": "",
+      "deps": {
+        "components": [
+          "init",
+          "c_utils",
+          "drivers_peripheral_camera",
+          "part graphic_surface",
+          "graphic_surface",
+          "hdf_core",
+          "hilog",
+          "ipc",
+          "hitrace",
+          "hisysevent",
+          "drivers_interface_camera",
+          "drivers_interface_display",
+          "soc_p7885",
+          "product_wukong100"
+        ],
+        "third_party": [
+          "libjpeg-turbo"
+        ]
+      },
+      "build": {
+        "sub_component": [
+            "//device/board/revoview/wukong100:wukong100_group"
+        ],
+        "test": []
+      }
+    }
+  }
+  
