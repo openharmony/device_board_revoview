@@ -6,7 +6,7 @@
 
 |                          开发板名称                          | SoC型号 | 系统类型 |   领域   |
 | :----------------------------------------------------------: | :-----: | :------: | :------: |
-| [wukong100](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md) | UIS7885 | 小型系统 | 智慧视觉 |
+| [wukong100](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md) | UIS7885 | 标准系统 | 智慧视觉 |
 
 
 ## 目录
