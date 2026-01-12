@@ -6,11 +6,11 @@ WUKONG100开发套件，基于UNISOC UIS7885，采用1×Cortex-A76@2.7GHz + 3×C
 
 WUKONG100开发套件外观图如图1所示：
 
-![image-20260109170947320](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260109170947320.png)
+![WUKONG100开发套件外观图](../picture/wukong100.png)
 
-![image-20260109163646247](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260109163646247.png)
+![image-20260109163646247](../picture//front.png)
 
-![image-20260109163704808](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260109163704808.png)
+![image-20260109163704808](../picture/back.png)
 
 
 
@@ -20,7 +20,7 @@ WUKONG100开发套件外观图如图1所示：
 
 **1、WUKONG100开发套件正面接口示意图**
 
-![image-20260109143654431](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260109143654431.png)
+![wukong100功能分布图](../picture/interface.png)
 
 ​																					图2：WUKONG100开发套件正面接口示意图
 
