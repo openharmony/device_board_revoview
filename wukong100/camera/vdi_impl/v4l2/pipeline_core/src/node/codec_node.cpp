@@ -551,7 +551,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, uint32_t
     }
     CameraId cameraId = ConvertCameraId(cameraId_);
     if (cameraId == CAMERA_FIRST) {
-         CAMERA_LOGE("Do nth for main sensor !");
+        CAMERA_LOGE("Do nth for !");
     } else {
         Yuv420_Rot_VMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(), width, height);
         int ret = memcpy_s((void*)buffer->GetVirAddress(), size, (void*)bufferRotate_, size);
@@ -560,8 +560,6 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, uint32_t
             return -1;
         }
     }
-
-
     if (h264Encoder != nullptr) {
         MMInputParams input;
         memset(&input, 0, sizeof(MMInputParams));
