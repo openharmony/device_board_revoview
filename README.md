@@ -30,7 +30,7 @@
 
 ## 编译构建/使用方法
 
-参考各开发板子目录下readme说明
+[WUKONG100开发板使用说明](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md)
 
 
 ## 许可说明
