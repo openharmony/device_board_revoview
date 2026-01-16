@@ -30,7 +30,7 @@ This repository is used to store content related to development boards based on 
 
 ## Build and Usage
 
-Refer to the readme instructions in each development board subdirectory.
+[WUKONG100开发板使用说明](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md)
 
 
 ## License
