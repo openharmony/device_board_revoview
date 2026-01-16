@@ -462,31 +462,27 @@ static bool RenderGetMuteImpl(struct AlsaRender *renderIns)
 
 static int32_t RenderSetMuteImpl(struct AlsaRender *renderIns, bool muteFlag)
 {
+    AUDIO_FUNC_LOGE("RenderSetMuteImpl enter muteFlag: %{public}d!", muteFlag);
     int32_t ret;
-    long vol;
-    long setVol;
+
     RenderData *priData = RenderGetPriData(renderIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(priData);
 
-    ret = renderIns->GetVolume(renderIns, &vol);
+    struct AlsaMixerCtlElement elem;
+    struct AlsaSoundCard *cardIns = (struct AlsaSoundCard *)renderIns;
+
+    SndElementItemInit(&elem);
+    elem.numid = CAPTURE_MUTE_NUMID;
+    elem.name = CAPTURE_MUTE_PATH;
+    elem.value = muteFlag ? OPEN_MIC : CLOSE_MIC;
+
+    ret = SndElementWrite(cardIns, &elem);
     if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("GetVolume failed!");
+        AUDIO_FUNC_LOGE("write capture fail!");
         return HDF_FAILURE;
     }
-    
-    if (muteFlag) {
-        priData->tempVolume = vol;
-        setVol = 0;
-    } else {
-        setVol = priData->tempVolume;
-    }
-    
-    renderIns->SetVolume(renderIns, setVol);
-    if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("SetVolume failed!");
-        return HDF_FAILURE;
-    }
+
     renderIns->muteState = muteFlag;
     
     return HDF_SUCCESS;
