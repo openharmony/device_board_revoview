@@ -171,9 +171,7 @@ post_process
 
 烧录说明文档见 Download_R27.22.3801/Doc/下载工具使用指南V4.3.pdf“
 
-**五、联系**
 
-https://item.taobao.com/item.htm?ft=t&id=996716448910
 
 
 
