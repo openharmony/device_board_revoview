@@ -171,6 +171,4 @@ Tool path: device/board/revoview/wukong100/tools/Download_R27.22.3801.7z
 
 Flashing instructions can be found in Download_R27.22.3801/Doc/Download Tool User Guide V4.3.pdf
 
-**V. Contact**
 
-https://item.taobao.com/item.htm?ft=t&id=996716448910
