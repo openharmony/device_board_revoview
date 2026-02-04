@@ -1130,7 +1130,6 @@ static int32_t RenderCloseVoiceImpl(struct AlsaRender *renderIns)
         AUDIO_FUNC_LOGE("device_close not defined or exported!");
         return HDF_FAILURE;
     }
-    deviceClose();
     AUDIO_FUNC_LOGE("RenderCloseVoiceImpl end");
     return HDF_SUCCESS;
 }
