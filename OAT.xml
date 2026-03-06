@@ -68,6 +68,20 @@
                 <filteritem type="filepath" name="wukong100/kernel/mkboot/bin/mkbootimg" desc="打包工具，不能加其他注释"/>
                 <filteritem type="filepath" name="wukong100/kernel/mkboot/bin/mkdtimg" desc="打包工具，不能加其他注释"/>
                 <filteritem type="filepath" name="wukong100/kernel/mkboot/lib64/libc++.so" desc="打包工具，不能加其他注释"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_modem.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_product.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_system.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_vendor_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_vendor.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_modem.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_product.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_system.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_vendor_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_vendor.pem" desc="hvb 签名秘钥"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
                 <!--filteritem type="filename" name="*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
