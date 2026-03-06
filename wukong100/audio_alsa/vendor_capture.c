@@ -390,23 +390,31 @@ static int32_t CaptureStopImpl(struct AlsaCapture *captureIns)
 static int32_t CaptureGetGainThresholdImpl(struct AlsaCapture *captureIns, float *gainMin, float *gainMax)
 {
     AUDIO_FUNC_LOGE("not support gain operation");
+    CHECK_NULL_PTR_RETURN_DEFAULT(captureIns);
+    (void)gainMin;
+    (void)gainMax;
     return HDF_SUCCESS;
 }
 
 static int32_t CaptureGetGainImpl(struct AlsaCapture *captureIns, float *volume)
 {
     AUDIO_FUNC_LOGE("not support gain operation");
+    CHECK_NULL_PTR_RETURN_DEFAULT(captureIns);
+    (void)volume;
     return HDF_SUCCESS;
 }
 
 static int32_t CaptureSetGainImpl(struct AlsaCapture *captureIns, float volume)
 {
     AUDIO_FUNC_LOGE("not support gain operation");
+    CHECK_NULL_PTR_RETURN_DEFAULT(captureIns);
+    (void)volume;
     return HDF_SUCCESS;
 }
 
 static bool CaptureGetMuteImpl(struct AlsaCapture *captureIns)
 {
+    CHECK_NULL_PTR_RETURN_DEFAULT(captureIns);
     return captureIns->muteState;
 }
 
