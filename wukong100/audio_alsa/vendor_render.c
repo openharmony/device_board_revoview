@@ -574,28 +574,39 @@ static int32_t RenderStopImpl(struct AlsaRender *renderIns)
 static int32_t RenderGetGainThresholdImpl(struct AlsaRender *renderIns, float *gainMin, float *gainMax)
 {
     AUDIO_FUNC_LOGI("Not support gain operation");
+    CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
+    (void)gainMin;
+    (void)gainMax;
     return HDF_SUCCESS;
 }
 
 static int32_t RenderGetGainImpl(struct AlsaRender *renderIns, float *volume)
 {
     AUDIO_FUNC_LOGI("Not support gain operation");
+    CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
+    (void)volume;
     return HDF_SUCCESS;
 }
 
 static int32_t RenderSetGainImpl(struct AlsaRender *renderIns, float volume)
 {
     AUDIO_FUNC_LOGI("Not support gain operation");
+    CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
+    (void)volume;
     return HDF_SUCCESS;
 }
 
 static int32_t RenderGetChannelModeImpl(struct AlsaRender *renderIns, enum AudioChannelMode *mode)
 {
+    CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
+    (void)mode;
     return HDF_SUCCESS;
 }
 
 static int32_t RenderSetChannelModeImpl(struct AlsaRender *renderIns, enum AudioChannelMode mode)
 {
+    CHECK_NULL_PTR_RETURN_DEFAULT(renderIns);
+    (void)mode;
     return HDF_SUCCESS;
 }
 
@@ -1093,6 +1104,7 @@ static int32_t RenderSetTurningImpl()
 static int32_t RenderReadFromVoiceImpl(struct AlsaRender *renderIns, const char *adapterName)
 {
     AUDIO_FUNC_LOGI("RenderReadFromVoiceImpl enter");
+    (void)renderIns;
     int32_t ret;
     if (adapterName == NULL || strlen(adapterName) == 0) {
         AUDIO_FUNC_LOGE("Invalid adapterName!");
@@ -1121,6 +1133,7 @@ static int32_t RenderReadFromVoiceImpl(struct AlsaRender *renderIns, const char 
 static int32_t RenderCloseVoiceImpl(struct AlsaRender *renderIns)
 {
     AUDIO_FUNC_LOGE("RenderCloseVoiceImpl enter");
+    (void)renderIns;
     if (!g_dlHandle) {
         AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
         return HDF_FAILURE;
