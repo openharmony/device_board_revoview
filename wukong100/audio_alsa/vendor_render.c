@@ -157,6 +157,26 @@ static void PcmCloseHandle(struct AlsaSoundCard *cardIns)
     AUDIO_FUNC_LOGE("render PcmCloseHandle end");
 }
 
+static int32_t ConfigurePcm(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData, struct AlsaSoundCard *cardIns)
+{
+    int32_t ret = UpdateAudioRenderRoute(renderIns, handleData);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams UpdateAudioRenderRoute fail");
+        return HDF_FAILURE;
+    }
+    ret = RenderSetHwParamsImpl(renderIns, handleData);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams RenderSetHwParamsImpl fail");
+        return HDF_FAILURE;
+    }
+    ret = snd_pcm_prepare(cardIns->pcmHandle);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("snd_pcm_prepare fail: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
 static int32_t ReOpenPcmAndSetParams(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData)
 {
     AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams enter.");
@@ -203,23 +223,12 @@ static int32_t ReOpenPcmAndSetParams(struct AlsaRender *renderIns, const struct 
         return HDF_FAILURE;
     }
 
-    ret = UpdateAudioRenderRoute(renderIns, handleData);
+    ret = ConfigurePcm(renderIns, handleData, cardIns);
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams UpdateAudioRenderRoute fail");
-        return HDF_FAILURE;
-    }
-    
-    ret = RenderSetHwParamsImpl(renderIns, handleData);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams RenderSetHwParamsImpl fail");
+        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams ConfigurePcm fail");
         return HDF_FAILURE;
     }
 
-    ret = snd_pcm_prepare(cardIns->pcmHandle);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("snd_pcm_prepare fail: %{public}s", snd_strerror(ret));
-        return HDF_FAILURE;
-    }
     return HDF_SUCCESS;
 }
 
@@ -345,7 +354,6 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
     enum AudioCategory scene = handleData->frameRenderMode.attrs.type;
     AUDIO_FUNC_LOGI("RenderSelectSceneImpl enter scene: %{public}d, device: %{public}d", scene, renderIns->descPins);
     if (CheckSceneIsChange(scene)) {
-        AUDIO_FUNC_LOGI("RenderSelectSceneImpl change scene");
         if (g_currentScene == AUDIO_MMAP_NOIRQ) {
             AUDIO_FUNC_LOGI("RenderSelectSceneImpl scene is AUDIO_MMAP_NOIRQ");
             ret = UpdateAudioRenderRoute(renderIns, handleData);
@@ -386,7 +394,6 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
             }
         }
     }
-    AUDIO_FUNC_LOGI("RenderSelectSceneImpl end");
     return HDF_SUCCESS;
 }
 
@@ -488,6 +495,26 @@ static int32_t RenderSetMuteImpl(struct AlsaRender *renderIns, bool muteFlag)
     return HDF_SUCCESS;
 }
 
+static int32_t UpdateDeviceSo(struct AlsaRender *renderIns)
+{
+    int32_t ret;
+    if (!g_dlHandle) {
+        AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
+        return HDF_FAILURE;
+    }
+    UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "update_device");
+    if (updateDevice == NULL) {
+        AUDIO_FUNC_LOGE("update_device not defined or exported!");
+        return HDF_FAILURE;
+    }
+    ret = updateDevice(renderIns->descPins);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("render update_device faild");
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
 static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData)
 {
     AUDIO_FUNC_LOGI("RenderStartImpl enter g_currentScene: %{public}d!", g_currentScene);
@@ -518,26 +545,14 @@ static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioH
                 return HDF_FAILURE;
             }
 
-            if (!g_dlHandle) {
-                AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
-                return HDF_FAILURE;
-            }
-            UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "update_device");
-            if (updateDevice == NULL) {
-                AUDIO_FUNC_LOGE("update_device not defined or exported!");
-                return HDF_FAILURE;
-            }
-            ret = updateDevice(renderIns->descPins);
+            ret = UpdateDeviceSo(renderIns);
             if (ret < 0) {
-                AUDIO_FUNC_LOGE("render update_device faild");
+                AUDIO_FUNC_LOGE("render UpdateDevice faild");
                 return HDF_FAILURE;
             }
-
             return HDF_SUCCESS;
         }
-
         AUDIO_FUNC_LOGI("RenderStartImpl  call  cardIns->devName: %{public}s!", cardIns->devName);
-
         return HDF_FAILURE;
     } else {
         if (!SndisBusy(cardIns)) {
@@ -549,7 +564,7 @@ static int32_t RenderStartImpl(struct AlsaRender *renderIns, const struct AudioH
             }
         }
     }
-    
+
     return HDF_SUCCESS;
 }
 
@@ -638,6 +653,31 @@ static int32_t RenderSetChannelModeImpl(struct AlsaRender *renderIns, enum Audio
 
     return HDF_SUCCESS;
 }
+static int32_t ConfigureCaptur(snd_pcm_t *handle, snd_pcm_hw_params_t *hwParams)
+{
+    snd_pcm_uframes_t size = 0;
+    int32_t ret;
+    size = CAPTURE_PERIOD_SIZE_CALL;
+    ret = snd_pcm_hw_params_set_period_size_near(handle, hwParams, &size, 0);
+    if (ret != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("SetHWParamsCall Set period size failed!");
+        return ret;
+    }
+
+    size = CAPTURE_BUFFER_SIZE_CALL;
+    ret = snd_pcm_hw_params_set_buffer_size_near(handle, hwParams, &size);
+    if (ret != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("SetHWParamsCall Set buffer size failed!");
+        return ret;
+    }
+
+    ret = snd_pcm_hw_params(handle, hwParams);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("SetHWParamsCall Unable to set hw params for capture: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
 
 static int32_t SetHWParamsCapture(snd_pcm_t *pcmHandle)
 {
@@ -686,23 +726,9 @@ static int32_t SetHWParamsCapture(snd_pcm_t *pcmHandle)
         AUDIO_FUNC_LOGE("snd_pcm_hw_params_set_rate_near failed!");
     }
 
-    size = CAPTURE_PERIOD_SIZE_CALL;
-    ret = snd_pcm_hw_params_set_period_size_near(handle, hwParams, &size, 0);
-    if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("SetHWParamsCall Set period size failed!");
-        return ret;
-    }
-
-    size = CAPTURE_BUFFER_SIZE_CALL;
-    ret = snd_pcm_hw_params_set_buffer_size_near(handle, hwParams, &size);
-    if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("SetHWParamsCall Set buffer size failed!");
-        return ret;
-    }
-
-    ret = snd_pcm_hw_params(handle, hwParams);
+    ret = ConfigureCaptur(handle, hwParams);
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("SetHWParamsCall Unable to set hw params for capture: %{public}s", snd_strerror(ret));
+        AUDIO_FUNC_LOGE("ConfigureCaptur Unable to set hw params for capture: %{public}s", snd_strerror(ret));
         return HDF_FAILURE;
     }
 
@@ -787,13 +813,9 @@ static int32_t RenderHwParamsChmaps(struct AlsaSoundCard *cardIns)
 }
 #endif
 
-static int32_t SetHWParamsSubVdi(
-    snd_pcm_t *handle, snd_pcm_hw_params_t *params, const struct AudioPcmHwParams *hwParams)
+static int32_t EnableAlsa(snd_pcm_t *handle, snd_pcm_hw_params_t *params)
 {
     int32_t ret;
-    snd_pcm_format_t pcmFormat = SND_PCM_FORMAT_S16_LE;
-    CHECK_NULL_PTR_RETURN_DEFAULT(handle);
-    CHECK_NULL_PTR_RETURN_DEFAULT(params);
 
     /* set hardware resampling,enable alsa-lib resampling */
     ret = snd_pcm_hw_params_set_rate_resample(handle, params, 1);
@@ -810,6 +832,22 @@ static int32_t SetHWParamsSubVdi(
     ret = snd_pcm_hw_params_set_access_mask(handle, params, mask);
     if (ret < 0) {
         AUDIO_FUNC_LOGE("Access type not available for playback: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
+static int32_t SetHWParamsSubVdi(
+    snd_pcm_t *handle, snd_pcm_hw_params_t *params, const struct AudioPcmHwParams *hwParams)
+{
+    int32_t ret;
+    snd_pcm_format_t pcmFormat = SND_PCM_FORMAT_S16_LE;
+    CHECK_NULL_PTR_RETURN_DEFAULT(handle);
+    CHECK_NULL_PTR_RETURN_DEFAULT(params);
+
+    ret = EnableAlsa(handle, params);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("SndConverAlsaPcmFormat error.");
         return HDF_FAILURE;
     }
 
@@ -891,14 +929,8 @@ static int32_t SetHWRateVdi(snd_pcm_t *handle, snd_pcm_hw_params_t *params, uint
     return HDF_SUCCESS;
 }
 
-static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
+static int32_t SetHWRateParamsVdi(struct AlsaSoundCard *cardIns, snd_pcm_hw_params_t *hwParams)
 {
-    snd_pcm_uframes_t size;
-    snd_pcm_hw_params_t *hwParams = NULL;
-    struct AlsaRender *renderIns = (struct AlsaRender*)cardIns;
-    CHECK_NULL_PTR_RETURN_DEFAULT(cardIns->pcmHandle);
-
-    snd_pcm_hw_params_alloca(&hwParams);
     if (snd_pcm_hw_params_any(cardIns->pcmHandle, hwParams) < 0) {
         AUDIO_FUNC_LOGE("No configurations available");
         return HDF_FAILURE;
@@ -910,6 +942,21 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
     }
     if (SetHWRateVdi(cardIns->pcmHandle, hwParams, &(cardIns->hwParams.rate)) != HDF_SUCCESS) {
         AUDIO_FUNC_LOGE("SetHWRateVdi failed!");
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
+static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
+{
+    snd_pcm_uframes_t size;
+    snd_pcm_hw_params_t *hwParams = NULL;
+    struct AlsaRender *renderIns = (struct AlsaRender*)cardIns;
+    CHECK_NULL_PTR_RETURN_DEFAULT(cardIns->pcmHandle);
+
+    snd_pcm_hw_params_alloca(&hwParams);
+    if (SetHWRateParamsVdi(cardIns, hwParams) != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("SetHWRateParamsVdi failed!");
         return HDF_FAILURE;
     }
 
@@ -958,11 +1005,38 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
     return HDF_SUCCESS;
 }
 
-static int32_t SetSWParamsVdi(struct AlsaSoundCard *cardIns)
+static int32_t WriteToPlayback(snd_pcm_t *handle, snd_pcm_sw_params_t *swParams, struct AlsaRender *renderIns)
 {
     int32_t ret;
     int32_t val = 1; /* val 0 = disable period event, 1 = enable period event */
     snd_pcm_sframes_t stopThresholdSize = -1;
+    ret = snd_pcm_sw_params_set_stop_threshold(handle, swParams, stopThresholdSize);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("Unable to set stop threshold mode for playback: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+
+    /* enable period events when requested */
+    if (renderIns->periodEvent) {
+        ret = snd_pcm_sw_params_set_period_event(handle, swParams, val);
+        if (ret < 0) {
+            AUDIO_FUNC_LOGE("Unable to set period event: %{public}s", snd_strerror(ret));
+            return HDF_FAILURE;
+        }
+    }
+
+    /* write the parameters to the playback device */
+    ret = snd_pcm_sw_params(handle, swParams);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("Unable to set sw params for playback: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
+static int32_t SetSWParamsVdi(struct AlsaSoundCard *cardIns)
+{
+    int32_t ret;
     snd_pcm_sw_params_t *swParams = NULL;
     snd_pcm_t *handle = cardIns->pcmHandle;
     struct AlsaRender *renderIns = (struct AlsaRender *)cardIns;
@@ -1005,25 +1079,9 @@ static int32_t SetSWParamsVdi(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
 
-    ret = snd_pcm_sw_params_set_stop_threshold(handle, swParams, stopThresholdSize);
+    ret = WriteToPlayback(handle, swParams, renderIns);
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("Unable to set stop threshold mode for playback: %{public}s", snd_strerror(ret));
-        return HDF_FAILURE;
-    }
-
-    /* enable period events when requested */
-    if (renderIns->periodEvent) {
-        ret = snd_pcm_sw_params_set_period_event(handle, swParams, val);
-        if (ret < 0) {
-            AUDIO_FUNC_LOGE("Unable to set period event: %{public}s", snd_strerror(ret));
-            return HDF_FAILURE;
-        }
-    }
-
-    /* write the parameters to the playback device */
-    ret = snd_pcm_sw_params(handle, swParams);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("Unable to set sw params for playback: %{public}s", snd_strerror(ret));
+        AUDIO_FUNC_LOGE("Unable to write the parameters to the playback device: %{public}s", snd_strerror(ret));
         return HDF_FAILURE;
     }
 
