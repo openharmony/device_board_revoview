@@ -157,7 +157,8 @@ static void PcmCloseHandle(struct AlsaSoundCard *cardIns)
     AUDIO_FUNC_LOGE("render PcmCloseHandle end");
 }
 
-static int32_t ConfigurePcm(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData, struct AlsaSoundCard *cardIns)
+static int32_t ConfigurePcm(struct AlsaRender *renderIns, const struct AudioHwRenderParam *handleData,
+    struct AlsaSoundCard *cardIns)
 {
     int32_t ret = UpdateAudioRenderRoute(renderIns, handleData);
     if (ret < 0) {
