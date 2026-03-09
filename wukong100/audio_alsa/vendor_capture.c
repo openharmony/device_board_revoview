@@ -88,6 +88,30 @@ static void PcmCloseHandle(struct AlsaSoundCard *cardIns)
     AUDIO_FUNC_LOGE("capture PcmCloseHandle end");
 }
 
+static int32_t ConfigurePcm(struct AlsaCapture *captureIns, const struct AudioHwCaptureParam *handleData,
+    struct AlsaSoundCard *cardIns)
+{
+    int32_t ret = 0;
+    ret = UpdateAudioCaptureRoute(captureIns, handleData);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams UpdateAudioCaptureRoute fail");
+        return HDF_FAILURE;
+    }
+
+    ret = CaptureSetHwParamsImpl(captureIns, handleData);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams CaptureSetHwParamsImpl fail");
+        return HDF_FAILURE;
+    }
+
+    ret = snd_pcm_prepare(cardIns->pcmHandle);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("snd_pcm_prepare fail: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
 static int32_t ReOpenPcmAndSetParams(struct AlsaCapture *captureIns, const struct AudioHwCaptureParam *handleData)
 {
     AUDIO_FUNC_LOGE("capture ReOpenPcmAndSetParams enter.");
@@ -134,21 +158,9 @@ static int32_t ReOpenPcmAndSetParams(struct AlsaCapture *captureIns, const struc
         return HDF_FAILURE;
     }
 
-    ret = UpdateAudioCaptureRoute(captureIns, handleData);
+    ret = ConfigurePcm(renderIns, handleData, cardIns);
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams UpdateAudioCaptureRoute fail");
-        return HDF_FAILURE;
-    }
-
-    ret = CaptureSetHwParamsImpl(captureIns, handleData);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams CaptureSetHwParamsImpl fail");
-        return HDF_FAILURE;
-    }
-
-    ret = snd_pcm_prepare(cardIns->pcmHandle);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("snd_pcm_prepare fail: %{public}s", snd_strerror(ret));
+        AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams ConfigurePcm fail");
         return HDF_FAILURE;
     }
     return HDF_SUCCESS;
@@ -630,6 +642,33 @@ static int32_t SaveHwParams(struct AlsaSoundCard *cardIns, const struct AudioHwC
     return HDF_SUCCESS;
 }
 
+static int32_t ConfigureCaptur(snd_pcm_t *handle, snd_pcm_hw_params_t *hwParams, struct AlsaCapture *captureIns)
+{
+    snd_pcm_uframes_t size = 0;
+    int32_t ret;
+    size = captureIns->periodSize;
+    ret = snd_pcm_hw_params_set_period_size_near(handle, hwParams, &size, 0);
+    if (ret != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("SetHWParamsCall Set period size failed!");
+        return ret;
+    }
+    AUDIO_FUNC_LOGI("SetHWParamsCall use snd_pcm_hw_params_set_period_size_near");
+
+    size = captureIns->bufferSize;
+    ret = snd_pcm_hw_params_set_buffer_size_near(handle, hwParams, &size);
+    if (ret != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("SetHWParamsCall Set buffer size failed!");
+        return ret;
+    }
+
+    ret = snd_pcm_hw_params(handle, hwParams);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("SetHWParamsCall Unable to set hw params for capture: %{public}s", snd_strerror(ret));
+        return HDF_FAILURE;
+    }
+    return HDF_SUCCESS;
+}
+
 static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
 {
     AUDIO_FUNC_LOGI("SetHWParamsCall begin.");
@@ -638,7 +677,6 @@ static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
     uint32_t rRate = RATE_CALL;
     int32_t dir = 0;
     snd_pcm_format_t pcmFormat = SND_PCM_FORMAT_S16_LE;
-    snd_pcm_uframes_t size = 0;
     snd_pcm_hw_params_t *hwParams = NULL;
     snd_pcm_t *handle = cardIns->pcmHandle;
     struct AlsaCapture *captureIns = (struct AlsaCapture*)cardIns;
@@ -683,25 +721,10 @@ static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
 
     captureIns->periodSize = CAPTURE_PERIOD_SIZE_CALL;
     captureIns->bufferSize = CAPTURE_BUFFER_SIZE_CALL;
-    size = captureIns->periodSize;
-    ret = snd_pcm_hw_params_set_period_size_near(handle, hwParams, &size, 0);
+    ret = ConfigureCaptur(handle, hwParams, captureIns);
     if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("SetHWParamsCall Set period size failed!");
+        AUDIO_FUNC_LOGE("ConfigureCaptur Set period size failed!");
         return ret;
-    }
-    AUDIO_FUNC_LOGI("SetHWParamsCall use snd_pcm_hw_params_set_period_size_near");
-
-    size = captureIns->bufferSize;
-    ret = snd_pcm_hw_params_set_buffer_size_near(handle, hwParams, &size);
-    if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("SetHWParamsCall Set buffer size failed!");
-        return ret;
-    }
-
-    ret = snd_pcm_hw_params(handle, hwParams);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("SetHWParamsCall Unable to set hw params for capture: %{public}s", snd_strerror(ret));
-        return HDF_FAILURE;
     }
 
     return HDF_SUCCESS;
@@ -861,6 +884,38 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
     return HDF_SUCCESS;
 }
 
+
+static int32_t ConfigureTransfer(snd_pcm_t *handle, snd_pcm_sw_params_t *swParams, struct AlsaCapture *captureIns)
+{
+    int32_t ret;
+    snd_pcm_sframes_t startThresholdSize = 1;
+    snd_pcm_sframes_t stopThresholdSize = -1;
+    if (g_currentScene == AUDIO_IN_CALL) {
+        ret = snd_pcm_sw_params_set_avail_min(handle, swParams, 0);
+        ret = snd_pcm_sw_params_set_start_threshold(handle, swParams, 0);
+        ret = snd_pcm_sw_params_set_silence_size(handle, swParams, 0);
+        ret = snd_pcm_sw_params_set_silence_threshold(handle, swParams, 0);
+        ret = snd_pcm_sw_params_set_stop_threshold(handle, swParams, stopThresholdSize);
+    } else {
+        /* start the transfer when the buffer is 1 frames */
+        ret = snd_pcm_sw_params_set_start_threshold(handle, swParams, startThresholdSize);
+        if (ret < 0) {
+            AUDIO_FUNC_LOGE("Unable to set start threshold mode for capture: %{public}s.", snd_strerror(ret));
+            return HDF_FAILURE;
+        }
+
+        /* allow the transfer when at least period_size samples can be processed */
+        /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
+        ret = snd_pcm_sw_params_set_avail_min(handle, swParams,
+            captureIns->periodEvent ? captureIns->bufferSize : captureIns->periodSize);
+        if (ret < 0) {
+            AUDIO_FUNC_LOGE("Unable to set avail min for capture: %{public}s", snd_strerror(ret));
+            return HDF_FAILURE;
+        }
+    }
+    return HDF_SUCCESS;
+}
+
 static int32_t SetSWParams(struct AlsaSoundCard *cardIns)
 {
     int32_t ret;
@@ -885,28 +940,10 @@ static int32_t SetSWParams(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
 
-    if (g_currentScene == AUDIO_IN_CALL) {
-        ret = snd_pcm_sw_params_set_avail_min(handle, swParams, 0);
-        ret = snd_pcm_sw_params_set_start_threshold(handle, swParams, 0);
-        ret = snd_pcm_sw_params_set_silence_size(handle, swParams, 0);
-        ret = snd_pcm_sw_params_set_silence_threshold(handle, swParams, 0);
-        ret = snd_pcm_sw_params_set_stop_threshold(handle, swParams, stopThresholdSize);
-    } else {
-        /* start the transfer when the buffer is 1 frames */
-        ret = snd_pcm_sw_params_set_start_threshold(handle, swParams, startThresholdSize);
-        if (ret < 0) {
-            AUDIO_FUNC_LOGE("Unable to set start threshold mode for capture: %{public}s.", snd_strerror(ret));
-            return HDF_FAILURE;
-        }
-
-        /* allow the transfer when at least period_size samples can be processed */
-        /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
-        ret = snd_pcm_sw_params_set_avail_min(handle, swParams,
-            captureIns->periodEvent ? captureIns->bufferSize : captureIns->periodSize);
-        if (ret < 0) {
-            AUDIO_FUNC_LOGE("Unable to set avail min for capture: %{public}s", snd_strerror(ret));
-            return HDF_FAILURE;
-        }
+    ret = ConfigureTransfer(handle, swParams, captureIns);
+    if (ret < 0) {
+        AUDIO_FUNC_LOGE("Unable to set ConfigureTransfer for capture: %{public}s.", snd_strerror(ret));
+        return HDF_FAILURE;
     }
 
     /* enable period events when requested */
