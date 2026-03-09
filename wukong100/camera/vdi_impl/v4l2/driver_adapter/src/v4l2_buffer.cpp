@@ -70,7 +70,7 @@ RetCode HosV4L2Buffers::V4L2QueueBuffer(
     struct v4l2_buffer buf = {};
     struct v4l2_plane planes[1] = {};
 
-    if (frameSpec == nullptr) {
+    if (frameSpec == nullptr)
         return RC_ERROR;
 
     if (bufferType_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
