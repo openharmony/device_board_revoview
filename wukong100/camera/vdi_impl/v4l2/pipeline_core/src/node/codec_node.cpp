@@ -498,9 +498,7 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     if (jpegencodecfunc == nullptr) {
         jpegencodecfunc = DlDlsymJpegEncodecFunc();
         if (jpegencodecfunc == nullptr) {
-            CAMERA_LOGD(
-                "dlsym UnisocJpegEncodecFunc fail jpeghandler = "
-                "%{public}p,jpegencodecfunc= %{public}p",
+            CAMERA_LOGD("dlsym UnisocJpegEncodecFunc fail jpeghandler = %{public}p,jpegencodecfunc= %{public}p",
                 jpeghandler, jpegencodecfunc);
             buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
             return;
@@ -557,8 +555,7 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     } else {
         jpeg_length = dst.buf_size;
         if (jpeg_length != 0) {
-            CAMERA_LOGE("buf_vir 0x%lx size %{public}d\n", dst.addr_vir.addr_y,
-                        jpeg_length);
+            CAMERA_LOGE("buf_vir 0x%lx size %{public}d\n", dst.addr_vir.addr_y, jpeg_length);
             buffer->SetSize(jpeg_length);
             buffer->SetEsFrameSize(jpeg_length);
         } else {

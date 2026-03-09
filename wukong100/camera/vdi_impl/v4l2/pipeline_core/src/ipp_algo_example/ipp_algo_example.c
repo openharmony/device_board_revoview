@@ -85,7 +85,7 @@ int Process(IppAlgoBuffer *inBuffer[], int inBufferCount,
         char *startBuffer1 = (char *)(inBuffer[0]->addr) + inBuffer[0]->stride * inBuffer[0]->height;
         char *startBuffer2 = (char *)(inBuffer[1]->addr) + inBuffer[1]->stride * inBuffer[1]->height;
         if (memcpy_s(startBuffer1, inBuffer[0]->size - inBuffer[0]->stride * inBuffer[0]->height,
-                startBuffer2, inBuffer[0]->stride * inBuffer[0]->height) != 0) {
+                     startBuffer2, inBuffer[0]->stride * inBuffer[0]->height) != 0) {
             printf("memcpy_s failed.");
         }
     }
