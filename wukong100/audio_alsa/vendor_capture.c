@@ -885,7 +885,7 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
 }
 
 
-static int32_t ConfigureTransfer(snd_pcm_t *handle, snd_pcm_sw_params_t *swParams,struct AlsaCapture *captureIns)
+static int32_t ConfigureTransfer(snd_pcm_t *handle, snd_pcm_sw_params_t *swParams, struct AlsaCapture *captureIns)
 {
     int32_t ret;
     snd_pcm_sframes_t startThresholdSize = 1;
