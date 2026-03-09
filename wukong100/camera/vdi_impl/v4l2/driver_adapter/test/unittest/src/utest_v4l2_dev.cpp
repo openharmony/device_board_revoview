@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
+#include "utest_v4l2_dev.h"
+
 #include <gtest/gtest.h>
 #include <v4l2_dev.h>
 #include <v4l2_uvc.h>
 
-#include "utest_v4l2_dev.h"
-
 using namespace testing::ext;
 namespace OHOS::Camera {
-void V4L2UvcCallback(const std::string cameraId, const std::vector<DeviceControl>& control,
-    const std::vector<DeviceFormat>& fromat, const bool inOut)
+void V4L2UvcCallback(const std::string cameraId,
+                     const std::vector<DeviceControl>& control,
+                     const std::vector<DeviceFormat>& fromat,
+                     const bool inOut)
 {
     std::cout << "V4L2UvcCallback" << std::endl;
 }
@@ -48,23 +50,15 @@ void UtestV4L2Dev::TearDownTestCase(void)
     std::cout << "TearDownTestCase.." << std::endl;
 }
 
-void UtestV4L2Dev::SetUp(void)
-{
-    std::cout << "SetUp.." << std::endl;
-}
+void UtestV4L2Dev::SetUp(void) { std::cout << "SetUp.." << std::endl; }
 
-void UtestV4L2Dev::TearDown(void)
-{
-    std::cout << "TearDown.." << std::endl;
-}
+void UtestV4L2Dev::TearDown(void) { std::cout << "TearDown.." << std::endl; }
 
-HWTEST_F(UtestV4L2Dev, InitUvc, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, InitUvc, TestSize.Level0) {
     V4L2UVC_->V4L2UvcDetectInit(V4L2UvcCallback);
 }
 
-HWTEST_F(UtestV4L2Dev, InitCamera, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, InitCamera, TestSize.Level0) {
     int rc = 0;
 
     cameraIDs_.push_back("ov50c40");
@@ -73,8 +67,7 @@ HWTEST_F(UtestV4L2Dev, InitCamera, TestSize.Level0)
     EXPECT_EQ(true, rc != RC_ERROR);
 }
 
-HWTEST_F(UtestV4L2Dev, SetFormat, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, SetFormat, TestSize.Level0) {
     constexpr uint32_t width = 640;
     constexpr uint32_t height = 480;
 
@@ -99,8 +92,7 @@ HWTEST_F(UtestV4L2Dev, SetFormat, TestSize.Level0)
     EXPECT_EQ(RC_OK, rc);
 }
 
-HWTEST_F(UtestV4L2Dev, SetBuffer, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, SetBuffer, TestSize.Level0) {
     constexpr uint32_t bufferCount = 4;
 
     unsigned char* addr[bufferCount];
@@ -147,17 +139,14 @@ HWTEST_F(UtestV4L2Dev, SetBuffer, TestSize.Level0)
     EXPECT_EQ(bufferCount, i);
 }
 
-
-HWTEST_F(UtestV4L2Dev, SetFrameCallback, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, SetFrameCallback, TestSize.Level0) {
     int rc = 0;
 
     rc = V4L2Dev_->SetCallback(V4L2BufferCallback);
     EXPECT_EQ(RC_OK, rc);
 }
 
-HWTEST_F(UtestV4L2Dev, StreamStart, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, StreamStart, TestSize.Level0) {
     int rc = 0;
     int value;
     std::string devname = "ov50c40";
@@ -177,8 +166,7 @@ HWTEST_F(UtestV4L2Dev, StreamStart, TestSize.Level0)
     sleep(3);
 }
 
-HWTEST_F(UtestV4L2Dev, ReleaseAll, TestSize.Level0)
-{
+HWTEST_F(UtestV4L2Dev, ReleaseAll, TestSize.Level0) {
     std::string devname = "ov50c40";
 
     V4L2Dev_->StopStream(devname);
@@ -187,4 +175,4 @@ HWTEST_F(UtestV4L2Dev, ReleaseAll, TestSize.Level0)
 
     V4L2UVC_->V4L2UvcDetectUnInit();
 }
-} // namespace OHOS::Camera
+}  // namespace OHOS::Camera

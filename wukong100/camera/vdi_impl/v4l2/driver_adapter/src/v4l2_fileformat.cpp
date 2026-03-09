@@ -14,6 +14,7 @@
  */
 
 #include "v4l2_fileformat.h"
+
 #include "securec.h"
 #include "v4l2_dev.h"
 
@@ -28,24 +29,22 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDe
     int k = 0;
     struct v4l2_fmtdesc enumFmtDesc = {};
     struct v4l2_frmsizeenum frmSize = {};
-    struct v4l2_frmivalenum  fraMival = {};
+    struct v4l2_frmivalenum fraMival = {};
     constexpr uint32_t fmtMax = 50;
 
     for (i = 0; i < fmtMax; ++i) {
         enumFmtDesc.index = i;
-        enumFmtDesc.type  = bufType_;
-        if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FMT, &enumFmtDesc) < 0) {
+        enumFmtDesc.type = bufType_;
+        if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FMT, &enumFmtDesc) < 0)
             break;
-        }
 
         CAMERA_LOGD("[%{public}d]Supported format with description = %{public}s\n\n", i, enumFmtDesc.description);
 
         for (j = 0; j < fmtMax; ++j) {
             frmSize.index = j;
             frmSize.pixel_format = enumFmtDesc.pixelformat;
-            if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &frmSize) < 0) {
+            if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &frmSize) < 0)
                 break;
-            }
 
             if (frmSize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
                 CAMERA_LOGD("V4L2_FRMSIZE_TYPE_DISCRETE width %{public}d x height %{public}d\n\n",
@@ -57,9 +56,8 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDe
                 fraMival.pixel_format = frmSize.pixel_format;
                 fraMival.width = frmSize.discrete.width;
                 fraMival.height = frmSize.discrete.height;
-                if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &fraMival) < 0) {
+                if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &fraMival) < 0)
                     break;
-                }
 
                 DeviceFormat currentFormat = {};
                 currentFormat.fmtdesc.description = std::string((char*)enumFmtDesc.description);
@@ -71,7 +69,8 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDe
 
                 fmtDesc.push_back(currentFormat);
 
-                CAMERA_LOGD("frame interval: %{public}d, %{public}d\n\n", fraMival.discrete.numerator, fraMival.discrete.denominator);
+                CAMERA_LOGD("frame interval: %{public}d, %{public}d\n\n", fraMival.discrete.numerator,
+                            fraMival.discrete.denominator);
             }
         }
     }
@@ -84,7 +83,8 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDe
     return RC_OK;
 }
 
-RetCode HosFileFormat::V4L2GetFmtDescs(int fd, std::vector<DeviceFormat>& fmtDesc)
+RetCode HosFileFormat::V4L2GetFmtDescs(int fd,
+                                       std::vector<DeviceFormat>& fmtDesc)
 {
     RetCode rc = RC_OK;
 
@@ -109,7 +109,8 @@ RetCode HosFileFormat::V4L2GetFmtDescs(int fd, std::vector<DeviceFormat>& fmtDes
     return rc;
 }
 
-RetCode HosFileFormat::V4L2GetCapability(int fd, const std::string& devName, std::string& cameraId)
+RetCode HosFileFormat::V4L2GetCapability(int fd, const std::string& devName,
+                                         std::string& cameraId)
 {
     struct v4l2_capability cap = {};
 
@@ -122,7 +123,8 @@ RetCode HosFileFormat::V4L2GetCapability(int fd, const std::string& devName, std
         return RC_ERROR;
     }
 
-    if (!((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE_MPLANE) || (cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))) {
+    if (!((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE_MPLANE) ||
+          (cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))) {
         return RC_ERROR;
     }
 
@@ -135,7 +137,8 @@ RetCode HosFileFormat::V4L2GetCapability(int fd, const std::string& devName, std
     if (itr == HosV4L2Dev::deviceMatch.end()) {
         HosV4L2Dev::deviceMatch.insert(std::make_pair(cameraId, devName));
     } else {
-        CAMERA_LOGE("v4l2 device cameraId = %{public}s repeat Insert  error\n", cameraId.c_str());
+        CAMERA_LOGE("v4l2 device cameraId = %{public}s repeat Insert  error\n",
+                    cameraId.c_str());
     }
     CAMERA_LOGD("v4l2 driver name = %{public}s\n", cap.driver);
     CAMERA_LOGD("v4l2 devName = %{public}s\n", devName.c_str());
@@ -162,7 +165,10 @@ RetCode HosFileFormat::V4L2GetFmt(int fd, DeviceFormat& format)
     fmt.type = bufType_;
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_G_FMT, &fmt);
     if (rc < 0) {
-        CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_G_FMT failed: %{public}s\n", strerror(errno));
+        CAMERA_LOGE(
+            "error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_G_FMT failed: "
+            "%{public}s\n",
+            strerror(errno));
         return RC_ERROR;
     }
 
@@ -200,16 +206,25 @@ RetCode HosFileFormat::V4L2SetFmt(int fd, DeviceFormat& format)
         fmt.fmt.pix_mp.height = format.fmtdesc.height;
         fmt.fmt.pix_mp.field = V4L2_FIELD_INTERLACED;
         fmt.fmt.pix_mp.num_planes = 1;
-        CAMERA_LOGD("HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_FMT fmt=%{public}d V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE\n", int(fmt.fmt.pix_mp.pixelformat));
+        CAMERA_LOGD(
+            "HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_FMT fmt=%{public}d "
+            "V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE\n",
+            int(fmt.fmt.pix_mp.pixelformat));
     } else if (fmt.type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
         fmt.fmt.pix.pixelformat = format.fmtdesc.pixelformat;
         fmt.fmt.pix.width = format.fmtdesc.width;
         fmt.fmt.pix.height = format.fmtdesc.height;
-        CAMERA_LOGD("HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_FMT fmt=%{public}d fmt.type=%{public}d\n", int(fmt.fmt.pix.pixelformat), fmt.type);
+        CAMERA_LOGD(
+            "HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_FMT fmt=%{public}d "
+            "fmt.type=%{public}d\n",
+            int(fmt.fmt.pix.pixelformat), fmt.type);
     }
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_FMT, &fmt);
     if (rc < 0) {
-        CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_FMT failed: %{public}s\n", strerror(errno));
+        CAMERA_LOGE(
+            "error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_FMT failed: "
+            "%{public}s\n",
+            strerror(errno));
         return RC_ERROR;
     }
 
@@ -231,7 +246,10 @@ RetCode HosFileFormat::V4L2GetCrop(int fd, DeviceFormat& format)
 
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_G_CROP, &crop);
     if (rc < 0) {
-        CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_G_CROP failed: %{public}s\n", strerror(errno));
+        CAMERA_LOGE(
+            "error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_G_CROP failed: "
+            "%{public}s\n",
+            strerror(errno));
         return RC_ERROR;
     }
 
@@ -263,7 +281,10 @@ RetCode HosFileFormat::V4L2SetCrop(int fd, DeviceFormat& format)
 
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_CROP, &crop);
     if (rc < 0) {
-        CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_CROP failed: %{public}s\n", strerror(errno));
+        CAMERA_LOGE(
+            "error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_CROP failed: "
+            "%{public}s\n",
+            strerror(errno));
         return RC_ERROR;
     }
 
@@ -285,7 +306,10 @@ RetCode HosFileFormat::V4L2GetCropCap(int fd, DeviceFormat& format)
 
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_CROPCAP, &cropcap);
     if (rc < 0) {
-        CAMERA_LOGE("error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_CROPCAP failed: %{public}s\n", strerror(errno));
+        CAMERA_LOGE(
+            "error: HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_CROPCAP failed: "
+            "%{public}s\n",
+            strerror(errno));
         return RC_ERROR;
     }
 
@@ -320,7 +344,7 @@ int HosFileFormat::V4L2OpenDevice(const std::string& deviceName)
     }
     CAMERA_LOGD("V4L2OpenDevice %{public}s\n", devName);
     rc = HosV4L2Dev::v4l2Handle_->open(devName, UNISOCV4L2OPENFLAG);
-    if ( rc <= 0) {
+    if (rc <= 0) {
         CAMERA_LOGE("V4L2OpenDevice open error\n");
     }
     return rc;
@@ -338,16 +362,18 @@ void HosFileFormat::V4L2MatchDevice(std::vector<std::string>& cameraIDs)
     std::string name = DEVICENAMEX;
     int fd = 0;
     int rc = 0;
-    size_t sensorNum =  cameraIDs.size();
+    size_t sensorNum = cameraIDs.size();
 
     for (size_t i = 0; i < sensorNum; ++i) {
-        if ((sprintf_s(devName, sizeof(devName), "%s%d", name.c_str(), i)) < 0) {
+        if ((sprintf_s(devName, sizeof(devName), "%s%d", name.c_str(), i)) <
+            0) {
             CAMERA_LOGE("%{public}s: sprintf devName failed", __func__);
         }
 
         fd = HosV4L2Dev::v4l2Handle_->open(devName, UNISOCV4L2OPENFLAG);
         if (fd < 0) {
-            CAMERA_LOGE("%{public}s: open devName %{public}s failed", __func__, devName);
+            CAMERA_LOGE("%{public}s: open devName %{public}s failed", __func__,
+                        devName);
             continue;
         }
 
@@ -357,10 +383,12 @@ void HosFileFormat::V4L2MatchDevice(std::vector<std::string>& cameraIDs)
             HosV4L2Dev::v4l2Handle_->close(fd);
             continue;
         }
-        CAMERA_LOGD("%{public}s: open devName = %{public}s end", __func__, devName);
+        CAMERA_LOGD("%{public}s: open devName = %{public}s end", __func__,
+                    devName);
         HosV4L2Dev::v4l2Handle_->close(fd);
     }
-    CAMERA_LOGD("%{public}s: open sensorNum =  %{public}d all end", __func__, (int)sensorNum);
+    CAMERA_LOGD("%{public}s: open sensorNum =  %{public}d all end", __func__,
+                (int)sensorNum);
 }
 
 int HosFileFormat::V4L2SearchBufType(int fd)
@@ -374,7 +402,9 @@ int HosFileFormat::V4L2SearchBufType(int fd)
     }
 
     if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
-        CAMERA_LOGE("V4L2SearchBufType capabilities is not support V4L2_CAP_STREAMING\n");
+        CAMERA_LOGE(
+            "V4L2SearchBufType capabilities is not support "
+            "V4L2_CAP_STREAMING\n");
         return static_cast<int>(V4L2_BUF_TYPE_PRIVATE);
     }
 
@@ -386,4 +416,4 @@ int HosFileFormat::V4L2SearchBufType(int fd)
 
     return static_cast<int>(bufType_);
 }
-} // namespace OHOS::Camera
+}  // namespace OHOS::Camera

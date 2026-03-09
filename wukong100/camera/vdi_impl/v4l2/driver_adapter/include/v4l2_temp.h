@@ -16,14 +16,15 @@
 #ifndef HOS_CAMERA_TEMP_H
 #define HOS_CAMERA_TEMP_H
 
+#include <hdf_log.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <hdf_log.h>
 
 namespace OHOS::Camera {
 enum CameraBufferStatus {
@@ -32,27 +33,15 @@ enum CameraBufferStatus {
     CAMERA_BUFFER_STATUS_INVALID,
 };
 class IBuffer {
-public:
+   public:
     IBuffer() {}
     ~IBuffer() {}
 
-    int32_t GetIndex()
-    {
-        return index_;
-    }
-    uint32_t GetSize()
-    {
-        return size_;
-    }
-    void* GetVirAddress()
-    {
-        return virAddr_;
-    }
+    int32_t GetIndex() { return index_; }
+    uint32_t GetSize() { return size_; }
+    void* GetVirAddress() { return virAddr_; }
 
-    uint64_t GetUsage()
-    {
-        return usage_;
-    }
+    uint64_t GetUsage() { return usage_; }
 
     void SetIndex(const uint32_t index)
     {
@@ -77,12 +66,9 @@ public:
         usage_ = usage;
         return;
     }
-    void SetBufferStatus(const CameraBufferStatus flag)
-    {
-        (void)flag;
-    }
+    void SetBufferStatus(const CameraBufferStatus flag) { (void)flag; }
 
-private:
+   private:
     int32_t index_ = -1;
     uint32_t size_ = 0;
     void* virAddr_ = nullptr;
@@ -93,7 +79,6 @@ using FrameSpec = struct {
     int64_t bufferPoolId_;
     std::shared_ptr<IBuffer> buffer_;
 };
-
 
 enum AdapterCmd : uint32_t {
     CMD_AE_EXPO,
@@ -114,14 +99,14 @@ enum AdapterCmd : uint32_t {
 #ifdef DISABLE_LOGD
 #define CAMERA_LOGD(...)
 #else
-#define CAMERA_LOGD(fmt, ...)                    \
-    do {                                         \
+#define CAMERA_LOGD(fmt, ...)                      \
+    do {                                           \
         HDF_LOGD("INFO:" fmt "\n", ##__VA_ARGS__); \
     } while (0)
 #endif
 
-#define CAMERA_LOGE(fmt, ...)                     \
-    do {                                          \
+#define CAMERA_LOGE(fmt, ...)                       \
+    do {                                            \
         HDF_LOGE("ERROR:" fmt "\n", ##__VA_ARGS__); \
     } while (0)
 
@@ -133,33 +118,43 @@ enum RetCode {
     RC_ERROR,
 };
 
-#define CHECK_IF_NOT_EQUAL_RETURN_VALUE(arg1, arg2, ret)                                                            \
-    if ((arg1) != (arg2)) {                                                                                         \
-        CAMERA_LOGE("%{public}u, %{public}s is not equal to %{public}s, return %{public}s", __LINE__, #arg1, #arg2, \
-                    #ret);                                                                                          \
-        return (ret);                                                                                               \
+#define CHECK_IF_NOT_EQUAL_RETURN_VALUE(arg1, arg2, ret)                 \
+    if ((arg1) != (arg2)) {                                              \
+        CAMERA_LOGE(                                                     \
+            "%{public}u, %{public}s is not equal to %{public}s, return " \
+            "%{public}s",                                                \
+            __LINE__, #arg1, #arg2, #ret);                               \
+        return (ret);                                                    \
     }
 
-#define CHECK_IF_EQUAL_RETURN_VALUE(arg1, arg2, ret)                                                                   \
-    if ((arg1) == (arg2)) {                                                                                            \
-        CAMERA_LOGE("%{public}u, %{public}s is equal to %{public}s, return %{public}s", __LINE__, #arg1, #arg2, #ret); \
-        return (ret);                                                                                                  \
+#define CHECK_IF_EQUAL_RETURN_VALUE(arg1, arg2, ret)                 \
+    if ((arg1) == (arg2)) {                                          \
+        CAMERA_LOGE(                                                 \
+            "%{public}u, %{public}s is equal to %{public}s, return " \
+            "%{public}s",                                            \
+            __LINE__, #arg1, #arg2, #ret);                           \
+        return (ret);                                                \
     }
 
-#define CHECK_IF_PTR_NULL_RETURN_VALUE(ptr, ret) CHECK_IF_EQUAL_RETURN_VALUE(ptr, nullptr, ret)
+#define CHECK_IF_PTR_NULL_RETURN_VALUE(ptr, ret) \
+    CHECK_IF_EQUAL_RETURN_VALUE(ptr, nullptr, ret)
 
-#define CHECK_IF_NOT_EQUAL_RETURN_VOID(arg1, arg2)                                                        \
-    if ((arg1) != (arg2)) {                                                                               \
-        CAMERA_LOGE("%{public}u, %{public}s is not equal to %{public}s, return", __LINE__, #arg1, #arg2); \
-        return;                                                                                           \
+#define CHECK_IF_NOT_EQUAL_RETURN_VOID(arg1, arg2)                       \
+    if ((arg1) != (arg2)) {                                              \
+        CAMERA_LOGE(                                                     \
+            "%{public}u, %{public}s is not equal to %{public}s, return", \
+            __LINE__, #arg1, #arg2);                                     \
+        return;                                                          \
     }
 
-#define CHECK_IF_EQUAL_RETURN_VOID(arg1, arg2)                                                        \
-    if ((arg1) == (arg2)) {                                                                           \
-        CAMERA_LOGE("%{public}u, %{public}s is equal to %{public}s, return", __LINE__, #arg1, #arg2); \
-        return;                                                                                       \
+#define CHECK_IF_EQUAL_RETURN_VOID(arg1, arg2)                               \
+    if ((arg1) == (arg2)) {                                                  \
+        CAMERA_LOGE("%{public}u, %{public}s is equal to %{public}s, return", \
+                    __LINE__, #arg1, #arg2);                                 \
+        return;                                                              \
     }
 
-#define CHECK_IF_PTR_NULL_RETURN_VOID(ptr) CHECK_IF_EQUAL_RETURN_VOID(ptr, nullptr)
-} // namespace OHOS::Camera
-#endif // HOS_CAMERA_TEMP_H
+#define CHECK_IF_PTR_NULL_RETURN_VOID(ptr) \
+    CHECK_IF_EQUAL_RETURN_VOID(ptr, nullptr)
+}  // namespace OHOS::Camera
+#endif  // HOS_CAMERA_TEMP_H
