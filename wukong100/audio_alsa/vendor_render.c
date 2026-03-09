@@ -654,6 +654,7 @@ static int32_t RenderSetChannelModeImpl(struct AlsaRender *renderIns, enum Audio
 
     return HDF_SUCCESS;
 }
+
 static int32_t ConfigureCaptur(snd_pcm_t *handle, snd_pcm_hw_params_t *hwParams)
 {
     snd_pcm_uframes_t size = 0;
@@ -1237,7 +1238,6 @@ static int32_t RenderWriteiVdi(snd_pcm_t *pcm, const struct AudioHwRenderParam *
     const struct AudioPcmHwParams *hwParams)
 {
     CHECK_NULL_PTR_RETURN_DEFAULT(pcm);
-    AUDIO_FUNC_LOGI("RenderWriteiVdi enter");
     int32_t ret;
     int32_t offset;
     long frames;
@@ -1282,7 +1282,6 @@ static int32_t RenderWriteiVdi(snd_pcm_t *pcm, const struct AudioHwRenderParam *
              * stream is suspended and waiting for an application recovery.
              * -EPIPE: an underrun occurred.
              */
-            AUDIO_FUNC_LOGI("err: %{public}s", snd_strerror(ret));
             ret = snd_pcm_recover(pcm, frames, 0); // 0 for open render recover log.
             if (ret < 0) {
                 AUDIO_FUNC_LOGE("snd_pcm_writei failed: %{public}s", snd_strerror(ret));
