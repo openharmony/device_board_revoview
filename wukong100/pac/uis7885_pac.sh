@@ -64,7 +64,7 @@ if [[ -f "$target_path" ]]; then
 fi
 
 # cp image to work path
-#cp $package_path/*.img $work_path -rfv
+cp $package_path/*.img $work_path -rfv
 #if [ $secboot -eq 1 ]; then
 #    cp $package_path/*.bin $work_path/secboot_img -rfv
 #else
