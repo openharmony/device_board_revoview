@@ -23,7 +23,8 @@ HosV4L2Control::~HosV4L2Control() {}
 
 RetCode HosV4L2Control::V4L2SetCtrls(int fd,
                                      std::vector<DeviceControl>& control,
-                                     const int numControls) {
+                                     const int numControls)
+{
     int ret;
     int count = 0;
 
@@ -83,7 +84,8 @@ RetCode HosV4L2Control::V4L2SetCtrls(int fd,
 
 RetCode HosV4L2Control::V4L2GetCtrls(int fd,
                                      std::vector<DeviceControl>& control,
-                                     const int numControls) {
+                                     const int numControls)
+{
     int ret;
     int count = 0;
     auto iter = control.begin();
@@ -143,7 +145,8 @@ RetCode HosV4L2Control::V4L2GetCtrls(int fd,
     return RC_OK;
 }
 
-RetCode HosV4L2Control::V4L2GetCtrl(int fd, unsigned int id, int& value) {
+RetCode HosV4L2Control::V4L2GetCtrl(int fd, unsigned int id, int& value)
+{
     int rc = 0;
     struct v4l2_control ctrl;
 
@@ -160,7 +163,8 @@ RetCode HosV4L2Control::V4L2GetCtrl(int fd, unsigned int id, int& value) {
     return RC_OK;
 }
 
-RetCode HosV4L2Control::V4L2SetCtrl(int fd, unsigned int id, int value) {
+RetCode HosV4L2Control::V4L2SetCtrl(int fd, unsigned int id, int value)
+{
     struct v4l2_control ctrl;
     int rc = 0;
 
@@ -178,7 +182,8 @@ RetCode HosV4L2Control::V4L2SetCtrl(int fd, unsigned int id, int value) {
     return RC_OK;
 }
 
-int HosV4L2Control::ExtControl(int fd, struct v4l2_queryctrl* ctrl) {
+int HosV4L2Control::ExtControl(int fd, struct v4l2_queryctrl* ctrl)
+{
     int ret = 0;
 
     if (ctrl == nullptr) {
@@ -193,7 +198,8 @@ int HosV4L2Control::ExtControl(int fd, struct v4l2_queryctrl* ctrl) {
 }
 
 void HosV4L2Control::V4L2SetValue(int fd, std::vector<DeviceControl>& control,
-                                  DeviceControl& ctrl, v4l2_queryctrl& qCtrl) {
+                                  DeviceControl& ctrl, v4l2_queryctrl& qCtrl)
+{
     int value = 0;
     int rc = 0;
 
@@ -227,7 +233,8 @@ void HosV4L2Control::V4L2SetValue(int fd, std::vector<DeviceControl>& control,
 }
 
 void HosV4L2Control::V4L2EnumExtControls(int fd,
-                                         std::vector<DeviceControl>& control) {
+                                         std::vector<DeviceControl>& control)
+{
     struct v4l2_queryctrl qCtrl = {};
     DeviceControl ctrl = {};
     int rc = 0;
@@ -268,7 +275,8 @@ void HosV4L2Control::V4L2EnumExtControls(int fd,
 }
 
 int HosV4L2Control::V4L2GetControl(int fd, std::vector<DeviceControl>& control,
-                                   unsigned int id) {
+                                   unsigned int id)
+{
     struct v4l2_queryctrl queryCtrl = {};
     DeviceControl ctrl = {};
     int rc = 0;
@@ -316,7 +324,8 @@ int HosV4L2Control::V4L2GetControl(int fd, std::vector<DeviceControl>& control,
 }
 
 void HosV4L2Control::V4L2EnumControls(int fd,
-                                      std::vector<DeviceControl>& control) {
+                                      std::vector<DeviceControl>& control)
+{
     int rc = 0;
     constexpr uint32_t max = V4L2_CID_PRIVATE_BASE + 100;
 
@@ -332,7 +341,8 @@ void HosV4L2Control::V4L2EnumControls(int fd,
 }
 
 RetCode HosV4L2Control::V4L2GetControls(int fd,
-                                        std::vector<DeviceControl>& control) {
+                                        std::vector<DeviceControl>& control)
+{
     int rc = 0;
     struct v4l2_queryctrl qCtrl = {};
 

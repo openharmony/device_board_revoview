@@ -30,7 +30,8 @@ HosV4L2UVC::~HosV4L2UVC() {}
 
 void HosV4L2UVC::V4L2UvcSearchCapability(const std::string devName,
                                          const std::string v4l2Device,
-                                         bool inOut) {
+                                         bool inOut)
+{
     if (devName.length() == 0 || v4l2Device.length() == 0) {
         CAMERA_LOGE(
             "UVC:V4L2UvcSearchCapability devName or v4l2Device is null");
@@ -79,7 +80,8 @@ void HosV4L2UVC::V4L2UvcSearchCapability(const std::string devName,
 }
 
 void HosV4L2UVC::V4L2UvcMatchDev(const std::string name,
-                                 const std::string v4l2Device, bool inOut) {
+                                 const std::string v4l2Device, bool inOut)
+{
     std::pair<std::map<std::string, std::string>::iterator, bool> iter;
     constexpr uint32_t nameSize = 16;
     char devName[nameSize] = {0};
@@ -135,7 +137,8 @@ void HosV4L2UVC::V4L2UvcMatchDev(const std::string name,
 }
 
 RetCode HosV4L2UVC::V4L2UvcGetCap(const std::string v4l2Device,
-                                  struct v4l2_capability& cap) {
+                                  struct v4l2_capability& cap)
+{
     int fd = 0;
     int rc = 0;
     char* devName = nullptr;
@@ -175,7 +178,8 @@ RetCode HosV4L2UVC::V4L2UvcGetCap(const std::string v4l2Device,
 }
 
 RetCode HosV4L2UVC::V4L2UVCGetCapability(int fd, const std::string devName,
-                                         std::string& cameraId) {
+                                         std::string& cameraId)
+{
     struct v4l2_capability capability = {};
 
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_QUERYCAP, &capability);
@@ -202,7 +206,8 @@ RetCode HosV4L2UVC::V4L2UVCGetCapability(int fd, const std::string devName,
     return RC_OK;
 }
 
-void HosV4L2UVC::V4L2UvcEnmeDevices() {
+void HosV4L2UVC::V4L2UvcEnmeDevices()
+{
     struct stat sta = {};
     std::string name = DEVICENAMEX;
     char devName[16] = {0};
@@ -242,7 +247,8 @@ void HosV4L2UVC::V4L2UvcEnmeDevices() {
 }
 
 const char* HosV4L2UVC::V4L2GetUsbValue(const char* key, const char* str,
-                                        int len) {
+                                        int len)
+{
     if (key == nullptr || str == nullptr || len <= 0 || strlen(key) > len) {
         return nullptr;
     }
@@ -260,7 +266,8 @@ const char* HosV4L2UVC::V4L2GetUsbValue(const char* key, const char* str,
 
 void HosV4L2UVC::V4L2GetUsbString(std::string& action, std::string& subsystem,
                                   std::string& devnode, char* buf,
-                                  unsigned int len) {
+                                  unsigned int len)
+{
     int lineLen = 0;
     int pos = 0;
     const char* retVal;
@@ -309,7 +316,8 @@ void HosV4L2UVC::V4L2GetUsbString(std::string& action, std::string& subsystem,
     CAMERA_LOGD("UVC:V4L2GetUsbString exit\n");
 }
 
-void HosV4L2UVC::loopUvcDevice() {
+void HosV4L2UVC::loopUvcDevice()
+{
     fd_set fds;
     int rc = 0;
     constexpr uint32_t delayTime = 200000;
@@ -343,7 +351,8 @@ void HosV4L2UVC::loopUvcDevice() {
     }
 }
 
-int HosV4L2UVC::CheckBuf(unsigned int len, char* buf) {
+int HosV4L2UVC::CheckBuf(unsigned int len, char* buf)
+{
     constexpr uint32_t UVC_DETECT_ENABLE = 0;
     constexpr uint32_t UVC_DETECT_DISABLE = -1;
     if (len > 0 && (strstr(buf, "video4linux") != nullptr)) {
@@ -362,7 +371,8 @@ int HosV4L2UVC::CheckBuf(unsigned int len, char* buf) {
 
 void HosV4L2UVC::UpdateV4L2UvcMatchDev(std::string& action,
                                        std::string& subsystem,
-                                       std::string& devnode) {
+                                       std::string& devnode)
+{
     int rc = 0;
     if (subsystem == "video4linux") {
         CAMERA_LOGD(
@@ -397,7 +407,8 @@ void HosV4L2UVC::UpdateV4L2UvcMatchDev(std::string& action,
     }
 }
 
-void HosV4L2UVC::V4L2UvcDetectUnInit() {
+void HosV4L2UVC::V4L2UvcDetectUnInit()
+{
     int rc = 0;
     constexpr uint32_t delayTime = 300000;
 
@@ -425,7 +436,8 @@ void HosV4L2UVC::V4L2UvcDetectUnInit() {
     }
 }
 
-RetCode HosV4L2UVC::V4L2UvcDetectInit(UvcCallback cb) {
+RetCode HosV4L2UVC::V4L2UvcDetectInit(UvcCallback cb)
+{
     int rc = 0;
     struct sockaddr_nl nls;
 

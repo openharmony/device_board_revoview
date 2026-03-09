@@ -23,7 +23,8 @@ HosFileFormat::HosFileFormat() {}
 HosFileFormat::~HosFileFormat() {}
 
 RetCode HosFileFormat::V4L2SearchFormat(int fd,
-                                        std::vector<DeviceFormat>& fmtDesc) {
+                                        std::vector<DeviceFormat>& fmtDesc)
+{
     int i = 0;
     int j = 0;
     int k = 0;
@@ -98,7 +99,8 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd,
 }
 
 RetCode HosFileFormat::V4L2GetFmtDescs(int fd,
-                                       std::vector<DeviceFormat>& fmtDesc) {
+                                       std::vector<DeviceFormat>& fmtDesc)
+{
     RetCode rc = RC_OK;
 
     std::vector<DeviceFormat>().swap(fmtDesc);
@@ -123,7 +125,8 @@ RetCode HosFileFormat::V4L2GetFmtDescs(int fd,
 }
 
 RetCode HosFileFormat::V4L2GetCapability(int fd, const std::string& devName,
-                                         std::string& cameraId) {
+                                         std::string& cameraId)
+{
     struct v4l2_capability cap = {};
 
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_QUERYCAP, &cap);
@@ -162,7 +165,8 @@ RetCode HosFileFormat::V4L2GetCapability(int fd, const std::string& devName,
     return RC_OK;
 }
 
-RetCode HosFileFormat::V4L2GetFmt(int fd, DeviceFormat& format) {
+RetCode HosFileFormat::V4L2GetFmt(int fd, DeviceFormat& format)
+{
     struct v4l2_format fmt = {};
 
     if (bufType_ == 0) {
@@ -198,7 +202,8 @@ RetCode HosFileFormat::V4L2GetFmt(int fd, DeviceFormat& format) {
     return RC_OK;
 }
 
-RetCode HosFileFormat::V4L2SetFmt(int fd, DeviceFormat& format) {
+RetCode HosFileFormat::V4L2SetFmt(int fd, DeviceFormat& format)
+{
     struct v4l2_format fmt = {};
 
     if (bufType_ == 0) {
@@ -241,7 +246,8 @@ RetCode HosFileFormat::V4L2SetFmt(int fd, DeviceFormat& format) {
     return RC_OK;
 }
 
-RetCode HosFileFormat::V4L2GetCrop(int fd, DeviceFormat& format) {
+RetCode HosFileFormat::V4L2GetCrop(int fd, DeviceFormat& format)
+{
     struct v4l2_crop crop = {};
 
     if (bufType_ == 0) {
@@ -270,7 +276,8 @@ RetCode HosFileFormat::V4L2GetCrop(int fd, DeviceFormat& format) {
     return RC_OK;
 }
 
-RetCode HosFileFormat::V4L2SetCrop(int fd, DeviceFormat& format) {
+RetCode HosFileFormat::V4L2SetCrop(int fd, DeviceFormat& format)
+{
     struct v4l2_crop crop = {};
 
     if (bufType_ == 0) {
@@ -299,7 +306,8 @@ RetCode HosFileFormat::V4L2SetCrop(int fd, DeviceFormat& format) {
     return RC_OK;
 }
 
-RetCode HosFileFormat::V4L2GetCropCap(int fd, DeviceFormat& format) {
+RetCode HosFileFormat::V4L2GetCropCap(int fd, DeviceFormat& format)
+{
     struct v4l2_cropcap cropcap = {};
 
     if (bufType_ == 0) {
@@ -336,7 +344,8 @@ RetCode HosFileFormat::V4L2GetCropCap(int fd, DeviceFormat& format) {
     return RC_OK;
 }
 
-int HosFileFormat::V4L2OpenDevice(const std::string& deviceName) {
+int HosFileFormat::V4L2OpenDevice(const std::string& deviceName)
+{
     size_t len = deviceName.length();
     if (len == 0) {
         CAMERA_LOGD("V4L2OpenDevice deviceName length is 0\n");
@@ -356,11 +365,13 @@ int HosFileFormat::V4L2OpenDevice(const std::string& deviceName) {
     return rc;
 }
 
-void HosFileFormat::V4L2CloseDevice(int fd) {
+void HosFileFormat::V4L2CloseDevice(int fd)
+{
     HosV4L2Dev::v4l2Handle_->close(fd);
 }
 
-void HosFileFormat::V4L2MatchDevice(std::vector<std::string>& cameraIDs) {
+void HosFileFormat::V4L2MatchDevice(std::vector<std::string>& cameraIDs)
+{
     struct stat st = {};
     char devName[16] = {0};
     std::string name = DEVICENAMEX;
@@ -395,7 +406,8 @@ void HosFileFormat::V4L2MatchDevice(std::vector<std::string>& cameraIDs) {
                 (int)sensorNum);
 }
 
-int HosFileFormat::V4L2SearchBufType(int fd) {
+int HosFileFormat::V4L2SearchBufType(int fd)
+{
     struct v4l2_capability cap = {};
 
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_QUERYCAP, &cap);

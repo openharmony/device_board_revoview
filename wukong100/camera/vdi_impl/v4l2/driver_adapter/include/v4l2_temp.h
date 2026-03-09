@@ -43,22 +43,26 @@ class IBuffer {
 
     uint64_t GetUsage() { return usage_; }
 
-    void SetIndex(const uint32_t index) {
+    void SetIndex(const uint32_t index)
+    {
         index_ = index;
         return;
     }
 
-    void SetSize(const uint32_t size) {
+    void SetSize(const uint32_t size)
+    {
         size_ = size;
         return;
     }
 
-    void SetVirAddress(void* addr) {
+    void SetVirAddress(void* addr)
+    {
         virAddr_ = addr;
         return;
     }
 
-    void SetUsage(const uint64_t usage) {
+    void SetUsage(const uint64_t usage)
+    {
         usage_ = usage;
         return;
     }

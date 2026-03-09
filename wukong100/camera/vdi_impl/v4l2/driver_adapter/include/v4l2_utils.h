@@ -38,7 +38,8 @@ static const std::map<CameraBufferFormat, uint32_t> ohos_mapPixFmtHal2V4l2 = {
 
 class V4L2Utils {
    public:
-    static uint32_t ConvertPixfmtHal2V4l2(CameraBufferFormat halPixfmt) {
+    static uint32_t ConvertPixfmtHal2V4l2(CameraBufferFormat halPixfmt)
+    {
         auto it = ohos_mapPixFmtHal2V4l2.find(halPixfmt);
         if (it == ohos_mapPixFmtHal2V4l2.end()) {
             CAMERA_LOGD(

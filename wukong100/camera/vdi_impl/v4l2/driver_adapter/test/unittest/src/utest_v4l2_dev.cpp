@@ -24,15 +24,18 @@ namespace OHOS::Camera {
 void V4L2UvcCallback(const std::string cameraId,
                      const std::vector<DeviceControl>& control,
                      const std::vector<DeviceFormat>& fromat,
-                     const bool inOut) {
+                     const bool inOut)
+{
     std::cout << "V4L2UvcCallback" << std::endl;
 }
 
-void V4L2BufferCallback(std::shared_ptr<FrameSpec> buffer) {
+void V4L2BufferCallback(std::shared_ptr<FrameSpec> buffer)
+{
     std::cout << "V4L2BufferCallback" << std::endl;
 }
 
-void UtestV4L2Dev::SetUpTestCase(void) {
+void UtestV4L2Dev::SetUpTestCase(void)
+{
     std::cout << "SetUpTestCase.." << std::endl;
 
     V4L2UVC_ = std::make_shared<HosV4L2UVC>();
@@ -42,7 +45,8 @@ void UtestV4L2Dev::SetUpTestCase(void) {
     EXPECT_EQ(true, V4L2Dev_ != nullptr);
 }
 
-void UtestV4L2Dev::TearDownTestCase(void) {
+void UtestV4L2Dev::TearDownTestCase(void)
+{
     std::cout << "TearDownTestCase.." << std::endl;
 }
 

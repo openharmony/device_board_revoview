@@ -19,29 +19,34 @@
 namespace OHOS::Camera {
 ExifNode::ExifNode(const std::string &name, const std::string &type,
                    const std::string &cameraId)
-    : NodeBase(name, type, cameraId) {
+    : NodeBase(name, type, cameraId)
+{
     CAMERA_LOGV("%{public}s enter, type(%{public}s)\n", name_.c_str(),
                 type_.c_str());
 }
 
 ExifNode::~ExifNode() { CAMERA_LOGI("~ExifNode Node exit."); }
 
-RetCode ExifNode::Start(const int32_t streamId) {
+RetCode ExifNode::Start(const int32_t streamId)
+{
     CAMERA_LOGI("ExifNode::Start streamId = %{public}d\n", streamId);
     return RC_OK;
 }
 
-RetCode ExifNode::Stop(const int32_t streamId) {
+RetCode ExifNode::Stop(const int32_t streamId)
+{
     CAMERA_LOGI("ExifNode::Stop streamId = %{public}d\n", streamId);
     return RC_OK;
 }
 
-RetCode ExifNode::Flush(const int32_t streamId) {
+RetCode ExifNode::Flush(const int32_t streamId)
+{
     CAMERA_LOGI("ExifNode::Flush streamId = %{public}d\n", streamId);
     return RC_OK;
 }
 
-void ExifNode::DeliverBuffer(std::shared_ptr<IBuffer> &buffer) {
+void ExifNode::DeliverBuffer(std::shared_ptr<IBuffer> &buffer)
+{
     if (buffer == nullptr) {
         CAMERA_LOGE("ExifNode::DeliverBuffer frameSpec is null");
         return;
@@ -57,7 +62,8 @@ void ExifNode::DeliverBuffer(std::shared_ptr<IBuffer> &buffer) {
     }
 }
 
-RetCode ExifNode::Config(const int32_t streamId, const CaptureMeta &meta) {
+RetCode ExifNode::Config(const int32_t streamId, const CaptureMeta &meta)
+{
     if (meta == nullptr) {
         CAMERA_LOGW("%{public}s streamId= %{public}d", __FUNCTION__, streamId);
         return RC_OK;
@@ -68,7 +74,8 @@ RetCode ExifNode::Config(const int32_t streamId, const CaptureMeta &meta) {
     return RC_OK;
 }
 
-RetCode ExifNode::SendMetadata(std::shared_ptr<CameraMetadata> meta) {
+RetCode ExifNode::SendMetadata(std::shared_ptr<CameraMetadata> meta)
+{
     common_metadata_header_t *data = meta->get();
     camera_metadata_item_t entry;
     uint8_t captureQuality = 0;
@@ -119,7 +126,8 @@ RetCode ExifNode::SendMetadata(std::shared_ptr<CameraMetadata> meta) {
     return rc;
 }
 
-RetCode ExifNode::SetGpsInfoMetadata(common_metadata_header_t *data) {
+RetCode ExifNode::SetGpsInfoMetadata(common_metadata_header_t *data)
+{
     uint32_t count = 0;
     camera_metadata_item_t entry;
     int ret = FindCameraMetadataItem(data, OHOS_JPEG_GPS_COORDINATES, &entry);
@@ -141,12 +149,14 @@ RetCode ExifNode::SetGpsInfoMetadata(common_metadata_header_t *data) {
     return RC_OK;
 }
 
-RetCode ExifNode::Capture(const int32_t streamId, const int32_t captureId) {
+RetCode ExifNode::Capture(const int32_t streamId, const int32_t captureId)
+{
     CAMERA_LOGV("ExifNode::Capture");
     return RC_OK;
 }
 
-RetCode ExifNode::CancelCapture(const int32_t streamId) {
+RetCode ExifNode::CancelCapture(const int32_t streamId)
+{
     CAMERA_LOGI("ExifNode::CancelCapture streamid = %{public}d", streamId);
 
     return RC_OK;

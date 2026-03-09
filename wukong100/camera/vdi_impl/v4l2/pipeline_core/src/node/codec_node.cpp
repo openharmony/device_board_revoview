@@ -26,7 +26,8 @@ JpegEncodecFunc* CodecNode::jpegencodecfunc = DlDlsymJpegEncodecFunc();
 AvcH264EncInterface* CodecNode::h264Encoder = nullptr;
 void* CodecNode::h264Handle = nullptr;
 
-AvcH264EncInterface* CodecNode::CreateAvcH264EncInterface() {
+AvcH264EncInterface* CodecNode::CreateAvcH264EncInterface()
+{
     if (h264Handle == nullptr) {
         void* handler =
             dlopen("/vendor/lib64/libsprd_h264enc_wrapper.z.so", RTLD_LAZY);
@@ -66,7 +67,8 @@ AvcH264EncInterface* CodecNode::CreateAvcH264EncInterface() {
 
 CodecNode::CodecNode(const std::string& name, const std::string& type,
                      const std::string& cameraId)
-    : NodeBase(name, type, cameraId) {
+    : NodeBase(name, type, cameraId)
+{
     if (bufferRotate_ != nullptr) {
         free(bufferRotate_);
         bufferRotate_ = nullptr;
@@ -78,7 +80,8 @@ CodecNode::CodecNode(const std::string& name, const std::string& type,
                 type_.c_str());
 }
 
-CodecNode::~CodecNode() {
+CodecNode::~CodecNode()
+{
     if (bufferRotate_ != nullptr) {
         free(bufferRotate_);
         bufferRotate_ = nullptr;
@@ -88,7 +91,8 @@ CodecNode::~CodecNode() {
     CAMERA_LOGI("~CodecNode Node exit.");
 }
 
-RetCode CodecNode::Start(const int32_t streamId) {
+RetCode CodecNode::Start(const int32_t streamId)
+{
     CAMERA_LOGI("RKCodecNode::Start streamId = %{public}d\n", streamId);
     uint64_t bufferPoolId = 0;
     startflag = 0;
@@ -116,7 +120,8 @@ RetCode CodecNode::Start(const int32_t streamId) {
     return RC_OK;
 }
 
-RetCode CodecNode::Stop(const int32_t streamId) {
+RetCode CodecNode::Stop(const int32_t streamId)
+{
     CAMERA_LOGI("CodecNode::Stop streamId = %{public}d\n", streamId);
     startflag = 0;
     if (bufferRotate_ != nullptr) {
@@ -126,12 +131,14 @@ RetCode CodecNode::Stop(const int32_t streamId) {
     return RC_OK;
 }
 
-RetCode CodecNode::Flush(const int32_t streamId) {
+RetCode CodecNode::Flush(const int32_t streamId)
+{
     CAMERA_LOGI("CodecNode::Flush streamId = %{public}d\n", streamId);
     return RC_OK;
 }
 
-unsigned char CodecNode::Clip(int value) {
+unsigned char CodecNode::Clip(int value)
+{
     const int BYTEMAXVAL = 255;
     return static_cast<unsigned char>(
         value > BYTEMAXVAL ? BYTEMAXVAL : value < 0 ? 0 : value);
@@ -139,7 +146,8 @@ unsigned char CodecNode::Clip(int value) {
 
 void CodecNode::YUVToRGB(int Y, int U, int V, unsigned char* Red,
                          unsigned char* Green, unsigned char* Blue,
-                         unsigned char* Alapha) {
+                         unsigned char* Alapha)
+{
     const int Y_CONST = 16;
     const int UV_CONST = 128;
     const double Y_COEFFICIENT = 1.164;
@@ -159,7 +167,8 @@ void CodecNode::YUVToRGB(int Y, int U, int V, unsigned char* Red,
 };
 
 static void Yuv420_Rot_Right_90(u_char* dst, u_char* src, int width,
-                                int height) {
+                                int height)
+{
     const int INTERVAL = 2;
     int size = width * height;
     int pos = 0;
@@ -191,7 +200,8 @@ static void Yuv420_Rot_Right_90(u_char* dst, u_char* src, int width,
 }
 
 static void Yuv420_Rot_left_90(u_char* dst, u_char* src, int width,
-                               int height) {
+                               int height)
+{
     const int INTERVAL = 2;
     int size = width * height;
     int pos = 0;
@@ -222,7 +232,8 @@ static void Yuv420_Rot_left_90(u_char* dst, u_char* src, int width,
     }
 }
 
-static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height) {
+static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height)
+{
     const int INTERVAL = 2;
     int size = width * height;
     int pos = 0;
@@ -252,7 +263,8 @@ static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height) {
     }
 }
 
-static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height) {
+static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height)
+{
     const int INTERVAL = 2;
     int size = width * height;
     int pos = 0;
@@ -283,7 +295,8 @@ static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height) {
 }
 
 static void Yuv420_Rot_HMirror(u_char* dst, u_char* src, int width,
-                               int height) {
+                               int height)
+{
     const int INTERVAL = 2;
     int size = width * height;
     int pos = 0;
@@ -314,7 +327,8 @@ static void Yuv420_Rot_HMirror(u_char* dst, u_char* src, int width,
 }
 
 static void Yuv420_Rot_VMirror(u_char* dst, u_char* src, int width,
-                               int height) {
+                               int height)
+{
     const int INTERVAL = 2;
     int size = width * height;
     int pos = size;
@@ -353,7 +367,8 @@ const CodecMetadataTag g_codecMapCameraId[] = {
     {"lcam003", CAMERA_THIRD}, {"lcam004", CAMERA_FOURTH},
     {"lcam005", CAMERA_FIFTH}, {"lcam006", CAMERA_SIXTH}};
 
-CameraId CodecNode::ConvertCameraId(const std::string& cameraId) {
+CameraId CodecNode::ConvertCameraId(const std::string& cameraId)
+{
     for (auto cameraID : g_codecMapCameraId) {
         if (cameraID.cameraId1 == cameraId) {
             return cameraID.cameraId2;
@@ -362,7 +377,8 @@ CameraId CodecNode::ConvertCameraId(const std::string& cameraId) {
     return CAMERA_FIRST;
 }
 
-RetCode CodecNode::ConfigJpegOrientation(common_metadata_header_t* data) {
+RetCode CodecNode::ConfigJpegOrientation(common_metadata_header_t* data)
+{
     camera_metadata_item_t entry;
     int ret = FindCameraMetadataItem(data, OHOS_JPEG_ORIENTATION, &entry);
     if (ret != 0 || entry.data.i32 == nullptr) {
@@ -385,7 +401,8 @@ RetCode CodecNode::ConfigJpegOrientation(common_metadata_header_t* data) {
     return RC_OK;
 }
 
-RetCode CodecNode::ConfigJpegQuality(common_metadata_header_t* data) {
+RetCode CodecNode::ConfigJpegQuality(common_metadata_header_t* data)
+{
     camera_metadata_item_t entry;
     int ret = FindCameraMetadataItem(data, OHOS_JPEG_QUALITY, &entry);
     if (ret != 0) {
@@ -411,7 +428,8 @@ RetCode CodecNode::ConfigJpegQuality(common_metadata_header_t* data) {
     return RC_OK;
 }
 
-RetCode CodecNode::Config(const int32_t streamId, const CaptureMeta& meta) {
+RetCode CodecNode::Config(const int32_t streamId, const CaptureMeta& meta)
+{
     if (meta == nullptr) {
         CAMERA_LOGE("meta is nullptr");
         return RC_ERROR;
@@ -429,7 +447,8 @@ RetCode CodecNode::Config(const int32_t streamId, const CaptureMeta& meta) {
     return rc;
 }
 
-void* CodecNode::DlOpenJpegWrapperLib() {
+void* CodecNode::DlOpenJpegWrapperLib()
+{
     void* jpeghandlertmp = nullptr;
     CAMERA_LOGD("dlopen /vendor/lib64/libsprd_jpegenc_wrapper.z.so enter");
     jpeghandlertmp =
@@ -448,7 +467,8 @@ void* CodecNode::DlOpenJpegWrapperLib() {
     return jpeghandlertmp;
 }
 
-JpegEncodecFunc* CodecNode::DlDlsymJpegEncodecFunc() {
+JpegEncodecFunc* CodecNode::DlDlsymJpegEncodecFunc()
+{
     if (jpeghandler == nullptr) {
         jpeghandler = DlOpenJpegWrapperLib();
         if (jpeghandler == nullptr) {
@@ -473,7 +493,8 @@ JpegEncodecFunc* CodecNode::DlDlsymJpegEncodecFunc() {
     return jpegencodecfunctmp;
 }
 
-void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer) {
+void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
+{
     if (jpegencodecfunc == nullptr) {
         jpegencodecfunc = DlDlsymJpegEncodecFunc();
         if (jpegencodecfunc == nullptr) {
@@ -549,7 +570,8 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer) {
 }
 
 int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
-                                      uint32_t& frameSize) {
+                                      uint32_t& frameSize)
+{
     uint32_t width = buffer->GetWidth();
     uint32_t height = buffer->GetHeight();
     const int YUV420_SIZE_UP = 3;
@@ -645,7 +667,8 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
     }
 }
 
-static uint64_t GetPts() {
+static uint64_t GetPts()
+{
     constexpr uint32_t SEC_TO_NS = 1000000000;
     struct timespec timestamp = {0, 0};
     clock_gettime(CLOCK_MONOTONIC, &timestamp);
@@ -654,7 +677,8 @@ static uint64_t GetPts() {
     return time;
 }
 
-void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer) {
+void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
+{
     if (buffer == nullptr) {
         CAMERA_LOGE("CodecNode::DeliverBuffer frameSpec is null");
         return;
@@ -708,12 +732,14 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer) {
     NodeBase::DeliverBuffer(buffer);
 }
 
-RetCode CodecNode::Capture(const int32_t streamId, const int32_t captureId) {
+RetCode CodecNode::Capture(const int32_t streamId, const int32_t captureId)
+{
     CAMERA_LOGV("CodecNode::Capture");
     return RC_OK;
 }
 
-RetCode CodecNode::CancelCapture(const int32_t streamId) {
+RetCode CodecNode::CancelCapture(const int32_t streamId)
+{
     int ret = RC_OK;
     CAMERA_LOGI("CodecNode::CancelCapture streamid = %{public}d", streamId);
     if (nodestatus == 1) {

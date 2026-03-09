@@ -39,15 +39,18 @@ class V4l2AdapterInterface {
     virtual int munmap(void *addr, size_t length) = 0;
     virtual int poll(struct pollfd *fds, nfds_t nfds, int timeout) = 0;
     virtual int close(int flags) = 0;
-    virtual int write_i2c_t(int fd_, void *reg, int count) {
+    virtual int write_i2c_t(int fd_, void *reg, int count)
+    {
         return this->write_i2c_t(fd_, reg, count);
     };
-    virtual int read_i2c(int fd_, unsigned short reg_addr) {
+    virtual int read_i2c(int fd_, unsigned short reg_addr)
+    {
         return this->read_i2c(fd_, reg_addr);
     };
 
     template <class T, int N>
-    int write_i2c(int fd_, T (&array)[N]) {
+    int write_i2c(int fd_, T (&array)[N])
+    {
         int count = 0;
         for (int i = 0; i < N; i++) {
             if (!array) break;

@@ -23,13 +23,15 @@
 namespace OHOS::Camera {
 HosV4L2Buffers::HosV4L2Buffers(enum v4l2_memory memType,
                                enum v4l2_buf_type bufferType)
-    : memoryType_(memType), bufferType_(bufferType) {
+    : memoryType_(memType), bufferType_(bufferType)
+{
     adapterBufferMapNum = 0;
 }
 
 HosV4L2Buffers::~HosV4L2Buffers() {}
 
-RetCode HosV4L2Buffers::V4L2ReqBuffers(int fd, int unsigned buffCont) {
+RetCode HosV4L2Buffers::V4L2ReqBuffers(int fd, int unsigned buffCont)
+{
     struct v4l2_requestbuffers req = {};
 
     CAMERA_LOGD("V4L2ReqBuffers buffCont=%{public}d\n", buffCont);
@@ -63,7 +65,8 @@ RetCode HosV4L2Buffers::V4L2ReqBuffers(int fd, int unsigned buffCont) {
 }
 
 RetCode HosV4L2Buffers::V4L2QueueBuffer(
-    int fd, const std::shared_ptr<FrameSpec>& frameSpec) {
+    int fd, const std::shared_ptr<FrameSpec>& frameSpec)
+{
     struct v4l2_buffer buf = {};
     struct v4l2_plane planes[1] = {};
 
@@ -135,7 +138,8 @@ RetCode HosV4L2Buffers::V4L2QueueBuffer(
 }
 
 void HosV4L2Buffers::MakeInqueueBuffer(
-    struct v4l2_buffer& buf, const std::shared_ptr<FrameSpec>& frameSpec) {
+    struct v4l2_buffer& buf, const std::shared_ptr<FrameSpec>& frameSpec)
+{
     CAMERA_LOGD("HosV4L2Buffers::MakeInqueueBuffer in.");
 
     buf.index = (uint32_t)frameSpec->buffer_->GetIndex();
@@ -159,7 +163,8 @@ void HosV4L2Buffers::MakeInqueueBuffer(
 }
 
 void HosV4L2Buffers::SetInqueueBuffer(
-    struct v4l2_buffer& buf, const std::shared_ptr<FrameSpec>& frameSpec) {
+    struct v4l2_buffer& buf, const std::shared_ptr<FrameSpec>& frameSpec)
+{
     CAMERA_LOGD("HosV4L2Buffers::SetInqueueBuffer in.");
     if (bufferType_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
         buf.m.planes[0].length = frameSpec->buffer_->GetSize();
@@ -174,7 +179,8 @@ void HosV4L2Buffers::SetInqueueBuffer(
 }
 
 void HosV4L2Buffers::SetMmapInqueueBuffer(
-    struct v4l2_buffer& buf, const std::shared_ptr<FrameSpec>& frameSpec) {
+    struct v4l2_buffer& buf, const std::shared_ptr<FrameSpec>& frameSpec)
+{
     CAMERA_LOGD("HosV4L2Buffers::SetMmapInqueueBuffer in.");
     if (bufferType_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
         buf.m.planes[0].length = adapterBufferMap_[buf.index].length;
@@ -187,7 +193,8 @@ void HosV4L2Buffers::SetMmapInqueueBuffer(
     return;
 }
 
-RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd) {
+RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd)
+{
     struct v4l2_buffer buf = {};
     struct v4l2_plane planes[1] = {};
     while (bufCont < 1) {
@@ -268,7 +275,8 @@ RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd) {
     return RC_OK;
 }
 
-RetCode HosV4L2Buffers::V4L2AllocBuffer(int fd, int buffcont) {
+RetCode HosV4L2Buffers::V4L2AllocBuffer(int fd, int buffcont)
+{
     for (int i = 0; i < buffcont; i++) {
         struct v4l2_buffer buf = {};
         struct v4l2_plane planes[1] = {};
@@ -308,7 +316,8 @@ RetCode HosV4L2Buffers::V4L2AllocBuffer(int fd, int buffcont) {
 }
 
 RetCode HosV4L2Buffers::V4L2AllocBuffer(
-    int fd, const std::shared_ptr<FrameSpec>& frameSpec) {
+    int fd, const std::shared_ptr<FrameSpec>& frameSpec)
+{
     struct v4l2_buffer buf = {};
     struct v4l2_plane planes[1] = {};
     CAMERA_LOGD("V4L2AllocBuffer\n");
@@ -348,7 +357,8 @@ RetCode HosV4L2Buffers::V4L2AllocBuffer(
     return RC_OK;
 }
 
-RetCode HosV4L2Buffers::SetAdapterBuffer(int fd, struct v4l2_buffer& buf) {
+RetCode HosV4L2Buffers::SetAdapterBuffer(int fd, struct v4l2_buffer& buf)
+{
     CAMERA_LOGD("HosV4L2Buffers::SetAdapterBuffer buf.index=%{public}d in.",
                 buf.index);
     int32_t ret = 0;
@@ -397,7 +407,8 @@ RetCode HosV4L2Buffers::SetAdapterBuffer(int fd, struct v4l2_buffer& buf) {
 
 RetCode HosV4L2Buffers::SetAdapterBuffer(
     int fd, struct v4l2_buffer& buf,
-    const std::shared_ptr<FrameSpec>& frameSpec) {
+    const std::shared_ptr<FrameSpec>& frameSpec)
+{
     CAMERA_LOGD("HosV4L2Buffers::SetAdapterBuffer in.");
     int32_t ret = 0;
     int32_t index = (uint32_t)frameSpec->buffer_->GetIndex();
@@ -440,7 +451,8 @@ RetCode HosV4L2Buffers::SetAdapterBuffer(
     return RC_OK;
 }
 
-RetCode HosV4L2Buffers::V4L2ReleaseBuffers(int fd) {
+RetCode HosV4L2Buffers::V4L2ReleaseBuffers(int fd)
+{
     CAMERA_LOGE("HosV4L2Buffers::V4L2ReleaseBuffers\n");
 
     bufferLock_.lock();
@@ -457,12 +469,14 @@ RetCode HosV4L2Buffers::V4L2ReleaseBuffers(int fd) {
     return V4L2ReqBuffers(fd, 0);
 }
 
-void HosV4L2Buffers::SetV4L2BuffersCallback(BufCallback cb) {
+void HosV4L2Buffers::SetV4L2BuffersCallback(BufCallback cb)
+{
     CAMERA_LOGD("HosV4L2Buffers::SetV4L2BuffersCallback OK.");
     dequeueBuffer_ = cb;
 }
 
-RetCode HosV4L2Buffers::Flush(int fd) {
+RetCode HosV4L2Buffers::Flush(int fd)
+{
     CAMERA_LOGD("HosV4L2Buffers::Flush\n");
     return RC_OK;
 }
