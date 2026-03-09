@@ -37,21 +37,22 @@ static const std::map<CameraBufferFormat, uint32_t> ohos_mapPixFmtHal2V4l2 = {
 };
 
 class V4L2Utils {
- public:
-  static uint32_t ConvertPixfmtHal2V4l2(CameraBufferFormat halPixfmt) {
-    auto it = ohos_mapPixFmtHal2V4l2.find(halPixfmt);
-    if (it == ohos_mapPixFmtHal2V4l2.end()) {
-      CAMERA_LOGD(
-          "halPixfmt=%{public}d is not find in ohos_mapPixFmtHal2V4l2,return "
-          "V4L2_PIX_FMT_NV21.",
-          (int)halPixfmt);
-      return V4L2_PIX_FMT_NV21;
+   public:
+    static uint32_t ConvertPixfmtHal2V4l2(CameraBufferFormat halPixfmt) {
+        auto it = ohos_mapPixFmtHal2V4l2.find(halPixfmt);
+        if (it == ohos_mapPixFmtHal2V4l2.end()) {
+            CAMERA_LOGD(
+                "halPixfmt=%{public}d is not find in "
+                "ohos_mapPixFmtHal2V4l2,return "
+                "V4L2_PIX_FMT_NV21.",
+                (int)halPixfmt);
+            return V4L2_PIX_FMT_NV21;
+        }
+        return it->second;
     }
-    return it->second;
-  }
 
-  V4L2Utils() {}
-  ~V4L2Utils() {}
+    V4L2Utils() {}
+    ~V4L2Utils() {}
 };
 }  // namespace OHOS::Camera
 #endif  // HOS_CAMERA_V4L2_UTILS_H

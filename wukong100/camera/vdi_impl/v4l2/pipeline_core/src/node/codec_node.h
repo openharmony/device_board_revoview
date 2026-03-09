@@ -30,48 +30,48 @@ typedef int JpegEncodecFunc(struct jpg_op_mean&, struct yuvbuf_frm&,
                             struct yuvbuf_frm&, void*);
 
 class CodecNode : public NodeBase {
- public:
-  CodecNode(const std::string& name, const std::string& type,
-            const std::string& cameraId);
-  ~CodecNode() override;
-  CameraId ConvertCameraId(const std::string& cameraId);
-  RetCode Start(const int32_t streamId) override;
-  RetCode Stop(const int32_t streamId) override;
-  void DeliverBuffer(std::shared_ptr<IBuffer>& buffer) override;
-  virtual RetCode Capture(const int32_t streamId,
-                          const int32_t captureId) override;
-  RetCode CancelCapture(const int32_t streamId) override;
-  RetCode Flush(const int32_t streamId);
+   public:
+    CodecNode(const std::string& name, const std::string& type,
+              const std::string& cameraId);
+    ~CodecNode() override;
+    CameraId ConvertCameraId(const std::string& cameraId);
+    RetCode Start(const int32_t streamId) override;
+    RetCode Stop(const int32_t streamId) override;
+    void DeliverBuffer(std::shared_ptr<IBuffer>& buffer) override;
+    virtual RetCode Capture(const int32_t streamId,
+                            const int32_t captureId) override;
+    RetCode CancelCapture(const int32_t streamId) override;
+    RetCode Flush(const int32_t streamId);
 
-  AvcH264EncInterface* CreateAvcH264EncInterface();
-  static void* DlOpenJpegWrapperLib();
-  static JpegEncodecFunc* DlDlsymJpegEncodecFunc();
-  static void* jpeghandler;
-  static JpegEncodecFunc* jpegencodecfunc;
-  static AvcH264EncInterface* h264Encoder;
-  static void* h264Handle;
+    AvcH264EncInterface* CreateAvcH264EncInterface();
+    static void* DlOpenJpegWrapperLib();
+    static JpegEncodecFunc* DlDlsymJpegEncodecFunc();
+    static void* jpeghandler;
+    static JpegEncodecFunc* jpegencodecfunc;
+    static AvcH264EncInterface* h264Encoder;
+    static void* h264Handle;
 
- private:
-  unsigned char Clip(int value);
-  void YUVToRGB(int Y, int U, int V, unsigned char* Red, unsigned char* Green,
-                unsigned char* Blue, unsigned char* Alapha);
-  RetCode ConfigJpegOrientation(common_metadata_header_t* data);
-  RetCode ConfigJpegQuality(common_metadata_header_t* data);
-  RetCode Config(const int32_t streamId, const CaptureMeta& meta);
-  void Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer);
-  int Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
-                             uint32_t& frameSize);
+   private:
+    unsigned char Clip(int value);
+    void YUVToRGB(int Y, int U, int V, unsigned char* Red, unsigned char* Green,
+                  unsigned char* Blue, unsigned char* Alapha);
+    RetCode ConfigJpegOrientation(common_metadata_header_t* data);
+    RetCode ConfigJpegQuality(common_metadata_header_t* data);
+    RetCode Config(const int32_t streamId, const CaptureMeta& meta);
+    void Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer);
+    int Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
+                               uint32_t& frameSize);
 
-  unsigned char* previewTempBuff_ = nullptr;
+    unsigned char* previewTempBuff_ = nullptr;
 
-  std::atomic<unsigned int> status{0};
-  int nodestatus = 0;
-  std::vector<std::shared_ptr<IPort>> outPutPorts_;
-  std::shared_ptr<IBufferPool> bufferPool_ = nullptr;
-  uint32_t jpegRotation_;
-  uint32_t jpegQuality_;
-  u_char* bufferRotate_ = nullptr;
-  int startflag = 0;
+    std::atomic<unsigned int> status{0};
+    int nodestatus = 0;
+    std::vector<std::shared_ptr<IPort>> outPutPorts_;
+    std::shared_ptr<IBufferPool> bufferPool_ = nullptr;
+    uint32_t jpegRotation_;
+    uint32_t jpegQuality_;
+    u_char* bufferRotate_ = nullptr;
+    int startflag = 0;
 };
 }  // namespace OHOS::Camera
 #endif
