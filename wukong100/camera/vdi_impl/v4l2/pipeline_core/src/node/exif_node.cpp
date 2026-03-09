@@ -12,19 +12,20 @@
  */
 
 #include "exif_node.h"
+
 #include <exif_utils.h>
 #include <securec.h>
 
 namespace OHOS::Camera {
-ExifNode::ExifNode(const std::string &name, const std::string &type, const std::string &cameraId) : NodeBase(name, type, cameraId)
+ExifNode::ExifNode(const std::string &name, const std::string &type,
+                   const std::string &cameraId)
+    : NodeBase(name, type, cameraId)
 {
-    CAMERA_LOGV("%{public}s enter, type(%{public}s)\n", name_.c_str(), type_.c_str());
+    CAMERA_LOGV("%{public}s enter, type(%{public}s)\n", name_.c_str(),
+                type_.c_str());
 }
 
-ExifNode::~ExifNode()
-{
-    CAMERA_LOGI("~ExifNode Node exit.");
-}
+ExifNode::~ExifNode() { CAMERA_LOGI("~ExifNode Node exit."); }
 
 RetCode ExifNode::Start(const int32_t streamId)
 {
@@ -53,7 +54,7 @@ void ExifNode::DeliverBuffer(std::shared_ptr<IBuffer> &buffer)
 
     int32_t id = buffer->GetStreamId();
     outPutPorts_ = GetOutPorts();
-    for (auto& it : outPutPorts_) {
+    for (auto &it : outPutPorts_) {
         if (it->format_.streamId_ == id) {
             it->DeliverBuffer(buffer);
             return;
@@ -94,23 +95,32 @@ RetCode ExifNode::SendMetadata(std::shared_ptr<CameraMetadata> meta)
 
     ret = FindCameraMetadataItem(data, OHOS_JPEG_QUALITY, &entry);
     if (ret != 0) {
-        CAMERA_LOGE("%{public}s get OHOS_JPEG_QUALITY error and ret= %{public}d", __FUNCTION__, ret);
+        CAMERA_LOGE(
+            "%{public}s get OHOS_JPEG_QUALITY error and ret= %{public}d",
+            __FUNCTION__, ret);
         return RC_ERROR;
     }
     captureQuality = *(entry.data.u8);
     ret = FindCameraMetadataItem(data, OHOS_JPEG_ORIENTATION, &entry);
     if (ret != 0) {
-        CAMERA_LOGE("%{public}s get OHOS_JPEG_ORIENTATION error and ret= %{public}d", __FUNCTION__, ret);
+        CAMERA_LOGE(
+            "%{public}s get OHOS_JPEG_ORIENTATION error and ret= %{public}d",
+            __FUNCTION__, ret);
         return RC_ERROR;
     }
     captureOrientation = *(entry.data.i32);
     ret = FindCameraMetadataItem(data, OHOS_CONTROL_CAPTURE_MIRROR, &entry);
     if (ret != 0) {
-        CAMERA_LOGE("%{public}s get OHOS_CONTROL_CAPTURE_MIRROR error and ret= %{public}d", __FUNCTION__, ret);
+        CAMERA_LOGE(
+            "%{public}s get OHOS_CONTROL_CAPTURE_MIRROR error and ret= "
+            "%{public}d",
+            __FUNCTION__, ret);
         return RC_ERROR;
     }
     mirrorSwitch = *(entry.data.u8);
-    CAMERA_LOGI("%{public}s captureQuality= %{public}d and captureOrientation= %{public}d and mirrorSwitch= %{public}d",
+    CAMERA_LOGI(
+        "%{public}s captureQuality= %{public}d and captureOrientation= "
+        "%{public}d and mirrorSwitch= %{public}d",
         __FUNCTION__, captureQuality, captureOrientation, mirrorSwitch);
 
     return rc;
@@ -126,8 +136,8 @@ RetCode ExifNode::SetGpsInfoMetadata(common_metadata_header_t *data)
     }
     constexpr uint32_t groupLen = 3;
     count = entry.count;
-    CAMERA_LOGI("%{public}s  gps count %{public}d)\n", __FUNCTION__,  count);
-    if (count!= groupLen) {
+    CAMERA_LOGI("%{public}s  gps count %{public}d)\n", __FUNCTION__, count);
+    if (count != groupLen) {
         CAMERA_LOGE("%{public}s  gps data count error\n", __FUNCTION__);
         return RC_ERROR;
     }
@@ -153,4 +163,4 @@ RetCode ExifNode::CancelCapture(const int32_t streamId)
 }
 
 REGISTERNODE(ExifNode, {"Exif"})
-} // namespace OHOS::Camera
+}  // namespace OHOS::Camera
