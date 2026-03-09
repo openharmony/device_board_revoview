@@ -29,8 +29,7 @@ RetCode HosV4L2Control::V4L2SetCtrls(int fd,
     int count = 0;
 
     if (numControls != control.size()) {
-        CAMERA_LOGE(
-            "HosV4L2Control::V4L2SetCtrls numControls != control.size()\n");
+        CAMERA_LOGE("HosV4L2Control::V4L2SetCtrls numControls != control.size()\n");
         return RC_ERROR;
     }
 
@@ -51,12 +50,9 @@ RetCode HosV4L2Control::V4L2SetCtrls(int fd,
             ctrls.ctrl_class = itr->ctrl_class;
             ctrls.count = count;
             ctrls.controls = cList;
-            ret =
-                HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_EXT_CTRLS, &ctrls);
+            ret = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_EXT_CTRLS, &ctrls);
             if (ret) {
-                CAMERA_LOGE(
-                    "HosV4L2Control::VIDIOC_S_EXT_CTRLS set failed try to "
-                    "VIDIOC_S_CTRL\n");
+                CAMERA_LOGE("HosV4L2Control::VIDIOC_S_EXT_CTRLS set failed try to VIDIOC_S_CTRL\n");
                 struct v4l2_control ctrl;
 
                 for (int i = 0; count > 0; i++, count--) {
@@ -65,11 +61,7 @@ RetCode HosV4L2Control::V4L2SetCtrls(int fd,
                     ret = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_CTRL,
                                                          &ctrl);
                     if (ret) {
-                        CAMERA_LOGE(
-                            "HosV4L2Control::V4L2SetCtrls VIDIOC_S_CTRL error "
-                            "i = "
-                            "%{public}d\n",
-                            i);
+                        CAMERA_LOGE("HosV4L2Control::V4L2SetCtrls VIDIOC_S_CTRL error i = %{public}d\n", i);
                         continue;
                     }
                 }
@@ -91,8 +83,7 @@ RetCode HosV4L2Control::V4L2GetCtrls(int fd,
     auto iter = control.begin();
 
     if (numControls != control.size()) {
-        CAMERA_LOGE(
-            "HosV4L2Control::V4L2GetCtrls numControls != control.size()\n");
+        CAMERA_LOGE("HosV4L2Control::V4L2GetCtrls numControls != control.size()\n");
         return RC_ERROR;
     }
 
@@ -113,17 +104,13 @@ RetCode HosV4L2Control::V4L2GetCtrls(int fd,
             ctrls.ctrl_class = itr->ctrl_class;
             ctrls.count = count;
             ctrls.controls = cList;
-            ret =
-                HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_G_EXT_CTRLS, &ctrls);
+            ret = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_G_EXT_CTRLS, &ctrls);
             if (ret) {
-                CAMERA_LOGE(
-                    "HosV4L2Control::VIDIOC_G_EXT_CTRLS set failed try to "
-                    "VIDIOC_S_CTRL\n");
+                CAMERA_LOGE("HosV4L2Control::VIDIOC_G_EXT_CTRLS set failed try to VIDIOC_S_CTRL\n");
                 struct v4l2_control ctrl;
                 for (int i = 0; count > 0; i++, count--) {
                     ctrl.id = cList[i].id;
-                    ret = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_G_CTRL,
-                                                         &ctrl);
+                    ret = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_G_CTRL, &ctrl);
                     if (ret) {
                         continue;
                     }

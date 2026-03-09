@@ -49,10 +49,7 @@ int Process(IppAlgoBuffer *inBuffer[], int inBufferCount,
 
     for (int i = 0; i < inBufferCount; i++) {
         if (inBuffer[i] != NULL) {
-            printf(
-                "in buffer addr = %p, width = %u, height = %u, stride = %u, "
-                "size = "
-                "%u, id = %d\n",
+            printf("in buffer addr = %p, width = %u, height = %u, stride = %u, size = %u, id = %d\n",
                 inBuffer[i]->addr, inBuffer[i]->width, inBuffer[i]->height,
                 inBuffer[i]->stride, inBuffer[i]->size, inBuffer[i]->id);
         } else {
@@ -61,15 +58,13 @@ int Process(IppAlgoBuffer *inBuffer[], int inBufferCount,
     }
 
     if (outBuffer != NULL && outBuffer->addr != NULL) {
-        printf("out buffer addr = %p, size = %u, id = %d\n", outBuffer->addr,
-               outBuffer->size, outBuffer->id);
+        printf("out buffer addr = %p, size = %u, id = %d\n", outBuffer->addr, outBuffer->size, outBuffer->id);
     } else {
         printf("out buffer is NULL\n");
     }
 
     if (inBufferCount == 1) {
-        if (inBuffer[0] == NULL || outBuffer == NULL ||
-            inBuffer[0]->addr == NULL || outBuffer->addr == NULL) {
+        if (inBuffer[0] == NULL || outBuffer == NULL || inBuffer[0]->addr == NULL || outBuffer->addr == NULL) {
             return 0;
         }
         char *in = (char *)(inBuffer[0]->addr);
@@ -82,23 +77,17 @@ int Process(IppAlgoBuffer *inBuffer[], int inBufferCount,
 
     const int INBUFFERDOUBLE = 2;
     if (inBufferCount == INBUFFERDOUBLE) {
-        if (inBuffer[0] == NULL || inBuffer[1] == NULL ||
-            inBuffer[0]->addr == NULL || inBuffer[1]->addr == NULL) {
+        if (inBuffer[0] == NULL || inBuffer[1] == NULL || inBuffer[0]->addr == NULL || inBuffer[1]->addr == NULL) {
             return -1;
         }
         printf("example algo merge 2 camera images\n");
 
-        char *startBuffer1 = (char *)(inBuffer[0]->addr) +
-                             inBuffer[0]->stride * inBuffer[0]->height;
-        char *startBuffer2 = (char *)(inBuffer[1]->addr) +
-                             inBuffer[1]->stride * inBuffer[1]->height;
-        if (memcpy_s(
-                startBuffer1,
-                inBuffer[0]->size - inBuffer[0]->stride * inBuffer[0]->height,
+        char *startBuffer1 = (char *)(inBuffer[0]->addr) + inBuffer[0]->stride * inBuffer[0]->height;
+        char *startBuffer2 = (char *)(inBuffer[1]->addr) + inBuffer[1]->stride * inBuffer[1]->height;
+        if (memcpy_s(startBuffer1, inBuffer[0]->size - inBuffer[0]->stride * inBuffer[0]->height,
                 startBuffer2, inBuffer[0]->stride * inBuffer[0]->height) != 0) {
             printf("memcpy_s failed.");
         }
-        return 0;
     }
     return 0;
 }

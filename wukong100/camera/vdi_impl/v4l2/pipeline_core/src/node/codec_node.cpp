@@ -685,21 +685,15 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
     }
 
     int32_t id = buffer->GetStreamId();
-    CAMERA_LOGD(
-        "CodecNode::DeliverBuffer StreamId %{public}d, encode type : "
-        "%{public}d",
+    CAMERA_LOGD("CodecNode::DeliverBuffer StreamId %{public}d, encode type : %{public}d",
         id, buffer->GetEncodeType());
     if (buffer->GetBufferStatus() != CAMERA_BUFFER_STATUS_OK) {
-        CAMERA_LOGE(
-            "CodecNode BufferStatus() != CAMERA_BUFFER_STATUS_OK StreamId "
-            "%{public}d",
-            id);
+        CAMERA_LOGE("CodecNode BufferStatus() != CAMERA_BUFFER_STATUS_OK StreamId %{public}d", id);
         return NodeBase::DeliverBuffer(buffer);
     }
     if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_JPEG) {
         Yuv420ToJpegWithUnisoc(buffer);
-        CAMERA_LOGI("CodecNode::node codec enter jpeg,%{public}d",
-                    (int)buffer->GetSize());
+        CAMERA_LOGI("CodecNode::node codec enter jpeg,%{public}d", (int)buffer->GetSize());
     } else if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_H264) {
         nodestatus = 1;
         uint32_t frameSize = 0;
@@ -707,8 +701,7 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         buffer->SetEsFrameSize(frameSize);
         buffer->SetEsTimestamp(GetPts());
     } else {
-        CAMERA_LOGI("CodecNode::node buffer format = %{public}d",
-                    buffer->GetFormat());
+        CAMERA_LOGI("CodecNode::node buffer format = %{public}d", buffer->GetFormat());
         const int YUV420_SIZE_UP = 3;
         const int YUV420_SIZE_DOWN = 2;
         int yuv_length = buffer->GetWidth() * buffer->GetHeight() *

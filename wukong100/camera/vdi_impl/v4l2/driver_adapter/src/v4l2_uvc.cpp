@@ -87,8 +87,7 @@ void HosV4L2UVC::V4L2UvcMatchDev(const std::string name,
     char devName[nameSize] = {0};
 
     CAMERA_LOGD(
-        "UVC:V4L2UvcMatchDev name %{public}s v4l2Device %{public}s inOut = "
-        "%{public}d\n",
+        "UVC:V4L2UvcMatchDev name %{public}s v4l2Device %{public}s inOut = %{public}d\n",
         name.c_str(), v4l2Device.c_str(), inOut);
     if ((sprintf_s(devName, sizeof(devName), "%s", name.c_str())) < 0) {
         CAMERA_LOGE("%{public}s: sprintf devName failed", __func__);
@@ -114,8 +113,7 @@ void HosV4L2UVC::V4L2UvcMatchDev(const std::string name,
                 }
                 if (iter.second) {
                     CAMERA_LOGD(
-                        "UVC:V4L2UvcMatchDev::deviceMatch.insert: %{public}s "
-                        "devName "
+                        "UVC:V4L2UvcMatchDev::deviceMatch.insert: %{public}s devName "
                         "%{public}s i %{public}d\n",
                         v4l2Device.c_str(), devName, i);
                     break;
@@ -124,8 +122,7 @@ void HosV4L2UVC::V4L2UvcMatchDev(const std::string name,
         }
     } else {
         CAMERA_LOGD(
-            "UVC: HosV4L2Dev::deviceMatch.erase: %{public}s devName "
-            "%{public}s\n",
+            "UVC: HosV4L2Dev::deviceMatch.erase: %{public}s devName %{public}s\n",
             v4l2Device.c_str(), devName);
         std::lock_guard<std::mutex> l(HosV4L2Dev::deviceFdLock_);
         HosV4L2Dev::deviceMatch.erase(std::string(devName));

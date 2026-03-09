@@ -22,8 +22,7 @@ namespace OHOS::Camera {
 HosFileFormat::HosFileFormat() {}
 HosFileFormat::~HosFileFormat() {}
 
-RetCode HosFileFormat::V4L2SearchFormat(int fd,
-                                        std::vector<DeviceFormat>& fmtDesc)
+RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDesc)
 {
     int i = 0;
     int j = 0;
@@ -36,27 +35,19 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd,
     for (i = 0; i < fmtMax; ++i) {
         enumFmtDesc.index = i;
         enumFmtDesc.type = bufType_;
-        if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FMT, &enumFmtDesc) <
-            0) {
+        if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FMT, &enumFmtDesc) < 0)
             break;
-        }
 
-        CAMERA_LOGD(
-            "[%{public}d]Supported format with description = %{public}s\n\n", i,
-            enumFmtDesc.description);
+        CAMERA_LOGD("[%{public}d]Supported format with description = %{public}s\n\n", i, enumFmtDesc.description);
 
         for (j = 0; j < fmtMax; ++j) {
             frmSize.index = j;
             frmSize.pixel_format = enumFmtDesc.pixelformat;
-            if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMESIZES,
-                                               &frmSize) < 0) {
+            if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &frmSize) < 0)
                 break;
-            }
 
             if (frmSize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
-                CAMERA_LOGD(
-                    "V4L2_FRMSIZE_TYPE_DISCRETE width %{public}d x height "
-                    "%{public}d\n\n",
+                CAMERA_LOGD("V4L2_FRMSIZE_TYPE_DISCRETE width %{public}d x height %{public}d\n\n",
                     frmSize.discrete.width, frmSize.discrete.height);
             }
 
@@ -65,26 +56,20 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd,
                 fraMival.pixel_format = frmSize.pixel_format;
                 fraMival.width = frmSize.discrete.width;
                 fraMival.height = frmSize.discrete.height;
-                if (HosV4L2Dev::v4l2Handle_->ioctl(
-                        fd, VIDIOC_ENUM_FRAMEINTERVALS, &fraMival) < 0) {
+                if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &fraMival) < 0)
                     break;
-                }
 
                 DeviceFormat currentFormat = {};
-                currentFormat.fmtdesc.description =
-                    std::string((char*)enumFmtDesc.description);
+                currentFormat.fmtdesc.description = std::string((char*)enumFmtDesc.description);
                 currentFormat.fmtdesc.pixelformat = enumFmtDesc.pixelformat;
                 currentFormat.fmtdesc.width = frmSize.discrete.width;
                 currentFormat.fmtdesc.height = frmSize.discrete.height;
-                currentFormat.fmtdesc.fps.numerator =
-                    fraMival.discrete.numerator;
-                currentFormat.fmtdesc.fps.denominator =
-                    fraMival.discrete.denominator;
+                currentFormat.fmtdesc.fps.numerator = fraMival.discrete.numerator;
+                currentFormat.fmtdesc.fps.denominator = fraMival.discrete.denominator;
 
                 fmtDesc.push_back(currentFormat);
 
-                CAMERA_LOGD("frame interval: %{public}d, %{public}d\n\n",
-                            fraMival.discrete.numerator,
+                CAMERA_LOGD("frame interval: %{public}d, %{public}d\n\n", fraMival.discrete.numerator,
                             fraMival.discrete.denominator);
             }
         }

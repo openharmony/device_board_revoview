@@ -104,35 +104,28 @@ RetCode HosV4L2Buffers::V4L2QueueBuffer(
         int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_QBUF, &buf);
         if (rc < 0) {
             bufferLock_.unlock();
-            CAMERA_LOGE(
-                "HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_QBUF failed: "
-                "%{public}s\n",
-                strerror(errno));
+            CAMERA_LOGE("HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_QBUF failed: %{public}s\n", strerror(errno));
             return RC_ERROR;
         }
         itr->second[buf.index] = frameSpec;
         bufferLock_.unlock();
-        CAMERA_LOGD("insert frameMap fd = %{public}d buf.index = %{public}d\n",
-                    fd, buf.index);
+        CAMERA_LOGD("insert frameMap fd = %{public}d buf.index = %{public}d\n", fd, buf.index);
     } else {
         int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_QBUF, &buf);
         if (rc < 0) {
             bufferLock_.unlock();
-            CAMERA_LOGE("ioctl VIDIOC_QBUF failed: %{public}s\n",
-                        strerror(errno));
+            CAMERA_LOGE("ioctl VIDIOC_QBUF failed: %{public}s\n", strerror(errno));
             return RC_ERROR;
         }
         FrameMap frameMap;
         frameMap.insert(std::make_pair(buf.index, frameSpec));
         queueBuffers_.insert(std::make_pair(fd, frameMap));
         bufferLock_.unlock();
-        CAMERA_LOGD("insert fd = %{public}d buf.index = %{public}d\n", fd,
-                    buf.index);
+        CAMERA_LOGD("insert fd = %{public}d buf.index = %{public}d\n", fd, buf.index);
     }
 
     bufCont++;
-    CAMERA_LOGD("V4L2QueueBuffer success bufCont = %{public}d\n",
-                bufCont.load());
+    CAMERA_LOGD("V4L2QueueBuffer success bufCont = %{public}d\n", bufCont.load());
 
     return RC_OK;
 }
