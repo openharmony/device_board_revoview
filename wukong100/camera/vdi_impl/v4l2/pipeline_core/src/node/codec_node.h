@@ -26,8 +26,8 @@ namespace OHOS::Camera {
 
 enum VIDEO_RECORD_STATUS { START, ENCODING, STOP };
 
-typedef int JpegEncodecFunc(struct jpg_op_mean&, struct yuvbuf_frm&,
-                            struct yuvbuf_frm&, void*);
+typedef int JpegEncodecFunc(struct JpgOpMean&, struct YuvbufFrm&,
+                            struct YuvbufFrm&, void*);
 
 class CodecNode : public NodeBase {
    public:
@@ -53,8 +53,8 @@ class CodecNode : public NodeBase {
 
    private:
     unsigned char Clip(int value);
-    void YUVToRGB(int Y, int U, int V, unsigned char* Red, unsigned char* Green,
-                  unsigned char* Blue, unsigned char* Alapha);
+    void YUVToRGB(int y, int u, int v, unsigned char* red, unsigned char* green,
+                  unsigned char* blue, unsigned char* alapha);
     RetCode ConfigJpegOrientation(common_metadata_header_t* data);
     RetCode ConfigJpegQuality(common_metadata_header_t* data);
     RetCode Config(const int32_t streamId, const CaptureMeta& meta);

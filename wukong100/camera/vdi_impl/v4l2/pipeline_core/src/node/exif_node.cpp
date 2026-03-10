@@ -151,6 +151,8 @@ RetCode ExifNode::SetGpsInfoMetadata(common_metadata_header_t *data)
 
 RetCode ExifNode::Capture(const int32_t streamId, const int32_t captureId)
 {
+    (void)streamId;
+    (void)captureId;
     CAMERA_LOGV("ExifNode::Capture");
     return RC_OK;
 }
