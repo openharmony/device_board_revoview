@@ -158,7 +158,7 @@ static int32_t ReOpenPcmAndSetParams(struct AlsaCapture *captureIns, const struc
         return HDF_FAILURE;
     }
 
-    ret = ConfigurePcm(renderIns, handleData, cardIns);
+    ret = ConfigurePcm(captureIns, handleData, cardIns);
     if (ret < 0) {
         AUDIO_FUNC_LOGE("ReOpenPcmAndSetParams ConfigurePcm fail");
         return HDF_FAILURE;
@@ -646,6 +646,8 @@ static int32_t ConfigureCaptur(snd_pcm_t *handle, snd_pcm_hw_params_t *hwParams,
 {
     snd_pcm_uframes_t size = 0;
     int32_t ret;
+    captureIns->periodSize = CAPTURE_PERIOD_SIZE_CALL;
+    captureIns->bufferSize = CAPTURE_BUFFER_SIZE_CALL;
     size = captureIns->periodSize;
     ret = snd_pcm_hw_params_set_period_size_near(handle, hwParams, &size, 0);
     if (ret != HDF_SUCCESS) {
@@ -671,7 +673,6 @@ static int32_t ConfigureCaptur(snd_pcm_t *handle, snd_pcm_hw_params_t *hwParams,
 
 static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
 {
-    AUDIO_FUNC_LOGI("SetHWParamsCall begin.");
     int32_t ret;
     uint32_t channel = CHANNEL_CALL;
     uint32_t rRate = RATE_CALL;
@@ -719,14 +720,11 @@ static int32_t SetHWParamsCall(struct AlsaSoundCard *cardIns)
         return ret;
     }
 
-    captureIns->periodSize = CAPTURE_PERIOD_SIZE_CALL;
-    captureIns->bufferSize = CAPTURE_BUFFER_SIZE_CALL;
     ret = ConfigureCaptur(handle, hwParams, captureIns);
     if (ret != HDF_SUCCESS) {
         AUDIO_FUNC_LOGE("ConfigureCaptur Set period size failed!");
         return ret;
     }
-
     return HDF_SUCCESS;
 }
 
@@ -920,8 +918,6 @@ static int32_t SetSWParams(struct AlsaSoundCard *cardIns)
 {
     int32_t ret;
     /* The time when the application starts reading data */
-    snd_pcm_sframes_t startThresholdSize = 1;
-    snd_pcm_sframes_t stopThresholdSize = -1;
     snd_pcm_sw_params_t *swParams = NULL;
     snd_pcm_t *handle = cardIns->pcmHandle;
     struct AlsaCapture *captureIns = (struct AlsaCapture *)cardIns;
