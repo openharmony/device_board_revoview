@@ -45,24 +45,24 @@ AvcH264EncInterface* CodecNode::CreateAvcH264EncInterface()
     CreateInstanceFunc* createInstance =
         (CreateInstanceFunc*)dlsym(h264Handle, "CreateAvcH264Encoder");
     if (createInstance == nullptr) {
-        const char* dlsym_error = dlerror();
-        if (dlsym_error) {
+        const char* dlsymError = dlerror();
+        if (dlsymError) {
             CAMERA_LOGE(
                 "Cannot load symbol CreateAvcH264Encoder, %{public}s, "
                 "%{public}p",
-                dlsym_error, createInstance);
+                dlsymError, createInstance);
         }
         CAMERA_LOGD("load symbol CreateAvcH264Encoder, %{public}p",
                     createInstance);
         return nullptr;
     }
 
-    AvcH264EncInterface* H264EncHandle = createInstance();
-    if (H264EncHandle == nullptr) {
+    AvcH264EncInterface* h264EncHandle = createInstance();
+    if (h264EncHandle == nullptr) {
         CAMERA_LOGE("CreateAvcH264EncAdapterInstance, failed");
     }
 
-    return H264EncHandle;
+    return h264EncHandle;
 }
 
 CodecNode::CodecNode(const std::string& name, const std::string& type,
@@ -139,37 +139,37 @@ RetCode CodecNode::Flush(const int32_t streamId)
 
 unsigned char CodecNode::Clip(int value)
 {
-    const int BYTEMAXVAL = 255;
+    const int bytemaxval = 255;
     return static_cast<unsigned char>(
-        value > BYTEMAXVAL ? BYTEMAXVAL : value < 0 ? 0 : value);
+        value > bytemaxval ? bytemaxval : value < 0 ? 0 : value);
 }
 
-void CodecNode::YUVToRGB(int Y, int U, int V, unsigned char* Red,
-                         unsigned char* Green, unsigned char* Blue,
-                         unsigned char* Alapha)
+void CodecNode::YUVToRGB(int y, int u, int v, unsigned char* red,
+                         unsigned char* green, unsigned char* blue,
+                         unsigned char* alapha)
 {
-    const int Y_CONST = 16;
-    const int UV_CONST = 128;
-    const double Y_COEFFICIENT = 1.164;
-    const double RUV_COEFFICIENT = 2.018;
-    const double GVU_COEFFICIENT = 0.813;
-    const double GUV_COEFFICIENT = 0.391;
-    const double BVU_COEFFICIENT = 1.596;
-    const int ALAPHA = 255;
-    int r = Y_COEFFICIENT * (Y - Y_CONST) + RUV_COEFFICIENT * (U - UV_CONST);
-    int g = Y_COEFFICIENT * (Y - Y_CONST) + GVU_COEFFICIENT * (V - UV_CONST) -
-            GUV_COEFFICIENT * (U - UV_CONST);
-    int b = Y_COEFFICIENT * (Y - Y_CONST) + BVU_COEFFICIENT * (V - UV_CONST);
-    *Red = Clip(r);
-    *Green = Clip(g);
-    *Blue = Clip(b);
-    *Alapha = ALAPHA;
+    const int yConst = 16;
+    const int uvConst = 128;
+    const double yCoefficient = 1.164;
+    const double ruvCoefficient = 2.018;
+    const double gvuCoefficient = 0.813;
+    const double guvCoefficient = 0.391;
+    const double bvuCoefficient = 1.596;
+    const int aAlapha = 255;
+    int r = yCoefficient * (y - yConst) + ruvCoefficient * (u - uvConst);
+    int g = yCoefficient * (y - yConst) + gvuCoefficient * (v - uvConst) -
+            guvCoefficient * (u - uvConst);
+    int b = yCoefficient * (y - yConst) + bvuCoefficient * (v - uvConst);
+    *red = Clip(r);
+    *green = Clip(g);
+    *blue = Clip(b);
+    *alapha = aAlapha;
 };
 
-static void Yuv420_Rot_Right_90(u_char* dst, u_char* src, int width,
+static void Yuv420RotRight90(u_char* dst, u_char* src, int width,
                                 int height)
 {
-    const int INTERVAL = 2;
+    const int interval = 2;
     int size = width * height;
     int pos = 0;
     int n = 0;
@@ -188,21 +188,21 @@ static void Yuv420_Rot_Right_90(u_char* dst, u_char* src, int width,
 
     u_char* temp = src + size;
 
-    for (int j = 0; j < width; j += INTERVAL) {
+    for (int j = 0; j < width; j += interval) {
         pos = width * hheight;
         for (int i = 0; i < hheight; i++) {
             pos -= width;
             dst[n] = temp[pos + j];
             dst[n + 1] = temp[pos + j + 1];
-            n += INTERVAL;
+            n += interval;
         }
     }
 }
 
-static void Yuv420_Rot_left_90(u_char* dst, u_char* src, int width,
+static void Yuv420RotLeft90(u_char* dst, u_char* src, int width,
                                int height)
 {
-    const int INTERVAL = 2;
+    const int interval = 2;
     int size = width * height;
     int pos = 0;
     int n = 0;
@@ -221,20 +221,20 @@ static void Yuv420_Rot_left_90(u_char* dst, u_char* src, int width,
 
     u_char* temp = src + size;
 
-    for (int j = 0; j < width; j += INTERVAL) {
+    for (int j = 0; j < width; j += interval) {
         pos = 0;
         for (int i = 0; i < hheight; i++) {
             pos += width;
-            dst[n] = temp[pos - j - INTERVAL];
+            dst[n] = temp[pos - j - interval];
             dst[n + 1] = temp[pos - j - 1];
-            n += INTERVAL;
+            n += interval;
         }
     }
 }
 
-static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height)
+static void Yuv420Rot180(u_char* dst, u_char* src, int width, int height)
 {
-    const int INTERVAL = 2;
+    const int interval = 2;
     int size = width * height;
     int pos = 0;
     int n = 0;
@@ -254,18 +254,18 @@ static void Yuv420_Rot_180(u_char* dst, u_char* src, int width, int height)
     u_char* temp = src + size;
     pos = width * hheight;
     for (int j = 0; j < hheight; j++) {
-        for (int i = 0; i < width; i += INTERVAL) {
+        for (int i = 0; i < width; i += interval) {
             dst[n + 1] = temp[pos - i - 1];
-            dst[n] = temp[pos - i - INTERVAL];
-            n += INTERVAL;
+            dst[n] = temp[pos - i - interval];
+            n += interval;
         }
         pos -= width;
     }
 }
 
-static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height)
+static void Yuv420spRot180(u_char* dst, u_char* src, int width, int height)
 {
-    const int INTERVAL = 2;
+    const int interval = 2;
     int size = width * height;
     int pos = 0;
     int n = 0;
@@ -285,19 +285,19 @@ static void Yuv420sp_Rot_180(u_char* dst, u_char* src, int width, int height)
     u_char* temp = src + size;
     pos = width * hheight;
     for (int j = 0; j < hheight; j++) {
-        for (int i = 0; i < width; i += INTERVAL) {
+        for (int i = 0; i < width; i += interval) {
             dst[n + 1] = temp[pos - i - 1];
-            dst[n] = temp[pos - i - INTERVAL];
-            n += INTERVAL;
+            dst[n] = temp[pos - i - interval];
+            n += interval;
         }
         pos -= width;
     }
 }
 
-static void Yuv420_Rot_HMirror(u_char* dst, u_char* src, int width,
+static void Yuv420RotHMirror(u_char* dst, u_char* src, int width,
                                int height)
 {
-    const int INTERVAL = 2;
+    const int interval = 2;
     int size = width * height;
     int pos = 0;
     int n = 0;
@@ -317,19 +317,19 @@ static void Yuv420_Rot_HMirror(u_char* dst, u_char* src, int width,
     u_char* temp = src + size;
     pos = 0;
     for (int j = 0; j < hheight; j++) {
-        for (int i = width; i > 0; i -= INTERVAL) {
-            dst[n] = temp[pos + i - INTERVAL];
+        for (int i = width; i > 0; i -= interval) {
+            dst[n] = temp[pos + i - interval];
             dst[n + 1] = temp[pos + i - 1];
-            n += INTERVAL;
+            n += interval;
         }
         pos += width;
     }
 }
 
-static void Yuv420_Rot_VMirror(u_char* dst, u_char* src, int width,
+static void Yuv420RotVMirror(u_char* dst, u_char* src, int width,
                                int height)
 {
-    const int INTERVAL = 2;
+    const int interval = 2;
     int size = width * height;
     int pos = size;
     int n = 0;
@@ -349,10 +349,10 @@ static void Yuv420_Rot_VMirror(u_char* dst, u_char* src, int width,
     pos = width * hheight;
     for (int j = 0; j < hheight; j++) {
         pos -= width;
-        for (int i = 0; i < width; i += INTERVAL) {
+        for (int i = 0; i < width; i += interval) {
             dst[n] = temp[pos + i];
             dst[n + 1] = temp[pos + i + 1];
-            n += INTERVAL;
+            n += interval;
         }
     }
 }
@@ -362,14 +362,14 @@ struct CodecMetadataTag {
     CameraId cameraId2 = CAMERA_FIRST;
 };
 
-const CodecMetadataTag g_codecMapCameraId[] = {
+const CodecMetadataTag CODEC_MAP_CAMERA_ID[] = {
     {"lcam001", CAMERA_FIRST}, {"lcam002", CAMERA_SECOND},
     {"lcam003", CAMERA_THIRD}, {"lcam004", CAMERA_FOURTH},
     {"lcam005", CAMERA_FIFTH}, {"lcam006", CAMERA_SIXTH}};
 
 CameraId CodecNode::ConvertCameraId(const std::string& cameraId)
 {
-    for (auto cameraID : g_codecMapCameraId) {
+    for (auto cameraID : CODEC_MAP_CAMERA_ID) {
         if (cameraID.cameraId1 == cameraId) {
             return cameraID.cameraId2;
         }
@@ -410,26 +410,27 @@ RetCode CodecNode::ConfigJpegQuality(common_metadata_header_t* data)
         return RC_OK;
     }
 
-    const int HIGH_QUALITY_JPEG = 100;
-    const int MIDDLE_QUALITY_JPEG = 95;
-    const int LOW_QUALITY_JPEG = 85;
+    const int highQualityJpeg = 100;
+    const int middleQualityJpeg = 95;
+    const int lowQualityJpeg = 85;
 
     CAMERA_LOGI("OHOS_JPEG_QUALITY is = %{public}d",
                 static_cast<int>(entry.data.u8[0]));
     if (*entry.data.i32 == OHOS_CAMERA_JPEG_LEVEL_LOW) {
-        jpegQuality_ = LOW_QUALITY_JPEG;
+        jpegQuality_ = lowQualityJpeg;
     } else if (*entry.data.i32 == OHOS_CAMERA_JPEG_LEVEL_MIDDLE) {
-        jpegQuality_ = MIDDLE_QUALITY_JPEG;
+        jpegQuality_ = middleQualityJpeg;
     } else if (*entry.data.i32 == OHOS_CAMERA_JPEG_LEVEL_HIGH) {
-        jpegQuality_ = HIGH_QUALITY_JPEG;
+        jpegQuality_ = highQualityJpeg;
     } else {
-        jpegQuality_ = HIGH_QUALITY_JPEG;
+        jpegQuality_ = highQualityJpeg;
     }
     return RC_OK;
 }
 
 RetCode CodecNode::Config(const int32_t streamId, const CaptureMeta& meta)
 {
+    (void)streamId;
     if (meta == nullptr) {
         CAMERA_LOGE("meta is nullptr");
         return RC_ERROR;
@@ -480,8 +481,8 @@ JpegEncodecFunc* CodecNode::DlDlsymJpegEncodecFunc()
     }
     JpegEncodecFunc* jpegencodecfunctmp =
         (JpegEncodecFunc*)dlsym(jpeghandler, "UnisocJpegEncodecFunc");
-    const char* dlsym_error = dlerror();
-    if (dlsym_error) {
+    const char* dlsymError = dlerror();
+    if (dlsymError) {
         CAMERA_LOGE("Cannot load symbol UnisocJpegEncodecFunc, %{public}s",
                     dlerror());
         return nullptr;
@@ -504,15 +505,15 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
             return;
         }
     }
-    const int HIGH_QUALITY_JPEG = 100;
-    struct jpg_op_mean mean;
-    struct yuvbuf_frm src;
-    struct yuvbuf_frm dst;
-    mean.slice_height = 0;
-    mean.slice_mode = 0;
-    mean.is_thumb = 0;
-    mean.is_sync = 1;
-    mean.quality_level = HIGH_QUALITY_JPEG;
+    const int highQualityJpeg = 100;
+    struct JpgOpMean mean;
+    struct YuvbufFrm src;
+    struct YuvbufFrm dst;
+    mean.sliceHeight = 0;
+    mean.sliceMode = 0;
+    mean.isThumb = 0;
+    mean.isSync = 1;
+    mean.qualityLevel = highQualityJpeg;
     mean.mirror = 0;
     mean.flip = 0;
     mean.rotation = 0;
@@ -529,15 +530,15 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     uint32_t height = buffer->GetHeight();
     src.size.width = width;
     src.size.height = height;
-    src.addr_phy.addr_y = 0;
-    src.addr_phy.addr_u = width * height;
-    src.data_end.y_endian = 1;
-    const int YUV420_UV_ENDIAN = 2;
-    src.data_end.uv_endian = YUV420_UV_ENDIAN;
-    dst.addr_phy.addr_y = 0;
-    const int YUV420_SIZE_UP = 3;
-    const int YUV420_SIZE_DOWN = 2;
-    dst.buf_size = width * height * YUV420_SIZE_UP / YUV420_SIZE_DOWN;
+    src.addrPhy.addrY = 0;
+    src.addrPhy.addrU = width * height;
+    src.dataEnd.yEndian = 1;
+    const int yuV420UvEndian = 2;
+    src.dataEnd.uvEndian = yuV420UvEndian;
+    dst.addrPhy.addrY = 0;
+    const int yuV420SizeUp = 3;
+    const int yuV420SizeDown = 2;
+    dst.bufSize = width * height * yuV420SizeUp / yuV420SizeDown;
     if (mean.rotation == 0) {
         dst.size.width = width;
         dst.size.height = height;
@@ -546,22 +547,22 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
         dst.size.height = width;
     }
 
-    int jpeg_length = 0;
+    int jpegLength = 0;
     int ret = jpegencodecfunc(mean, src, dst, buffer->GetVirAddress());
     if (ret != 0) {
-        buffer->SetSize(jpeg_length);
-        buffer->SetEsFrameSize(jpeg_length);
+        buffer->SetSize(jpegLength);
+        buffer->SetEsFrameSize(jpegLength);
         CAMERA_LOGE("jpegencodecfunc, ret code = %{public}d", ret);
     } else {
-        jpeg_length = dst.buf_size;
-        if (jpeg_length != 0) {
-            CAMERA_LOGE("buf_vir 0x%lx size %{public}d\n", dst.addr_vir.addr_y, jpeg_length);
-            buffer->SetSize(jpeg_length);
-            buffer->SetEsFrameSize(jpeg_length);
+        jpegLength = dst.bufSize;
+        if (jpegLength != 0) {
+            CAMERA_LOGE("buf_vir 0x%lx size %{public}d\n", dst.addrVir.addrY, jpegLength);
+            buffer->SetSize(jpegLength);
+            buffer->SetEsFrameSize(jpegLength);
         } else {
-            buffer->SetSize(jpeg_length);
-            buffer->SetEsFrameSize(jpeg_length);
-            CAMERA_LOGE("jpeg_length = 0, error!\n");
+            buffer->SetSize(jpegLength);
+            buffer->SetEsFrameSize(jpegLength);
+            CAMERA_LOGE("jpegLength = 0, error!\n");
         }
     }
 }
@@ -571,9 +572,9 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
 {
     uint32_t width = buffer->GetWidth();
     uint32_t height = buffer->GetHeight();
-    const int YUV420_SIZE_UP = 3;
-    const int YUV420_SIZE_DOWN = 2;
-    unsigned int size = width * height * YUV420_SIZE_UP / YUV420_SIZE_DOWN;
+    const int yuV420SizeUp = 3;
+    const int yuV420SizeDown = 2;
+    unsigned int size = width * height * yuV420SizeUp / yuV420SizeDown;
     if (bufferRotate_ == nullptr) {
         bufferRotate_ = (u_char*)malloc(size);
         if (!bufferRotate_) {
@@ -585,7 +586,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
     if (cameraId == CAMERA_FIRST) {
         CAMERA_LOGE("Do nth for !");
     } else {
-        Yuv420_Rot_VMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(),
+        Yuv420RotVMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(),
                            width, height);
         int ret = memcpy_s((void*)buffer->GetVirAddress(), size,
                            (void*)bufferRotate_, size);
@@ -596,30 +597,30 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
     }
     if (h264Encoder != nullptr) {
         MMInputParams input;
-        memset(&input, 0, sizeof(MMInputParams));
-        input.org_width = 0;
-        input.org_height = 0;
+        memset_s(&input, sizeof(input), 0, sizeof(MMInputParams));
+        input.orgWidth = 0;
+        input.orgHeight = 0;
         input.width = buffer->GetWidth();
         input.height = buffer->GetHeight();
         input.format = H264;
-        const int MAXFRAMERATE = 30;
-        input.framerate = MAXFRAMERATE;
-        const int MAXKEYINTERVAL = 10;
-        input.max_key_interval = MAXKEYINTERVAL;
+        const int maxframerate = 30;
+        input.framerate = maxframerate;
+        const int maxkeyinterval = 10;
+        input.maxKeyInterval = maxkeyinterval;
         input.cbr = 1;
-        const int BITRATE = 3000000;
-        input.bitrate = BITRATE;
-        const int QP = 8;
-        input.qp = QP;
+        const int bitrate = 3000000;
+        input.bitrate = bitrate;
+        const int qp = 8;
+        input.qp = qp;
         input.frames = 0;
         input.eis = 0;
-        input.yuv_format = MMENC_YUV420SP_NV21;
+        input.yuvFormat = MMENC_YUV420SP_NV21;
         input.vsp = MMENC_VSP;
-        input.fbc_mode = FBC_NONE;
+        input.fbcMode = FBC_NONE;
 
         if (input.eis == 0) {
-            input.org_height = input.height;
-            input.org_width = input.width;
+            input.orgHeight = input.height;
+            input.orgWidth = input.width;
         }
 
         CAMERA_LOGI(
@@ -629,15 +630,15 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
             status.load(), this);
         if (status == 0) {
             status = 1;
-            if (h264Encoder->vsp_start(&input, (char*)(buffer->GetVirAddress()),
+            if (h264Encoder->VspStart(&input, (char*)(buffer->GetVirAddress()),
                                        frameSize) < 0) {
-                CAMERA_LOGE("CodecNode:: h264Encoder.vsp_start err");
+                CAMERA_LOGE("CodecNode:: h264Encoder.VspStart err");
                 return -1;
             }
             startflag = 1;
         }
         int type = 0;
-        int ret1 = h264Encoder->vsp_enc(
+        int ret1 = h264Encoder->VspEnc(
             &input, (char*)(buffer->GetVirAddress()), frameSize, type);
         if (ret1 == 0) {
             if (type == 0) {
@@ -650,7 +651,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
                 buffer->SetEsKeyFrame(0);
             }
             CAMERA_LOGE(
-                "CodecNode:: h264Encoder.vsp_start startflag=%{public}d "
+                "CodecNode:: h264Encoder.VspStart startflag=%{public}d "
                 "key=%{public}d,SetEsKeyFrame=%{public}d",
                 startflag, type, buffer->GetEsFrameInfo().isKey);
         } else {
@@ -666,10 +667,10 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
 
 static uint64_t GetPts()
 {
-    constexpr uint32_t SEC_TO_NS = 1000000000;
+    constexpr uint32_t secToNs = 1000000000;
     struct timespec timestamp = {0, 0};
     clock_gettime(CLOCK_MONOTONIC, &timestamp);
-    uint64_t time = static_cast<uint64_t>(timestamp.tv_sec) * SEC_TO_NS +
+    uint64_t time = static_cast<uint64_t>(timestamp.tv_sec) * secToNs +
                     static_cast<uint64_t>(timestamp.tv_nsec);
     return time;
 }
@@ -699,23 +700,23 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         buffer->SetEsTimestamp(GetPts());
     } else {
         CAMERA_LOGI("CodecNode::node buffer format = %{public}d", buffer->GetFormat());
-        const int YUV420_SIZE_UP = 3;
-        const int YUV420_SIZE_DOWN = 2;
-        int yuv_length = buffer->GetWidth() * buffer->GetHeight() *
-                         YUV420_SIZE_UP / YUV420_SIZE_DOWN;
-        buffer->SetEsFrameSize(yuv_length);
+        const int yuV420SizeUp = 3;
+        const int yuV420SizeDown = 2;
+        int yuvLength = buffer->GetWidth() * buffer->GetHeight() *
+                         yuV420SizeUp / yuV420SizeDown;
+        buffer->SetEsFrameSize(yuvLength);
         CameraId cameraId = ConvertCameraId(cameraId_);
         if (cameraId != CAMERA_FIRST) {
             if (bufferRotate_ == nullptr) {
-                bufferRotate_ = (u_char*)malloc(yuv_length);
+                bufferRotate_ = (u_char*)malloc(yuvLength);
                 if (!bufferRotate_) {
                     return;
                 }
             }
-            Yuv420sp_Rot_180(bufferRotate_, (u_char*)buffer->GetVirAddress(),
+            Yuv420spRot180(bufferRotate_, (u_char*)buffer->GetVirAddress(),
                              buffer->GetWidth(), buffer->GetHeight());
             memcpy_s((void*)buffer->GetVirAddress(), buffer->GetSize(),
-                     (void*)bufferRotate_, yuv_length);
+                     (void*)bufferRotate_, yuvLength);
         }
     }
 
@@ -724,6 +725,8 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
 
 RetCode CodecNode::Capture(const int32_t streamId, const int32_t captureId)
 {
+    (void)streamId;
+    (void)captureId;
     CAMERA_LOGV("CodecNode::Capture");
     return RC_OK;
 }
@@ -738,7 +741,7 @@ RetCode CodecNode::CancelCapture(const int32_t streamId)
             CAMERA_LOGI("CodecNode::CancelCapture 1 streamid = %{public}d",
                         streamId);
             if (h264Encoder != nullptr) {
-                h264Encoder->vsp_stop();
+                h264Encoder->VspStop();
             } else {
                 CAMERA_LOGE("CodecNode::CancelCapture h264Encoder is null");
                 ret = -1;

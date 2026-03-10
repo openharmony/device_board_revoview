@@ -26,6 +26,7 @@ void V4L2UvcCallback(const std::string cameraId,
                      const std::vector<DeviceFormat>& fromat,
                      const bool inOut)
 {
+    (void)inOut;
     std::cout << "V4L2UvcCallback" << std::endl;
 }
 
