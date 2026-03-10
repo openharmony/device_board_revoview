@@ -48,7 +48,12 @@ action("make_custom_image") {
   script = "pac/uis7885_pac.sh"
   package_path = "${root_out_dir}/packages/phone/images"
   target_path = "always.build"
-  script_path = "//device/soc/unisoc/p7885/pac/ImageFiles"
+  if (_result == "True") {
+    script_path = "//unisoc_p7885_property/pac/ImageFiles"
+  }
+  else {
+    script_path = "//device/soc/unisoc/p7885/pac/ImageFiles"
+  }
   if (defined(global_parts_info.startup_hvb)) {
     args = [
       rebase_path(package_path),
