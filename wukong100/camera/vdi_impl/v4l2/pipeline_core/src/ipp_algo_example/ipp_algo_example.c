@@ -75,8 +75,8 @@ int Process(IppAlgoBuffer *inBuffer[], int inBufferCount,
         return 0;
     }
 
-    const int INBUFFERDOUBLE = 2;
-    if (inBufferCount == INBUFFERDOUBLE) {
+    const int inbufferdouble = 2;
+    if (inBufferCount == inbufferdouble) {
         if (inBuffer[0] == NULL || inBuffer[1] == NULL || inBuffer[0]->addr == NULL || inBuffer[1]->addr == NULL) {
             return -1;
         }
