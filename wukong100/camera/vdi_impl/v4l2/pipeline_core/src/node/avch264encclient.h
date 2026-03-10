@@ -52,29 +52,29 @@ typedef enum {
 enum FBC_MODE { FBC_NONE, IFBC = 1, AFBC = 2 };
 
 typedef struct {
-    uint32_t org_width;
-    uint32_t org_height;
+    uint32_t orgWidth;
+    uint32_t orgHeight;
     uint32_t width;
     uint32_t height;
     int32_t format;
     uint32_t framerate;
-    uint32_t max_key_interval;
+    uint32_t maxKeyInterval;
     uint32_t cbr;
     uint32_t bitrate;
     uint32_t qp;
     uint32_t frames;
-    uint32_t yuv_format;
+    uint32_t yuvFormat;
     uint32_t vsp;
     uint32_t eis;
-    uint8_t fbc_mode;
+    uint8_t fbcMode;
 } MMInputParams;
 
 class AvcH264EncInterface {
    public:
     virtual ~AvcH264EncInterface(){};
-    virtual int vsp_start(MMInputParams* p_input, char* buffer, uint32_t& frameSize) = 0;
-    virtual int vsp_enc(MMInputParams* p_input, char* buffer, uint32_t& frameSize, int& type) = 0;
-    virtual int vsp_stop() = 0;
+    virtual int VspStart(MMInputParams* pInput, char* buffer, uint32_t& frameSize) = 0;
+    virtual int VspEnc(MMInputParams* pInput, char* buffer, uint32_t& frameSize, int& type) = 0;
+    virtual int VspStop() = 0;
 };
 
 class AvcH264EncClient {

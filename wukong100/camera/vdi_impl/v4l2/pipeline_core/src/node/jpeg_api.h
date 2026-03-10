@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef _JPEG_API_H_
-#define _JPEG_API_H_
+#ifndef JPEG_API_H
+#define JPEG_API_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,8 +32,8 @@ typedef unsigned char jpg_u8;
 typedef char jpg_s8;
 typedef void* jpg_handle;
 
-typedef struct jpeg_codec_caller_handle {
-    void* jpeg_cxt;
+typedef struct JpegCodecCallerHandle {
+    void* jpegCx;
     void* reserved;
 } JPEG_CODEC_CALLER_T;
 
@@ -52,35 +52,35 @@ typedef enum {
     JPEGENC_QUALITY_MAX
 } JPEGENC_QUALITY_E;
 
-struct yuvbuf_rect {
-    jpg_u32 start_x;
-    jpg_u32 start_y;
+struct YuvbufRect {
+    jpg_u32 startX;
+    jpg_u32 startY;
     jpg_u32 width;
     jpg_u32 height;
 };
 
-struct yuvbuf_size {
+struct YuvbufSize {
     jpg_u32 width;
     jpg_u32 height;
 };
 
-struct yuvbuf_addr {
-    jpg_uint addr_y;
-    jpg_uint addr_u;
-    jpg_uint addr_v;
+struct YuvbufAddr {
+    jpg_uint addrY;
+    jpg_uint addrU;
+    jpg_uint addrV;
 };
 
-struct yuvbuf_data_end {
-    jpg_u8 y_endian;
-    jpg_u8 uv_endian;
+struct YuvbufDataEnd {
+    jpg_u8 yEndian;
+    jpg_u8 uvEndian;
     jpg_u8 reserved0;
     jpg_u8 reserved1;
 };
 
-struct yuvbuf_info {
-    jpg_u32 channel_id;
-    jpg_u32 frame_id;
-    jpg_u32 frame_real_id;
+struct YuvbufInfo {
+    jpg_u32 channelId;
+    jpg_u32 frameId;
+    jpg_u32 frameRealId;
     jpg_u32 height;
     jpg_uint sec;
     jpg_uint usec;
@@ -90,52 +90,52 @@ struct yuvbuf_info {
     jpg_u32 fmt;
 };
 
-struct yuvbuf_frm {
+struct YuvbufFrm {
     jpg_u32 fmt;
-    jpg_u32 buf_size;
-    struct yuvbuf_rect rect;
-    struct yuvbuf_size size;
-    struct yuvbuf_addr addr_phy;
-    struct yuvbuf_addr addr_vir;
+    jpg_u32 bufSize;
+    struct YuvbufRect rect;
+    struct YuvbufSize size;
+    struct YuvbufAddr addrPhy;
+    struct YuvbufAddr addrVir;
     jpg_u32 fd;
-    struct yuvbuf_data_end data_end;
-    jpg_u32 format_pattern;
+    struct YuvbufDataEnd dataEnd;
+    jpg_u32 formatPattern;
     void* reserved;
 };
 
-struct jpg_op_mean {
-    jpg_u32 slice_height;
-    jpg_u32 slice_mode;
-    jpg_u32 ready_line_num;
-    jpg_u32 slice_num;
-    jpg_u32 is_sync;
-    jpg_u32 is_thumb;
+struct JpgOpMean {
+    jpg_u32 sliceHeight;
+    jpg_u32 sliceMode;
+    jpg_u32 readyLineNum;
+    jpg_u32 sliceNum;
+    jpg_u32 isSync;
+    jpg_u32 isThumb;
     jpg_u8 mirror;
     jpg_u8 flip;
     jpg_u8 rotation;
-    jpg_u32 quality_level;
-    jpg_uint out_param;
-    struct yuvbuf_frm temp_buf;
+    jpg_u32 qualityLevel;
+    jpg_uint outParam;
+    struct YuvbufFrm tempBuf;
 };
 
-struct jpeg_enc_cb_param {
-    jpg_uint stream_buf_phy;
-    jpg_uint stream_buf_vir;
-    jpg_u32 stream_size;
-    jpg_u32 slice_height;
-    jpg_u32 total_height;
-    jpg_u32 is_thumbnail;
+struct JpegEncCbParam {
+    jpg_uint streamBufPhy;
+    jpg_uint streamBufVir;
+    jpg_u32 streamSize;
+    jpg_u32 sliceHeight;
+    jpg_u32 totalHeight;
+    jpg_u32 isThumbnail;
 };
 
-struct jpeg_dec_cb_param {
-    jpg_u32 slice_height;
-    jpg_u32 total_height;
-    struct yuvbuf_frm* src_img;
-    struct yuvbuf_data_end data_endian;
+struct JpegDecCbParam {
+    jpg_u32 sliceHeight;
+    jpg_u32 totalHeight;
+    struct YuvbufFrm* srcImg;
+    struct YuvbufDataEnd dataEndian;
 };
 
 #define CMR_EVT_JPEG_BASE (1 << 20)
-enum jpg_jpeg_evt {
+enum JpgJpegEvt {
     CMR_JPEG_ENC_DONE = CMR_EVT_JPEG_BASE,
     CMR_JPEG_DEC_DONE,
     CMR_JPEG_WEXIF_DONE,
