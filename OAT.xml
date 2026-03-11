@@ -84,7 +84,9 @@
                 <filteritem type="filepath" name="wukong100/updater/resources/images/warn/.*.png" desc="升级服务应用的资源文件"/>
                 <filteritem type="filepath" name="wukong100/updater/resources/pages/.*.json" desc="升级服务应用的资源文件"/>
                 <filteritem type="filepath" name="wukong100/updater/resources/string/.*.json" desc="升级服务应用的资源文件"/>
-                <filteritem type="filepath" name="wukong100/tools/Download_R27.24.2301.7z" desc="烧录工具"/>
+		<filteritem type="filepath" name="wukong100/tools/Download_R27.24.2301.7z" desc="烧录工具"/>
+		<filteritem type="filepath" name="wukong100/tools/wukong100编译指导.pdf" desc="编译指导"/>
+		<filteritem type="filepath" name="wukong100/tools/wukong100编译烧录自动化指南.pdf" desc="烧录自动化指导"/>
                 <filteritem type="filename" name="*.png" desc="png"/>
                 <filteritem type="filename" name="*.jpg" desc="jpg"/>
                 <filteritem type="filename" name="*.bmp" desc="bmp"/>
