@@ -13,7 +13,7 @@ set -v
 curr=$(pwd -P)
 basepath=$(cd `dirname $0`; pwd)
 key_path="${basepath}/secureboot_key/config"
-package_path="${basepath}/../../../../../out/wukong100/packages/phone/images"
+package_path="${basepath}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles"
 img_path="${basepath}/../../../../../device/soc/unisoc/p7885//pac/ImageFiles/secboot_img"
 cmd_sign="python3 ${basepath}/../../../../../base/startup/hvb/tools/hvbtool.py"
 rollback_index=0
@@ -43,11 +43,19 @@ else
     exit 1
 fi
 
-if [ -f ${package_path}/vendor_boot.img ]; then
+#if [ -f ${package_path}/vendor_boot.img ]; then
+#    rm -rf ${img_path}/signed_vendor_boot.img
+#    $cmd_sign make_hashtree_footer --image ${package_path}/vendor_boot.img --partition vendor_boot_a --partition_size 104857600 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_vendor_boot.pem --privkey ${key_path}/rsa2048_private_vendor_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 5 --output ${img_path}/signed_vendor_boot.img
+#else
+#    echo "${package_path}/vendor_boot.img does not exist.\n"
+#    exit 1
+#fi
+
+if [ -f ${package_path}/vendor_boot_sec.img ]; then
     rm -rf ${img_path}/signed_vendor_boot.img
-    $cmd_sign make_hashtree_footer --image ${package_path}/vendor_boot.img --partition vendor_boot_a --partition_size 104857600 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_vendor_boot.pem --privkey ${key_path}/rsa2048_private_vendor_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 5 --output ${img_path}/signed_vendor_boot.img
+    $cmd_sign make_hashtree_footer --image ${package_path}/vendor_boot_sec.img --partition vendor_boot_a --partition_size 104857600 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_vendor_boot.pem --privkey ${key_path}/rsa2048_private_vendor_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 5 --output ${img_path}/signed_vendor_boot.img
 else
-    echo "${package_path}/vendor_boot.img does not exist.\n"
+    echo "${package_path}/vendor_boot_sec.img does not exist.\n"
     exit 1
 fi
 
