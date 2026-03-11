@@ -22,6 +22,7 @@
         <licensefile>LICENSE</licensefile>
         <policylist>
             <policy name="projectPolicy" desc="">
+                <policyitem type="copyright" name="Beijing Zhongke Honglve Technology Co., Ltd." path=".*" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="Developed by Zhongke Honglve"/>
                 <policyitem type="copyright" name="Huawei Technologies Co., Ltd." path=".*" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="Developed by Huawei Technologies"/>
                 <policyitem type="copyright" name="Huawei Device Co., Ltd." path=".*" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="Developed by Huawei Device"/>
                 <policyitem type="copyright" name="Shanghai Revoview Technologies Inc." path=".*" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="Developed By Revoview"/>
@@ -38,6 +39,20 @@
                 <filteritem type="filepath" name="wukong100/kernel/mkboot/bin/mkbootimg" desc="打包工具，不能加其他注释"/>
                 <filteritem type="filepath" name="wukong100/kernel/mkboot/bin/mkdtimg" desc="打包工具，不能加其他注释"/>
                 <filteritem type="filepath" name="wukong100/kernel/mkboot/lib64/libc++.so" desc="打包工具，不能加其他注释"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_modem.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_product.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_system.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_vendor_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_private_vendor.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_modem.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_product.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_system.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_vendor_boot.pem" desc="hvb 签名秘钥"/>
+		<filteritem type="filepath" name="wukong100/pac/secureboot_key/config/rsa2048_public_vendor.pem" desc="hvb 签名秘钥"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
                 <!--filteritem type="filename" name="*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
@@ -69,6 +84,7 @@
                 <filteritem type="filepath" name="wukong100/updater/resources/images/warn/.*.png" desc="升级服务应用的资源文件"/>
                 <filteritem type="filepath" name="wukong100/updater/resources/pages/.*.json" desc="升级服务应用的资源文件"/>
                 <filteritem type="filepath" name="wukong100/updater/resources/string/.*.json" desc="升级服务应用的资源文件"/>
+                <filteritem type="filepath" name="wukong100/tools/Download_R27.24.2301.7z" desc="烧录工具"/>
                 <filteritem type="filename" name="*.png" desc="png"/>
                 <filteritem type="filename" name="*.jpg" desc="jpg"/>
                 <filteritem type="filename" name="*.bmp" desc="bmp"/>

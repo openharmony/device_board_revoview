@@ -689,7 +689,6 @@ static int32_t SetHWParamsCapture(snd_pcm_t *pcmHandle)
     uint32_t channel = CHANNEL_CALL;
     uint32_t rRate = RATE_CALL;
     snd_pcm_format_t pcmFormat = SND_PCM_FORMAT_S16_LE;
-    snd_pcm_uframes_t size = 0;
     snd_pcm_hw_params_t *hwParams = NULL;
     snd_pcm_t *handle = pcmHandle;
     CHECK_NULL_PTR_RETURN_DEFAULT(handle);

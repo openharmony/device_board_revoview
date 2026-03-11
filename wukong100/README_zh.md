@@ -163,9 +163,9 @@ post_process
 
 3） 编译源码完成，请进行镜像烧录。
 
-工具路径：device/board/revoview/wukong100/tools/Download_R27.22.3801.7z
+工具路径：device/board/revoview/wukong100/tools/Download_R27.24.2301.7z
 
-烧录说明文档：见Download_R27.22.3801.7z 中的“下载工具使用指南V4.3.pdf“
+烧录说明文档：见Download_R27.24.2301.7z 中的“下载工具使用指南V4.4“
 
 
 

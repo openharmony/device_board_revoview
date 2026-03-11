@@ -37,7 +37,8 @@ fi
 
 # some prebuild img here
 if [ $secboot -eq 1 ]; then
-    work_path=$basepath/ImageFiles_secboot/
+    #work_path=$basepath/ImageFiles_secboot/
+    work_path=$basepath/
     # we output the pac to this dest path
     target_path=$package_path/wukong100_sec_userdebug.tar.gz
     pac_path=$package_path/wukong100_sec_userdebug.pac
@@ -52,11 +53,6 @@ echo curr path: $curr
 echo package path: $package
 echo target path: $work_path
 
-if [ $secboot -eq 1 ]; then
-    echo 'sign image start...'
-    # bash ${basepath}/create_sign_img_all.sh
-fi
-
 # del it first
 if [[ -f "$target_path" ]]; then
     rm -f $target_path
@@ -64,11 +60,25 @@ fi
 
 # cp image to work path
 cp $package_path/*.img $work_path -rfv
-#cp $package_path/*.bin $work_path -rfv
+#if [ $secboot -eq 1 ]; then
+#    cp $package_path/*.bin $work_path/secboot_img -rfv
+#else
+#    cp $package_path/*.bin $work_path -rfv
+#fi
+
+# hvbtool sign image
+if [ $secboot -eq 1 ]; then
+    echo 'sign image start...'
+    bash ${curr}/../../device/board/revoview/wukong100/pac/create_sign_img_all.sh
+fi
 
 # go to work path and make pac
 cd $work_path
-perl $script_path/mkpac.pl "$pac_path" "flash.cfg" "FlashParam"
+if [ $secboot -eq 1 ]; then
+    perl $script_path/mkpac.pl "$pac_path" "flash_secboot.cfg" "FlashParam"
+else
+    perl $script_path/mkpac.pl "$pac_path" "flash.cfg" "FlashParam"
+fi
 
 if [ $secboot -eq 1 ]; then
     tar -czf $target_path -C $package_path wukong100_sec_userdebug.pac
