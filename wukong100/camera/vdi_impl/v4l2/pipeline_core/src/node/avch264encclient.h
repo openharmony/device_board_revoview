@@ -72,8 +72,8 @@ typedef struct {
 class AvcH264EncInterface {
    public:
     virtual ~AvcH264EncInterface(){};
-    virtual int VspStart(MMInputParams* pInput, char* buffer, uint32_t& frameSize) = 0;
-    virtual int VspEnc(MMInputParams* pInput, char* buffer, uint32_t& frameSize, int& type) = 0;
+    virtual int VspStart(MMInputParams* pInput, char* buffer, const uint32_t& frameSize) = 0;
+    virtual int VspEnc(MMInputParams* pInput, char* buffer, const uint32_t& frameSize, int& type) = 0;
     virtual int VspStop() = 0;
 };
 
