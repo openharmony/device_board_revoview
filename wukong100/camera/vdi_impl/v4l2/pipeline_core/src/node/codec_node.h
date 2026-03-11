@@ -52,7 +52,7 @@ class CodecNode : public NodeBase {
     static void* h264Handle;
 
    private:
-    unsigned char Clip(int value);
+    unsigned char Clip(const int value);
     void YUVToRGB(int y, int u, int v, unsigned char* red, unsigned char* green,
                   unsigned char* blue, unsigned char* alapha);
     RetCode ConfigJpegOrientation(common_metadata_header_t* data);
@@ -60,7 +60,7 @@ class CodecNode : public NodeBase {
     RetCode Config(const int32_t streamId, const CaptureMeta& meta);
     void Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer);
     int Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
-                               uint32_t& frameSize);
+                               const uint32_t& frameSize);
 
     unsigned char* previewTempBuff_ = nullptr;
 

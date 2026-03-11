@@ -188,7 +188,6 @@ RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd)
         return RC_ERROR;
     buf.type = bufferType_;
     buf.memory = memoryType_;
-    CAMERA_LOGD("V4L2DequeueBuffer memoryType_ =  %{public}d\n", (int)memoryType_);
     if (bufferType_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
         buf.m.planes = planes;
         buf.length = 1;
@@ -196,7 +195,6 @@ RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd)
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_DQBUF, &buf);
     CAMERA_LOGD("V4L2DequeueBuffer memoryType_  buf.index == %{public}d rc=%{public}d\n", buf.index, rc);
     if (rc < 0) {
-        CAMERA_LOGE("HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_DQBUF failed: %{public}s\n", strerror(errno));
         return RC_ERROR;
     }
     if (memoryType_ == V4L2_MEMORY_MMAP) {
@@ -205,30 +203,23 @@ RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd)
                          adapterBufferMap_[buf.index].start, adapterBufferMap_[buf.index].length) != 0) {
                 rc = RC_ERROR;
             }
-        } else {
-            rc = RC_ERROR;
         }
-    } else {
-        rc = RC_ERROR;
     }
     bufferLock_.lock();
     auto IterMap = queueBuffers_.find(fd);
     if (IterMap == queueBuffers_.end()) {
         bufferLock_.unlock();
-        CAMERA_LOGE("std::map queueBuffers_ no fd\n");
         return RC_ERROR;
     }
     auto& bufferMap = IterMap->second;
     auto Iter = bufferMap.find(buf.index);
     if (Iter == bufferMap.end()) {
         bufferLock_.unlock();
-        CAMERA_LOGE("V4L2DequeueBuffer buf.index == %{public}d is not find in FrameMap\n", buf.index);
         return RC_ERROR;
     }
     if (dequeueBuffer_ == nullptr) {
         bufferMap.erase(Iter);
         bufferLock_.unlock();
-        CAMERA_LOGE("V4L2DequeueBuffer buf.index == %{public}d no callback\n", buf.index);
         return RC_ERROR;
     }
     std::shared_ptr<FrameSpec> framebuff = Iter->second;
