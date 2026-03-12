@@ -141,7 +141,7 @@ RetCode CodecNode::Flush(const int32_t streamId)
     return RC_OK;
 }
 
-unsigned char CodecNode::Clip(const int value)
+const unsigned char CodecNode::Clip(const int value)
 {
     const int bytemaxval = 255;
     return static_cast<unsigned char>(
@@ -530,17 +530,17 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     dst.addrPhy.addrY = 0;
     dst.bufSize = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
     if (mean.rotation == 0) {
-        dst.size.width = buffer->GetWidth();;
+        dst.size.width = buffer->GetWidth();
         dst.size.height = buffer->GetHeight();
     } else {
         dst.size.width = buffer->GetHeight();
-        dst.size.height = buffer->GetWidth();;
+        dst.size.height = buffer->GetWidth();
     }
 
     int jpegLength = 0;
-    int ret = jpegencodecfunc(mean, src, dst, buffer->GetVirAddress());
-    if (ret == 0)
+    if (jpegencodecfunc(mean, src, dst, buffer->GetVirAddress()) == 0) {
         jpegLength = dst.bufSize;
+    }
     buffer->SetSize(jpegLength);
     buffer->SetEsFrameSize(jpegLength);
 }
