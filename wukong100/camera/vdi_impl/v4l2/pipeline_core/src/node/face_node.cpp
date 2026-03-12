@@ -15,7 +15,7 @@
 #include <securec.h>
 
 namespace OHOS::Camera {
-FaceNode::FaceNode(const std::string &name, const std::string &type, const std::string 
+FaceNode::FaceNode(const std::string &name, const std::string &type, const std::string
     &cameraId) : NodeBase(name, type, cameraId), metaDataSize_(0)
 {
     CAMERA_LOGV("%{public}s enter, type(%{public}s)\n", name_.c_str(), type_.c_str());

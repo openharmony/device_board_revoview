@@ -79,15 +79,15 @@ class AvcH264EncInterface {
 
 class AvcH264EncClient {
    public:
-    AvcH264EncClient(const char* name);
+    explicit AvcH264EncClient(const char* name);
     virtual ~AvcH264EncClient() {}
 
-    static AvcH264EncInterface* create();
-    static void registerType(AvcH264EncClient* factory);
-    const std::string& name() const { return name_; }
+    static AvcH264EncInterface* Create();
+    static void RegisterType(AvcH264EncClient* factory);
+    const std::string& Name() const { return name_; }
 
    private:
-    virtual AvcH264EncInterface* createInstance();
+    virtual AvcH264EncInterface* CreateInstance();
     std::string name_;
 };
 
