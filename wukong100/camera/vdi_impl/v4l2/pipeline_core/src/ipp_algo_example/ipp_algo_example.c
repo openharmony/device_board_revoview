@@ -52,15 +52,11 @@ int Process(IppAlgoBuffer *inBuffer[], int inBufferCount,
             printf("in buffer addr = %p, width = %u, height = %u, stride = %u, size = %u, id = %d\n",
                 inBuffer[i]->addr, inBuffer[i]->width, inBuffer[i]->height,
                 inBuffer[i]->stride, inBuffer[i]->size, inBuffer[i]->id);
-        } else {
-            printf("in buffer %d is NULL\n", i);
         }
     }
 
     if (outBuffer != NULL && outBuffer->addr != NULL) {
         printf("out buffer addr = %p, size = %u, id = %d\n", outBuffer->addr, outBuffer->size, outBuffer->id);
-    } else {
-        printf("out buffer is NULL\n");
     }
 
     if (inBufferCount == 1) {
