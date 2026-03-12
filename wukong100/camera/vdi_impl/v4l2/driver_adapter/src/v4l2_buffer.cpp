@@ -194,9 +194,9 @@ RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd)
     }
     int rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_DQBUF, &buf);
     CAMERA_LOGD("V4L2DequeueBuffer memoryType_  buf.index == %{public}d rc=%{public}d\n", buf.index, rc);
-    if (rc < 0) {
+    if (rc < 0)
         return RC_ERROR;
-    }
+
     if (memoryType_ == V4L2_MEMORY_MMAP) {
         if (adapterBufferMap_[buf.index].userBufPtr && adapterBufferMap_[buf.index].start) {
             if (memcpy_s(adapterBufferMap_[buf.index].userBufPtr, adapterBufferMap_[buf.index].length,
@@ -225,9 +225,9 @@ RetCode HosV4L2Buffers::V4L2DequeueBuffer(int fd)
     std::shared_ptr<FrameSpec> framebuff = Iter->second;
     bufferMap.erase(Iter);
     bufferLock_.unlock();
-    if (rc < 0) {
+    if (rc < 0)
         framebuff->buffer_->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
-    }
+
     dequeueBuffer_(framebuff);
     bufCont--;
     CAMERA_LOGD("V4L2DequeueBuffer success bufCont = %{public}d\n", bufCont.load());

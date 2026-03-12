@@ -322,22 +322,18 @@ void HosV4L2Dev::loopBuffers()
     CAMERA_LOGD("!!! loopBuffers enter\n");
     prctl(PR_SET_NAME, "v4l2_loopbuffer");
 
-    CAMERA_LOGD("loopBuffers: poll streamNumber_  = %{public}d\n",
-                streamNumber_.load());
+    CAMERA_LOGD("loopBuffers: poll streamNumber_  = %{public}d\n", streamNumber_.load());
     while (streamNumber_ > 0) {
-        CHECK_IF_PTR_NULL_RETURN_VOID(myBuffers_);
+        if (myBuffers_ == nullptr) {
+            CAMERA_LOGE("myBuffers_ is nullptr");
+            return;
+        }
         while (currStartQueueBuffNum > 0) {
             rc = myBuffers_->V4L2DequeueBuffer(fds_[0].fd);
             if (rc == RC_ERROR) {
-                CAMERA_LOGE(
-                    "loopBuffers: myBuffers_->V4L2DequeueBuffer return error "
-                    "== "
-                    "%{public}d\n",
-                    rc);
+                CAMERA_LOGE("loopBuffers: myBuffers_->V4L2DequeueBuffer return error == %{public}d\n", rc);
             }
-            CAMERA_LOGD(
-                "loopBuffers: currStartQueueBuffNum=%{public}d, "
-                "streamNumber_=%{public}d,\n",
+            CAMERA_LOGD("loopBuffers: currStartQueueBuffNum=%{public}d, streamNumber_=%{public}d,\n",
                 currStartQueueBuffNum.load(), streamNumber_.load());
             currStartQueueBuffNum--;
         }
@@ -347,14 +343,9 @@ void HosV4L2Dev::loopBuffers()
     while (currStartQueueBuffNum > 0) {
         rc = myBuffers_->V4L2DequeueBuffer(fds_[0].fd);
         if (rc == RC_ERROR) {
-            CAMERA_LOGE(
-                "loopBuffers: myBuffers_->V4L2DequeueBuffer 1 return error == "
-                "%{public}d\n",
-                rc);
+            CAMERA_LOGE("loopBuffers: myBuffers_->V4L2DequeueBuffer 1 return error == %{public}d\n", rc);
         }
-        CAMERA_LOGD(
-            "loopBuffers1: currStartQueueBuffNum=%{public}d, "
-            "streamNumber_=%{public}d,\n",
+        CAMERA_LOGD("loopBuffers1: currStartQueueBuffNum=%{public}d, streamNumber_=%{public}d,\n",
             currStartQueueBuffNum.load(), streamNumber_.load());
         currStartQueueBuffNum--;
     }
