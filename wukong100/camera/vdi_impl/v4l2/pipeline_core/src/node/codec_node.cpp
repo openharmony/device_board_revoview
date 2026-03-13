@@ -23,6 +23,10 @@
 #define YUV420UVENDIAN     2
 #define YUV420SIZEUP       3
 #define YUV420SIZEDOWN     2
+#define MAXFRAMERATE       30
+#define MAXKEYINTERVAL     10
+#define BITRATE            3000000
+#define QP                 8
 
 namespace OHOS::Camera {
 void* CodecNode::jpeghandler = DlOpenJpegWrapperLib();
@@ -141,7 +145,7 @@ RetCode CodecNode::Flush(const int32_t streamId)
     return RC_OK;
 }
 
-const unsigned char CodecNode::Clip(const int value)
+unsigned char CodecNode::Clip(const int value) const
 {
     const int bytemaxval = 255;
     return static_cast<unsigned char>(
@@ -545,100 +549,67 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     buffer->SetEsFrameSize(jpegLength);
 }
 
-int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
-                                      const uint32_t& frameSize)
+int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, const uint32_t& frameSize)
 {
-    uint32_t width = buffer->GetWidth();
-    uint32_t height = buffer->GetHeight();
-    const int yuV420SizeUp = 3;
-    const int yuV420SizeDown = 2;
-    unsigned int size = width * height * yuV420SizeUp / yuV420SizeDown;
+    unsigned int size = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
     if (bufferRotate_ == nullptr) {
         bufferRotate_ = (u_char*)malloc(size);
         if (!bufferRotate_) {
-            CAMERA_LOGE("malloc memery error!");
             return -1;
         }
     }
-    CameraId cameraId = ConvertCameraId(cameraId_);
-    if (cameraId == CAMERA_FIRST) {
-        CAMERA_LOGE("Do nth for !");
-    } else {
-        Yuv420RotVMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(), width, height);
-        int ret = memcpy_s((void*)buffer->GetVirAddress(), size,
-                           (void*)bufferRotate_, size);
-        if (ret != 0) {
-            CAMERA_LOGE("copy memery error!");
+
+    if (ConvertCameraId(cameraId_) != CAMERA_FIRST) {
+        Yuv420RotVMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(), buffer->GetWidth(), buffer->GetHeight());
+        if (memcpy_s((void*)buffer->GetVirAddress(), size, (void*)bufferRotate_, size) != 0) {
             return -1;
         }
     }
-    if (h264Encoder != nullptr) {
-        MMInputParams input;
-        memset_s(&input, sizeof(input), 0, sizeof(MMInputParams));
-        input.orgWidth = 0;
-        input.orgHeight = 0;
-        input.width = buffer->GetWidth();
-        input.height = buffer->GetHeight();
-        input.format = H264;
-        const int maxframerate = 30;
-        input.framerate = maxframerate;
-        const int maxkeyinterval = 10;
-        input.maxKeyInterval = maxkeyinterval;
-        input.cbr = 1;
-        const int bitrate = 3000000;
-        input.bitrate = bitrate;
-        const int qp = 8;
-        input.qp = qp;
-        input.frames = 0;
-        input.eis = 0;
-        input.yuvFormat = MMENC_YUV420SP_NV21;
-        input.vsp = MMENC_VSP;
-        input.fbcMode = FBC_NONE;
 
-        if (input.eis == 0) {
-            input.orgHeight = input.height;
-            input.orgWidth = input.width;
-        }
-
-        CAMERA_LOGI(
-            "Yuv420ToH264WithUnisoc:: h264Encoder status is %{public}d, "
-            "codecnode "
-            "addr is %{public}p",
-            status.load(), this);
-        if (status == 0) {
-            status = 1;
-            if (h264Encoder->VspStart(&input, (char*)(buffer->GetVirAddress()), frameSize) < 0) {
-                CAMERA_LOGE("CodecNode:: h264Encoder.VspStart err");
-                return -1;
-            }
-            startflag = 1;
-        }
-        int type = 0;
-        int ret1 = h264Encoder->VspEnc(
-            &input, (char*)(buffer->GetVirAddress()), frameSize, type);
-        if (ret1 == 0) {
-            if (type == 0) {
-                buffer->SetEsKeyFrame(1);
-                startflag = 0;
-            } else {
-                if (startflag == 1) {
-                    buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
-                }
-                buffer->SetEsKeyFrame(0);
-            }
-            CAMERA_LOGE(
-                "CodecNode:: h264Encoder.VspStart startflag=%{public}d "
-                "key=%{public}d,SetEsKeyFrame=%{public}d",
-                startflag, type, buffer->GetEsFrameInfo().isKey);
-        } else {
-            buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
-            buffer->SetEsKeyFrame(0);
-        }
-        return ret1;
-    } else {
-        CAMERA_LOGE("CodecNode::Yuv420ToH264WithUnisoc h264Encoder is null");
+    if (h264Encoder == nullptr) {
         return -1;
     }
+
+    MMInputParams input;
+    memset_s(&input, sizeof(input), 0, sizeof(MMInputParams));
+    input.width = buffer->GetWidth();
+    input.height = buffer->GetHeight();
+    input.format = H264;
+    input.framerate = MAXFRAMERATE;
+    input.maxKeyInterval = MAXKEYINTERVAL;
+    input.cbr = 1;
+    input.bitrate = BITRATE;
+    input.qp = QP;
+    input.yuvFormat = MMENC_YUV420SP_NV21;
+    input.vsp = MMENC_VSP;
+    input.fbcMode = FBC_NONE;
+    input.orgHeight = input.height;
+    input.orgWidth = input.width;
+
+    if (status == 0) {
+        status = 1;
+        if (h264Encoder->VspStart(&input, (char*)(buffer->GetVirAddress()), frameSize) < 0) {
+            return -1;
+        }
+        startflag = 1;
+    }
+    int type = 0;
+    int ret = h264Encoder->VspEnc(&input, (char*)(buffer->GetVirAddress()), frameSize, type);
+    if (ret == 0) {
+        if (type == 0) {
+            buffer->SetEsKeyFrame(1);
+            startflag = 0;
+        } else {
+            if (startflag == 1)
+                buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
+
+            buffer->SetEsKeyFrame(0);
+        }
+    } else {
+        buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
+        buffer->SetEsKeyFrame(0);
+    }
+    return ret;
 }
 
 static uint64_t GetPts()
@@ -659,8 +630,7 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
     }
 
     int32_t id = buffer->GetStreamId();
-    CAMERA_LOGD("CodecNode::DeliverBuffer StreamId %{public}d, encode type : %{public}d",
-        id, buffer->GetEncodeType());
+    CAMERA_LOGD("CodecNode::DeliverBuffer StreamId %{public}d, encode type : %{public}d", id, buffer->GetEncodeType());
     if (buffer->GetBufferStatus() != CAMERA_BUFFER_STATUS_OK) {
         CAMERA_LOGE("CodecNode BufferStatus() != CAMERA_BUFFER_STATUS_OK StreamId %{public}d", id);
         return NodeBase::DeliverBuffer(buffer);
@@ -668,31 +638,31 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
     if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_JPEG) {
         Yuv420ToJpegWithUnisoc(buffer);
         CAMERA_LOGI("CodecNode::node codec enter jpeg,%{public}d", (int)buffer->GetSize());
+        return NodeBase::DeliverBuffer(buffer);
     } else if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_H264) {
         nodestatus = 1;
         uint32_t frameSize = 0;
         Yuv420ToH264WithUnisoc(buffer, frameSize);
         buffer->SetEsFrameSize(frameSize);
         buffer->SetEsTimestamp(GetPts());
-    } else {
-        CAMERA_LOGI("CodecNode::node buffer format = %{public}d", buffer->GetFormat());
-        const int yuV420SizeUp = 3;
-        const int yuV420SizeDown = 2;
-        int yuvLength = buffer->GetWidth() * buffer->GetHeight() *
-                         yuV420SizeUp / yuV420SizeDown;
-        buffer->SetEsFrameSize(yuvLength);
-        CameraId cameraId = ConvertCameraId(cameraId_);
-        if (cameraId != CAMERA_FIRST) {
-            if (bufferRotate_ == nullptr) {
-                bufferRotate_ = (u_char*)malloc(yuvLength);
-                if (!bufferRotate_) {
-                    return;
-                }
+        return NodeBase::DeliverBuffer(buffer);
+    }
+
+    CAMERA_LOGI("CodecNode::node buffer format = %{public}d", buffer->GetFormat());
+    const int yuV420SizeUp = 3;
+    const int yuV420SizeDown = 2;
+    int yuvLength = buffer->GetWidth() * buffer->GetHeight() * yuV420SizeUp / yuV420SizeDown;
+    buffer->SetEsFrameSize(yuvLength);
+    CameraId cameraId = ConvertCameraId(cameraId_);
+    if (cameraId != CAMERA_FIRST) {
+        if (bufferRotate_ == nullptr) {
+            bufferRotate_ = (u_char*)malloc(yuvLength);
+            if (!bufferRotate_) {
+                return;
             }
-            Yuv420spRot180(bufferRotate_, (u_char*)buffer->GetVirAddress(), buffer->GetWidth(), buffer->GetHeight());
-            memcpy_s((void*)buffer->GetVirAddress(), buffer->GetSize(),
-                     (void*)bufferRotate_, yuvLength);
         }
+        Yuv420spRot180(bufferRotate_, (u_char*)buffer->GetVirAddress(), buffer->GetWidth(), buffer->GetHeight());
+        memcpy_s((void*)buffer->GetVirAddress(), buffer->GetSize(), (void*)bufferRotate_, yuvLength);
     }
 
     NodeBase::DeliverBuffer(buffer);
