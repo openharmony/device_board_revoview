@@ -115,7 +115,7 @@ void HosV4L2UVC::V4L2UvcMatchDev(const std::string name, const std::string v4l2D
             if (iter.second) {
                 CAMERA_LOGD("UVC:V4L2UvcMatchDev::deviceMatch.insert: %{public}s devName %{public}s i %{public}d\n",
                     v4l2Device.c_str(), devName, i);
-                 break;
+                break;
             }
         }
     }
@@ -367,7 +367,7 @@ void HosV4L2UVC::UpdateV4L2UvcMatchDev(std::string& action,
     }
 
     CAMERA_LOGD("UVC:ACTION = %{public}s, SUBSYSTEM = %{public}s, DEVNAME = %{public}s\n",
-    action.c_str(), subsystem.c_str(), devnode.c_str());
+        action.c_str(), subsystem.c_str(), devnode.c_str());
     std::string devName = "/dev/" + devnode;
     if (action == "remove") {
         for (auto& itr : HosV4L2Dev::deviceMatch) {
