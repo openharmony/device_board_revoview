@@ -538,7 +538,7 @@ RetCode HosV4L2Dev::UpdateSetting(const std::string& cameraID, AdapterCmd comman
             rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE, *(int32_t*)args);
             break;
         case CMD_METER_MODE:
-            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_METERING,*(int32_t*)args);
+            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_METERING, *(int32_t*)args);
             break;
         case CMD_FLASH_MODE:
             switch ((int32_t)(args[0])) {
