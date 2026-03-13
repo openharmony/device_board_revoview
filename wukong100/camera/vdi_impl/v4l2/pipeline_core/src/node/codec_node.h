@@ -52,7 +52,7 @@ class CodecNode : public NodeBase {
     static void* h264Handle;
 
    private:
-    const unsigned char Clip(const int value);
+    unsigned char Clip(const int value) const;
     void YUVToRGB(int y, int u, int v, unsigned char* red, unsigned char* green,
                   unsigned char* blue, unsigned char* alapha);
     RetCode ConfigJpegOrientation(common_metadata_header_t* data);
