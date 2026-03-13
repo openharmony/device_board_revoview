@@ -19,6 +19,8 @@
 #include <sys/prctl.h>
 
 #include "securec.h"
+#define RECTREGION     200
+#define LEN            4
 
 namespace OHOS::Camera {
 std::map<std::string, std::string> HosV4L2Dev::deviceMatch =
@@ -504,74 +506,48 @@ RetCode HosV4L2Dev::FlashControl(const char* cmd, int cmd_len)
     return RC_OK;
 }
 
-RetCode HosV4L2Dev::UpdateSetting(const std::string& cameraID,
-                                  AdapterCmd command, const int* args)
+RetCode HosV4L2Dev::UpdateSetting(const std::string& cameraID, AdapterCmd command, const int* args)
 {
     int32_t fd;
     int rc = 0;
 
-    if (args == nullptr) {
-        CAMERA_LOGE("HosV4L2Dev::UpdateSetting: args is NULL\n");
+    if (args == nullptr)
         return RC_ERROR;
-    }
 
     if (myControl_ == nullptr) {
         myControl_ = std::make_shared<HosV4L2Control>();
-        if (myControl_ == nullptr) {
-            CAMERA_LOGE(
-                "HosV4L2Dev::UpdateSetting: myControl_ make_shared is NULL\n");
+        if (myControl_ == nullptr)
             return RC_ERROR;
-        }
     }
 
     fd = GetCurrentFd(cameraID);
-    if (fd < 0) {
-        CAMERA_LOGE("UpdateSetting: GetCurrentFd error\n");
+    if (fd < 0)
         return RC_ERROR;
-    }
-    CAMERA_LOGD(
-        "HosV4L2Dev::UpdateSetting: cameraID = %{public}s, command = "
-        "%{public}d, "
-        "args = %{public}d\n",
-        cameraID.c_str(), command, *(int32_t*)args);
-    const int RECTREGION = 200;
-    const int LEN = 4;
+
     switch (command) {
         case CMD_EXPOSURE_MODE:
-            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_AUTO,
-                                         *(int32_t*)args);
+            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_AUTO, *(int32_t*)args);
             break;
         case CMD_AE_EXPOTIME:
-            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_ABSOLUTE,
-                                         *(int32_t*)args);
+            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_ABSOLUTE, *(int32_t*)args);
             break;
         case CMD_EXPOSURE_COMPENSATION:
-            rc =
-                myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE, *(int32_t*)args);
+            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE, *(int32_t*)args);
             break;
         case CMD_AWB_MODE:
-            rc = myControl_->V4L2SetCtrl(
-                fd, V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE, *(int32_t*)args);
+            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE, *(int32_t*)args);
             break;
         case CMD_METER_MODE:
-            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_METERING,
-                                         *(int32_t*)args);
+            rc = myControl_->V4L2SetCtrl(fd, V4L2_CID_EXPOSURE_METERING, *(int32_t*)args);
             break;
         case CMD_FLASH_MODE:
-            CAMERA_LOGD("HosV4L2Dev::UpdateSetting flashmode=%{public}d",
-                        (int32_t)(args[0]));
             switch ((int32_t)(args[0])) {
                 case 0:
                     FlashControl("0x03", LEN);
                     break;
                 case 1:
                     FlashControl("0x02", LEN);
-                    break;
                 default:
-                    CAMERA_LOGE(
-                        "HosV4L2Dev::UpdateSetting: flashmode{%{public}d} "
-                        "unsupported\n",
-                        (int32_t)(args[0]));
                     break;
             }
             break;
@@ -581,28 +557,13 @@ RetCode HosV4L2Dev::UpdateSetting(const std::string& cameraID,
             r.top = ((int32_t)(args[1]));
             r.width = RECTREGION;
             r.height = RECTREGION;
-            CAMERA_LOGE(
-                "HosV4L2Dev::v4l2Handle_->ioctl "
-                "VIDIOC_S_INPUT,l:%{public}d,t:%{public}d,w:%{public}d,h:%{"
-                "public}d,"
-                "\n",
-                r.left, r.top, r.width, r.height);
-            rc = HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_INPUT, &r);
-            if (rc < 0) {
-                CAMERA_LOGE(
-                    "HosV4L2Dev::v4l2Handle_->ioctl VIDIOC_S_INPUT failed: "
-                    "%{public}s\n",
-                    strerror(errno));
+            if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_S_INPUT, &r) < 0)
                 return RC_ERROR;
-            }
-            break;
         default:
             break;
     }
-    if (rc != RC_OK) {
-        return RC_ERROR;
-    }
-    return RC_OK;
+
+    return rc;
 }
 
 RetCode HosV4L2Dev::QuerySetting(const std::string& cameraID,
