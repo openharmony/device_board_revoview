@@ -189,6 +189,11 @@
             "project":"multimedia_player_framework",
             "path":"foundation/multimedia/player_framework",
             "pr_url":"https://gitcode.com/openharmony/multimedia_player_framework/pull/7551"
+        },
+        {
+            "project":"third_party_libjpeg-turbo",
+            "path":"third_party/libjpeg-turbo",
+            "pr_url":"https://gitcode.com/openharmony/third_party_libjpeg-turbo/pull/85"
         }
     ]
 }
