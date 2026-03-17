@@ -10,71 +10,190 @@
 set -e
 set -v
 
-curr=$(pwd -P)
-basepath=$(cd `dirname $0`; pwd)
-key_path="${basepath}/secureboot_key/config"
-package_path="${basepath}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles"
-img_path="${basepath}/../../../../../device/soc/unisoc/p7885//pac/ImageFiles/secboot_img"
-cmd_sign="python3 ${basepath}/../../../../../base/startup/hvb/tools/hvbtool.py"
-rollback_index=0
+BASEPATH=$(cd `dirname $0`; pwd)
+KEY_PATH="${BASEPATH}/secureboot_key/config"
+PACKAGE_PATH="${BASEPATH}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles"
+IMG_PATH="${BASEPATH}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles/secboot_img"
+KERNEL_PATH="${BASEPATH}/../../../../../kernel_unisoc_p7885"
+# 签名工具与固定参数
+CMD_SIGN="/usr/bin/python3 ${BASEPATH}/../../../../../base/startup/hvb/tools/hvbtool.py"
+ROLLBACK_INDEX=0
+ALGORITHM="SHA256_RSA2048"
 
-echo curr path: $curr
-echo basepath: $basepath
-echo package path: $package_path
-echo cmd path: $cmd_sign
+echo basepath: $BASEPATH
+echo package path: $PACKAGE_PATH
+echo img path: $IMG_PATH
+echo cmd path: $CMD_SIGN
 
-#hash 签名
-if [ -f ${package_path}/dtbo.img ]; then
-    rm -rf ${img_path}/signed_dtbo.img
-    $cmd_sign make_hash_footer --image ${package_path}/dtbo.img --partition dtbo_a --partition_size 8388608 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_boot.pem --privkey ${key_path}/rsa2048_private_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 1 --output ${img_path}/signed_dtbo.img
+# 功能：通用镜像签名逻辑（支持hash/hashtree两种签名类型）
+# 参数：
+#   $1: 签名类型（hash/hashtree）
+#   $2: 源镜像文件名（如 dtbo.img/boot.img）
+#   $3: 分区名（如 dtbo_a/boot_a）
+#   $4: 分区大小（如 8388608/67108864）
+#   $5: 公钥文件名（如 rsa2048_public_boot.pem）
+#   $6: 私钥文件名（如 rsa2048_private_boot.pem）
+#   $7: rollback_index（如 1/4）
+#   $8: rollback_location（如 1/4）
+#   $9: 输出镜像名（如 signed_dtbo.img/signed_boot.img）
+sign_image() {
+    local sign_type="$1"
+    local src_img="$2"
+    local partition="$3"
+    local part_size="$4"
+    local pubkey="$5"
+    local privkey="$6"
+    local rollback_ind="$7"
+    local rollback_loc="$8"
+    local output_img="$9"
+
+    # 1. 拼接完整路径
+    local src_full="${PACKAGE_PATH}/${src_img}"
+    local pubkey_full="${KEY_PATH}/${pubkey}"
+    local privkey_full="${KEY_PATH}/${privkey}"
+    local output_full="${IMG_PATH}/${output_img}"
+
+    # 2. 基础检查（源镜像+密钥）
+    if [ ! -f "${src_full}" ]; then
+        echo "ERROR: Image not found → ${src_full}" >&2
+        exit 1
+    fi
+    if [ ! -f "${pubkey_full}" ] || [ ! -f "${privkey_full}" ]; then
+        echo "ERROR: Key files not found → pubkey: ${pubkey_full} privkey: ${privkey_full}" >&2
+        exit 1
+    fi
+
+    # 3. 删除旧签名文件
+    rm -rf "${output_full}"
+
+    # 4. 选择签名命令（hash/hashtree）
+    local sign_cmd=""
+    if [ "${sign_type}" = "hash" ]; then
+        sign_cmd="make_hash_footer"
+    elif [ "${sign_type}" = "hashtree" ]; then
+        sign_cmd="make_hashtree_footer"
+    else
+        echo "ERROR: Signature type not supported → ${sign_type} (Only hash/hashtree are supported." >&2
+        exit 1
+    fi
+
+    # 5. 执行签名（换行格式化，便于核对参数）
+    echo "INFO: start ${sign_type} signature → ${src_img}"
+    $CMD_SIGN "${sign_cmd}" \
+        --image "${src_full}" \
+        --partition "${partition}" \
+        --partition_size "${part_size}" \
+        --pubkey "${pubkey_full}" \
+        --privkey "${privkey_full}" \
+        --algorithm "${ALGORITHM}" \
+        --rollback_index "${rollback_ind}" \
+        --rollback_location "${rollback_loc}" \
+        --output "${output_full}"
+
+    # 6. 验证签名结果
+    if [ $? -eq 0 ]; then
+        echo "SUCCESS: ${src_img} ${sign_type} signature succeeded → ${output_full}"
+    else
+        echo "ERROR: ${src_img} ${sign_type} signature failed!" >&2
+        exit 1
+    fi
+}
+
+# hash签名 - dtbo.img
+sign_image \
+    "hash" \
+    "dtbo.img" \
+    "dtbo_a" \
+    "8388608" \
+    "rsa2048_public_boot.pem" \
+    "rsa2048_private_boot.pem" \
+    "${ROLLBACK_INDEX}" \
+    "1" \
+    "signed_dtbo.img"
+
+# hashtree签名 - boot.img
+sign_image \
+    "hashtree" \
+    "boot.img" \
+    "boot_a" \
+    "67108864" \
+    "rsa2048_public_boot.pem" \
+    "rsa2048_private_boot.pem" \
+    "${ROLLBACK_INDEX}" \
+    "4" \
+    "signed_boot.img"
+
+# hashtree签名 - vendor_boot.img / vendor_boot_sec.img（根据kernel路径选择）
+if [ -d "${KERNEL_PATH}" ]; then
+    sign_image \
+        "hashtree" \
+        "vendor_boot.img" \
+        "vendor_boot_a" \
+        "104857600" \
+        "rsa2048_public_vendor_boot.pem" \
+        "rsa2048_private_vendor_boot.pem" \
+        "${ROLLBACK_INDEX}" \
+        "5" \
+        "signed_vendor_boot.img"
 else
-    echo "${package_path}/dtbo.img does not exist.\n"
-    exit 1
+    sign_image \
+        "hashtree" \
+        "vendor_boot_sec.img" \
+        "vendor_boot_a" \
+        "104857600" \
+        "rsa2048_public_vendor_boot.pem" \
+        "rsa2048_private_vendor_boot.pem" \
+        "${ROLLBACK_INDEX}" \
+        "5" \
+        "signed_vendor_boot.img"
 fi
 
+# hashtree签名 - system.img
+sign_image \
+    "hashtree" \
+    "system.img" \
+    "system" \
+    "3145728000" \
+    "rsa2048_public_system.pem" \
+    "rsa2048_private_system.pem" \
+    "${ROLLBACK_INDEX}" \
+    "6" \
+    "signed_system.img"
 
-#hashtree签名
+# hashtree签名 - vendor.img
+sign_image \
+    "hashtree" \
+    "vendor.img" \
+    "vendor" \
+    "838860800" \
+    "rsa2048_public_vendor.pem" \
+    "rsa2048_private_vendor.pem" \
+    "${ROLLBACK_INDEX}" \
+    "7" \
+    "signed_vendor.img"
 
-if [ -f ${package_path}/boot.img ]; then
-    rm -rf ${img_path}/signed_boot.img
-    $cmd_sign make_hashtree_footer --image ${package_path}/boot.img --partition boot_a --partition_size 67108864 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_boot.pem --privkey ${key_path}/rsa2048_private_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 4 --output ${img_path}/signed_boot.img
-else
-    echo "${package_path}/boot.img does not exist.\n"
-    exit 1
-fi
-
-#if [ -f ${package_path}/vendor_boot.img ]; then
-#    rm -rf ${img_path}/signed_vendor_boot.img
-#    $cmd_sign make_hashtree_footer --image ${package_path}/vendor_boot.img --partition vendor_boot_a --partition_size 104857600 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_vendor_boot.pem --privkey ${key_path}/rsa2048_private_vendor_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 5 --output ${img_path}/signed_vendor_boot.img
-#else
-#    echo "${package_path}/vendor_boot.img does not exist.\n"
-#    exit 1
-#fi
-
-if [ -f ${package_path}/vendor_boot_sec.img ]; then
-    rm -rf ${img_path}/signed_vendor_boot.img
-    $cmd_sign make_hashtree_footer --image ${package_path}/vendor_boot_sec.img --partition vendor_boot_a --partition_size 104857600 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_vendor_boot.pem --privkey ${key_path}/rsa2048_private_vendor_boot.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 5 --output ${img_path}/signed_vendor_boot.img
-else
-    echo "${package_path}/vendor_boot_sec.img does not exist.\n"
-    exit 1
-fi
-
-if [ -f ${package_path}/system.img ]; then
-    rm -rf ${img_path}/signed_system.img
-    $cmd_sign make_hashtree_footer --image ${package_path}/system.img --partition system --partition_size 3145728000 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_system.pem --privkey ${key_path}/rsa2048_private_system.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 6 --output ${img_path}/signed_system.img
-else
-    echo "${package_path}/system.img does not exist.\n"
-    exit 1
-fi
-
-if [ -f ${package_path}/vendor.img ]; then
-    rm -rf ${img_path}/signed_vendor.img
-    $cmd_sign make_hashtree_footer --image ${package_path}/vendor.img --partition vendor --partition_size 838860800 --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public_vendor.pem --privkey ${key_path}/rsa2048_private_vendor.pem --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 7 --output ${img_path}/signed_vendor.img
-else
-    echo "${package_path}/vendor.img does not exist.\n"
-    exit 1
-fi
 
 #rvt生成
-rm -rf ${img_path}/rvt.img
-$cmd_sign make_rvt_image --salt 9f3a79b7f2bad5adb086bcb8cf37f991733f2696 --pubkey ${key_path}/rsa2048_public.pem --privkey ${key_path}/rsa2048_private.pem --partition rvt --partition_size 1048576 --algorithm SHA256_RSA2048 --rollback_index $rollback_index --rollback_location 0 --chain_partition boot_a:${key_path}/rsa2048_public_boot.pem --chain_partition vendor_boot_a:${key_path}/rsa2048_public_vendor_boot.pem --chain_partition dtbo_a:${key_path}/rsa2048_public_boot.pem  --chain_partition system:${key_path}/rsa2048_public_system.pem --chain_partition vendor:${key_path}/rsa2048_public_vendor.pem --output ${img_path}/rvt.img
+rm -rf ${IMG_PATH}/rvt.img
+${CMD_SIGN} \
+    make_rvt_image \
+    --pubkey ${KEY_PATH}/rsa2048_public.pem \
+    --privkey ${KEY_PATH}/rsa2048_private.pem \
+    --partition rvt \
+    --partition_size 1048576 \
+    --algorithm ${ALGORITHM} \
+    --rollback_index ${ROLLBACK_INDEX} \
+    --rollback_location 0 \
+    --chain_partition boot_a:${KEY_PATH}/rsa2048_public_boot.pem \
+    --chain_partition vendor_boot_a:${KEY_PATH}/rsa2048_public_vendor_boot.pem \
+    --chain_partition dtbo_a:${KEY_PATH}/rsa2048_public_boot.pem  \
+    --chain_partition system:${KEY_PATH}/rsa2048_public_system.pem \
+    --chain_partition vendor:${KEY_PATH}/rsa2048_public_vendor.pem \
+    --output ${IMG_PATH}/rvt.img
+
+if [ $? -eq 0 ]; then
+    echo "SUCCESS: rvt image generation succeeded"
+else
+    echo "ERROR: rvt image generation failed!" >&2
+    exit 1
+fi
