@@ -33,6 +33,7 @@ CODESIGN_PATCH_FILE=${ROOT_DIR}/kernel/linux/common_modules/code_sign/apply_code
 XPM_PATCH_FILE=${ROOT_DIR}/kernel/linux/common_modules/xpm/apply_xpm.sh
 QOS_AUTH_PATCH_FILE=${ROOT_DIR}/kernel/linux/common_modules/qos_auth/apply_qos_auth.sh
 UNIFIED_COLLECTION_PATCH_FILE=${ROOT_DIR}/kernel/linux/common_modules/ucollection/apply_ucollection.sh
+DEC_PATCH_FILE=${ROOT_DIR}/kernel/linux/common_modules/dec/apply_dec.sh
 
 PRODUCT_DEFCOFIG=${KERNEL_SOURCE}/arch/arm64/configs/wukong100_defconfig
 
@@ -63,6 +64,11 @@ mkdir -p ${KERNEL_SRC_TMP_PATH}/mkboot/dist
 
 #HDF patch
 bash ${ROOT_DIR}/drivers/hdf_core/adapter/khdf/linux/patch_hdf.sh ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${HDF_PATCH} wukong100
+
+#dec
+if [ -f $DEC_PATCH_FILE ]; then
+    bash $DEC_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
+fi
 
 #newip
 #if [ -f $NEWIP_PATCH_FILE ]; then
