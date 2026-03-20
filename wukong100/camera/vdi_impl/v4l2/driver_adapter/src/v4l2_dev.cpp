@@ -511,14 +511,11 @@ RetCode HosV4L2Dev::UpdateSetting(const std::string& cameraID, AdapterCmd comman
     int32_t fd;
     int rc = 0;
 
-    if (args == nullptr)
-        return RC_ERROR;
-
-    if (myControl_ == nullptr) {
+    if (myControl_ == nullptr)
         myControl_ = std::make_shared<HosV4L2Control>();
-        if (myControl_ == nullptr)
-            return RC_ERROR;
-    }
+
+    if ((myControl_ == nullptr) || (args == nullptr))
+        return RC_ERROR;
 
     fd = GetCurrentFd(cameraID);
     if (fd < 0)
