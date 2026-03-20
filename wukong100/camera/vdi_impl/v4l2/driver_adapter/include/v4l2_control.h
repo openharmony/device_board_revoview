@@ -18,6 +18,7 @@
 
 #include <linux/videodev2.h>
 #include <errno.h>
+#include <sys/ioctl.h>
 #include "v4l2_common.h"
 #if defined(V4L2_UTEST) || defined (V4L2_MAIN_TEST)
 #include "v4l2_temp.h"
@@ -31,10 +32,13 @@ public:
     HosV4L2Control();
     ~HosV4L2Control();
 
+    void V4L2VidiocSCtrl (int fd, int ret, struct v4l2_ext_control* cList, int count);
     RetCode V4L2GetCtrl(int fd, unsigned int id, int& value);
     RetCode V4L2SetCtrl(int fd, unsigned int id, int value);
     RetCode V4L2GetControls(int fd, std::vector<DeviceControl>& control);
     RetCode V4L2SetCtrls(int fd, std::vector<DeviceControl>& control, const int numControls);
+    void V4L2VidiocGExtCtrls (int fd, int ret, int &count,
+        v4l2_ext_control *cList, std::vector<DeviceControl>& control);
     RetCode V4L2GetCtrls(int fd, std::vector<DeviceControl>& control, const int numControls);
 
 private:
