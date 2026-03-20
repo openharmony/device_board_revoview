@@ -53,8 +53,6 @@ class CodecNode : public NodeBase {
 
    private:
     unsigned char Clip(const int value) const;
-    void YUVToRGB(int y, int u, int v, unsigned char* red, unsigned char* green,
-                  unsigned char* blue, unsigned char* alapha);
     RetCode ConfigJpegOrientation(common_metadata_header_t* data);
     RetCode ConfigJpegQuality(common_metadata_header_t* data);
     RetCode Config(const int32_t streamId, const CaptureMeta& meta);

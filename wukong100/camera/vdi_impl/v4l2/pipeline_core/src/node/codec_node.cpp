@@ -152,28 +152,6 @@ unsigned char CodecNode::Clip(const int value) const
         value > bytemaxval ? bytemaxval : value < 0 ? 0 : value);
 }
 
-void CodecNode::YUVToRGB(int y, int u, int v, unsigned char* red,
-                         unsigned char* green, unsigned char* blue,
-                         unsigned char* alapha)
-{
-    const int yConst = 16;
-    const int uvConst = 128;
-    const double yCoefficient = 1.164;
-    const double ruvCoefficient = 2.018;
-    const double gvuCoefficient = 0.813;
-    const double guvCoefficient = 0.391;
-    const double bvuCoefficient = 1.596;
-    const int aAlapha = 255;
-    int r = yCoefficient * (y - yConst) + ruvCoefficient * (u - uvConst);
-    int g = yCoefficient * (y - yConst) + gvuCoefficient * (v - uvConst) -
-            guvCoefficient * (u - uvConst);
-    int b = yCoefficient * (y - yConst) + bvuCoefficient * (v - uvConst);
-    *red = Clip(r);
-    *green = Clip(g);
-    *blue = Clip(b);
-    *alapha = aAlapha;
-};
-
 static void Yuv420RotRight90(u_char* dst, u_char* src, int width, int height)
 {
     const int interval = 2;
@@ -549,6 +527,26 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     buffer->SetEsFrameSize(jpegLength);
 }
 
+static void SetInput(MMInputParams &input, int width, int height)
+{
+    memset_s(&input, sizeof(input), 0, sizeof(MMInputParams));
+    input.width = width;
+    input.height = height;
+    input.format = H264;
+    input.framerate = MAXFRAMERATE;
+    input.maxKeyInterval = MAXKEYINTERVAL;
+    input.cbr = 1;
+    input.bitrate = BITRATE;
+    input.qp = QP;
+    input.yuvFormat = MMENC_YUV420SP_NV21;
+    input.vsp = MMENC_VSP;
+    input.fbcMode = FBC_NONE;
+    input.orgHeight = input.height;
+    input.orgWidth = input.width;
+
+    return;
+}
+
 int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, const uint32_t& frameSize)
 {
     unsigned int size = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
@@ -571,20 +569,7 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, const ui
     }
 
     MMInputParams input;
-    memset_s(&input, sizeof(input), 0, sizeof(MMInputParams));
-    input.width = buffer->GetWidth();
-    input.height = buffer->GetHeight();
-    input.format = H264;
-    input.framerate = MAXFRAMERATE;
-    input.maxKeyInterval = MAXKEYINTERVAL;
-    input.cbr = 1;
-    input.bitrate = BITRATE;
-    input.qp = QP;
-    input.yuvFormat = MMENC_YUV420SP_NV21;
-    input.vsp = MMENC_VSP;
-    input.fbcMode = FBC_NONE;
-    input.orgHeight = input.height;
-    input.orgWidth = input.width;
+    SetInput(input, buffer->GetWidth(), buffer->GetHeight());
 
     if (status == 0) {
         status = 1;
