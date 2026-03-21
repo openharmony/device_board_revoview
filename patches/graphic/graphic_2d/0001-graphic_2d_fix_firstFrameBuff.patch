@@ -1,0 +1,13 @@
+diff --git a/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp b/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp
+index 9c844867d2..f9b2d259ff 100644
+--- a/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp
++++ b/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp
+@@ -5401,7 +5401,7 @@ void RSMainThread::HandlePowerStatusChanged(ScreenId id,
+             return;
+         }
+ 
+-        node->SetScreenDirtyFlag(true);
++        SetDirtyFlag();
+         SetScreenPowerOnChanged(true);
+         if (lastStatus == ScreenPowerStatus::POWER_STATUS_OFF ||
+             lastStatus == ScreenPowerStatus::POWER_STATUS_OFF_FAKE ||
