@@ -22,14 +22,41 @@ namespace OHOS::Camera {
 HosFileFormat::HosFileFormat() {}
 HosFileFormat::~HosFileFormat() {}
 
+void HosFileFormat::V4L2GetCurrentFormat(int fd, std::vector<DeviceFormat>& fmtDesc,
+    struct v4l2_frmsizeenum &frmSize, struct v4l2_fmtdesc &enumFmtDesc)
+{
+    struct v4l2_frmivalenum  fraMival = {};
+    constexpr int32_t fmtMax = 50;
+    for (int k = 0; k < fmtMax; ++k) {
+        fraMival.index = static_cast<uint32_t>(k);
+        fraMival.pixel_format = frmSize.pixel_format;
+        fraMival.width = frmSize.discrete.width;
+        fraMival.height = frmSize.discrete.height;
+        if (ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &fraMival) < 0) {
+            break;
+        }
+
+        DeviceFormat currentFormat = {};
+        currentFormat.fmtdesc.description = std::string(reinterpret_cast<char*>(enumFmtDesc.description));
+        currentFormat.fmtdesc.pixelformat = enumFmtDesc.pixelformat;
+        currentFormat.fmtdesc.width = frmSize.discrete.width;
+        currentFormat.fmtdesc.height = frmSize.discrete.height;
+        currentFormat.fmtdesc.fps.numerator = static_cast<int32_t>(fraMival.discrete.numerator);
+        currentFormat.fmtdesc.fps.denominator = static_cast<int32_t>(fraMival.discrete.denominator);
+
+        fmtDesc.push_back(currentFormat);
+
+        CAMERA_LOGD("frame interval: %{public}d, %{public}d\n\n",
+            fraMival.discrete.numerator, fraMival.discrete.denominator);
+    }
+}
+
 RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDesc)
 {
     int i = 0;
     int j = 0;
-    int k = 0;
     struct v4l2_fmtdesc enumFmtDesc = {};
     struct v4l2_frmsizeenum frmSize = {};
-    struct v4l2_frmivalenum fraMival = {};
     constexpr uint32_t fmtMax = 50;
 
     for (i = 0; i < fmtMax; ++i) {
@@ -51,27 +78,7 @@ RetCode HosFileFormat::V4L2SearchFormat(int fd, std::vector<DeviceFormat>& fmtDe
                     frmSize.discrete.width, frmSize.discrete.height);
             }
 
-            for (k = 0; k < fmtMax; ++k) {
-                fraMival.index = k;
-                fraMival.pixel_format = frmSize.pixel_format;
-                fraMival.width = frmSize.discrete.width;
-                fraMival.height = frmSize.discrete.height;
-                if (HosV4L2Dev::v4l2Handle_->ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &fraMival) < 0)
-                    break;
-
-                DeviceFormat currentFormat = {};
-                currentFormat.fmtdesc.description = std::string((char*)enumFmtDesc.description);
-                currentFormat.fmtdesc.pixelformat = enumFmtDesc.pixelformat;
-                currentFormat.fmtdesc.width = frmSize.discrete.width;
-                currentFormat.fmtdesc.height = frmSize.discrete.height;
-                currentFormat.fmtdesc.fps.numerator = fraMival.discrete.numerator;
-                currentFormat.fmtdesc.fps.denominator = fraMival.discrete.denominator;
-
-                fmtDesc.push_back(currentFormat);
-
-                CAMERA_LOGD("frame interval: %{public}d, %{public}d\n\n", fraMival.discrete.numerator,
-                            fraMival.discrete.denominator);
-            }
+            V4L2GetCurrentFormat(fd, fmtDesc, frmSize, enumFmtDesc);
         }
     }
 
