@@ -163,9 +163,7 @@ post_process
 
 3） 编译源码完成，请进行镜像烧录。
 
-工具路径：device/board/revoview/wukong100/tools/Download_R27.24.2301.7z
-
-烧录说明文档：见Download_R27.24.2301.7z 中的“下载工具使用指南V4.4“
+[烧录说明文档](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/tools/wukong100%E7%BC%96%E8%AF%91%E7%83%A7%E5%BD%95%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8C%87%E5%8D%97.pdf)
 
 
 
