@@ -2,6 +2,6 @@
 #<src>                                                  <mnt_point> <type>    <mnt_flags and options>                              <fs_mgr_flags>
 /dev/block/platform/soc/soc:ap-ahb/22000000.ufs/by-name/system               /usr       ext4     ro,barrier=1  wait,required,hvb
 /dev/block/platform/soc/soc:ap-ahb/22000000.ufs/by-name/vendor              /vendor        ext4     ro,barrier=1  wait,required,hvb
-/dev/block/platform/soc/soc:ap-ahb/22000000.ufs/by-name/sys-prod            /sys_prod        ext4     ro,barrier=1  wait
+/dev/block/platform/soc/soc:ap-ahb/22000000.ufs/by-name/sys_prod            /sys_prod        ext4     ro,barrier=1  wait
 /dev/block/platform/soc/soc:ap-ahb/22000000.ufs/by-name/userdata            /data       f2fs     discard,noatime,nosuid,nodev  wait,check,fileencryption=software,quota
 /dev/block/platform/soc/soc:ap-ahb/22000000.ufs/by-name/misc /misc none none wait,required
