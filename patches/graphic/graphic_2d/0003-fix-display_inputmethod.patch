@@ -1,0 +1,13 @@
+diff --git a/rosen/modules/render_service_base/src/transaction/rs_transaction_data.cpp b/rosen/modules/render_service_base/src/transaction/rs_transaction_data.cpp
+index 049b1adedd..6738281a85 100644
+--- a/rosen/modules/render_service_base/src/transaction/rs_transaction_data.cpp
++++ b/rosen/modules/render_service_base/src/transaction/rs_transaction_data.cpp
+@@ -374,7 +374,7 @@ bool RSTransactionData::IsCallingPidValid(pid_t callingPid, const RSRenderNodeMa
+         const NodeId nodeId = command->GetNodeId();
+         const pid_t commandPid = ExtractPid(nodeId);
+         bool allowNonSystemAppCalling = command->GetAccessPermission() != RSCommandPermissionType::PERMISSION_SYSTEM;
+-        if (allowNonSystemAppCalling && (callingPid == commandPid || nodeMap.IsUIExtensionSurfaceNode(nodeId))) {
++        if (allowNonSystemAppCalling && (callingPid == commandPid || callingPid == 0 || nodeMap.IsUIExtensionSurfaceNode(nodeId))) {
+             continue;
+         }
+         inaccessibleCommandMap[commandPid][nodeId].insert(command->GetUniqueType());
