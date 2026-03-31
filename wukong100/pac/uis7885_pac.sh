@@ -69,7 +69,7 @@ cp $package_path/*.img $work_path -rfv
 # hvbtool sign image
 if [ $secboot -eq 1 ]; then
     echo 'sign image start...'
-    bash ${curr}/../../device/board/revoview/wukong100/pac/create_sign_img_all.sh
+    bash ${curr}/../../device/board/revoview/wukong100/pac/create_sign_img_all.sh ${basepath}
 fi
 
 # go to work path and make pac

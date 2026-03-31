@@ -17,8 +17,15 @@ set -v
 
 BASEPATH=$(cd `dirname $0`; pwd)
 KEY_PATH="${BASEPATH}/secureboot_key/config"
-PACKAGE_PATH="${BASEPATH}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles"
-IMG_PATH="${BASEPATH}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles/secboot_img"
+
+# args from build.sh or from bash execue
+if [[ $# -ge 1 ]]; then
+	PACKAGE_PATH=$1
+else
+	PACKAGE_PATH="${BASEPATH}/../../../../../device/soc/unisoc/p7885/pac/ImageFiles"
+fi
+
+IMG_PATH="${PACKAGE_PATH}/secboot_img"
 KERNEL_PATH="${BASEPATH}/../../../../../kernel_unisoc_p7885"
 # 签名工具与固定参数
 CMD_SIGN="/usr/bin/python3 ${BASEPATH}/../../../../../base/startup/hvb/tools/hvbtool.py"
