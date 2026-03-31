@@ -110,7 +110,7 @@ pip3 install -i https://repo.huaweicloud.com/repository/pypi/simple requests
 1） 通过repo + ssh 下载（需注册公钥，请参考码云帮助中心）。
 
 ```
-repo init -u git@gitee.com:openharmony/manifest.git -b master --no-repo-verify
+repo init -u git@gitcode.com:openharmony/manifest.git -b OpenHarmony_standard_p7885_rk3588_d3000m_20251124
 
 repo sync -c
 
@@ -120,7 +120,7 @@ repo forall -c 'git lfs pull'
 2） 通过repo + https 下载。
 
 ```
-repo init -u https://gitee.com/openharmony/manifest.git -b master --no-repo-verify
+repo init -u https://gitcode.com/openharmony/manifest -b OpenHarmony_standard_p7885_rk3588_d3000m_20251124
 
 repo sync -c
 
