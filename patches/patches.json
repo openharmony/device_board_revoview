@@ -101,6 +101,11 @@
             "pr_url":"https://gitcode.com/openharmony/multimedia_player_framework/pull/7551"
         },
         {
+            "project":"multimedia_camera_framework",
+            "path":"foundation/multimedia/camera_framework",
+            "pr_url":"https://gitcode.com/openharmony/multimedia_camera_framework/pull/4468"
+        },
+        {
             "project":"graphic_graphic_2d",
             "path":"foundation/graphic/graphic_2d",
             "patch_file":"graphic/graphic_2d/0001-graphic_2d_fix_firstFrameBuff.patch"
@@ -109,6 +114,11 @@
             "project":"graphic_graphic_2d",
             "path":"foundation/graphic/graphic_2d",
             "patch_file":"graphic/graphic_2d/0002-graphic_2d_fix_arm64_compile.patch"
+        },
+        {
+            "project":"graphic_graphic_2d",
+            "path":"foundation/graphic/graphic_2d",
+            "patch_file":"graphic/graphic_2d/0003-fix-display_inputmethod.patch"
         }
     ]
 }
