@@ -166,5 +166,6 @@ post_process
 [镜像烧录说明文档](https://gitcode.com/openharmony-sig/device_board_revoview/tree/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/tools)
 
 
-
+注：如需咨询设备硬件相关问题（如充电异常、屏幕损坏、按键失灵等），请联系您购买设备的店铺客服，以便获得针对具体硬件的售后支持。
+若您在使用 OpenHarmony 系统时遇到技术问题（如应用开发、系统适配、编译报错等），欢迎前往对应开源仓库提交 Issue，我们将有社区开发者协助跟进。
 
