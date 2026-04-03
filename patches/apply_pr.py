@@ -39,12 +39,16 @@ def apply_prs(ohos_root_path, patches_data):
     for patch_info in patches_data['patches']:
         project_name = patch_info['project']
         project_dir = os.path.join(ohos_root_path,patch_info['path'])
-        pr_url = patch_info['pr_url']
-        print("Start get fetch pr {}".format(pr_url))
-        result = fetch_pr(project_dir,project_name,pr_url)
-        print("bychris {}.".format(result[1]))
-        if result[0] != 0:
-            is_success=False
+        if 'pr_url' in patch_info:
+            pr_url = patch_info['pr_url']
+            print("Start get fetch pr {}".format(pr_url))
+            result = fetch_pr(project_dir,project_name,pr_url)
+            print("bychris {}.".format(result[1]))
+            if result[0] != 0:
+                is_success=False
+        else:
+            print("bychris 没有PR URL")
+
     if not is_success:
         sys.exit(-1)
 
