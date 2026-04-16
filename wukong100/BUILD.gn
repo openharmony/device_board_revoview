@@ -13,16 +13,6 @@
 
 import("//build/ohos.gni")
 import("device.gni")
-kernel_path = "//kernel_unisoc_p7885"
-
-_script = "//build/ohos/file_exists.py"
-_args = [
-  "--filename",
-  rebase_path(kernel_path, root_build_dir),
-  "--type",
-  "dir",
-]
-_result = exec_script(_script, _args, "string")
 
 print("wukong100group in")
 group("wukong100_group") {
@@ -30,17 +20,13 @@ group("wukong100_group") {
     "cfg:init_configs",
     "distributedhardware:distributedhardware",
     #"lk:lk",
+    #"kernel:kernel",
+    #"//vendor/revoview/wukong100/modules:modules",
     #"updater:updater_files",
     "//device/board/revoview/wukong100/camera/vdi_impl/v4l2:camera_board_vdi_impl",
     "//third_party/alsa-lib:libasound",
     "//third_party/alsa-utils:alsa-utils",
   ]
-  if (_result == "True") {
-    deps += [
-      "kernel:kernel",
-      "//vendor/revoview/wukong100/modules:modules",
-    ]
-  }
 }
 
 # build a pac package
@@ -48,12 +34,8 @@ action("make_custom_image") {
   script = "pac/uis7885_pac.sh"
   package_path = "${root_out_dir}/packages/phone/images"
   target_path = "always.build"
-  if (_result == "True") {
-    script_path = "//unisoc_p7885_property/pac/ImageFiles"
-  }
-  else {
-    script_path = "//device/soc/unisoc/p7885/pac/ImageFiles"
-  }
+  script_path = "//device/soc/unisoc/p7885/pac/ImageFiles"
+
   if (defined(global_parts_info.startup_hvb)) {
     args = [
       rebase_path(package_path),
@@ -73,9 +55,7 @@ action("make_custom_image") {
   deps = [
     "//build/ohos/images:make_images",
     # also must wait make boot image
-    #"kernel:make_boot_updater_image"
+    #"kernel:make_boot_updater_image",
+    #"kernel:make_boot_image",
   ]
-  if (_result == "True") {
-    deps += [ "kernel:make_boot_image" ]
-  }
 }
