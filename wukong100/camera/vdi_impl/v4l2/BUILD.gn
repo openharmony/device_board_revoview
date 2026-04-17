@@ -60,6 +60,32 @@ action("copy_source") {
   deps = [ ":generate_source" ]
 }
 
+ohos_prebuilt_etc("config.c") {
+  deps = [ ":copy_source" ]
+  source =
+      "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/config.c"
+  exec_script(
+      "/usr/bin/env",
+      [
+        "touch",
+        rebase_path(
+            "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/config.c"),
+      ])
+}
+
+ohos_prebuilt_etc("params.c") {
+  deps = [ ":copy_source" ]
+  source =
+      "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/params.c"
+  exec_script(
+      "/usr/bin/env",
+      [
+        "touch",
+        rebase_path(
+            "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/params.c"),
+      ])
+}
+
 hc_gen("build_ipp_algo_config") {
   sources = [ rebase_path(
           "$product_config_path/hdf_config/uhdf/camera/pipeline_core/ipp_algo_config.hcs") ]
@@ -89,9 +115,9 @@ config("example_config") {
 group("chipset_build") {
   public_deps = [
     ":camera_host_config.hcb",
-    # ":config.c",
+    ":config.c",
     ":ipp_algo_config.hcb",
-    # ":params.c",
+    ":params.c",
     "$board_camera_path/pipeline_core:camera_ipp_algo_example",
   ]
 }
