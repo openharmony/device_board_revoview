@@ -88,8 +88,8 @@ ohos_shared_library("camera_pipeline_core") {
   ]
 
   deps = [
-    "$board_camera_path:config.c",
-    "$board_camera_path:params.c",
+    # "$board_camera_path:config.c",
+    # "$board_camera_path:params.c",
     "$board_camera_path/device_manager:camera_device_manager",
     #"//device/soc/sprd/common/camera:jpeg_hw_sprd",
     #"//device/soc/sprd/common/hardware/omx_il/components/video/avc/dec/hw:libomx_avcenc_hw_sprd",
