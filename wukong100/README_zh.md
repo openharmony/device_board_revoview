@@ -185,6 +185,7 @@ post_process
 
 [镜像烧录说明文档](https://gitcode.com/openharmony-sig/device_board_revoview/tree/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/tools)
 
+4）板卡烧录过程中若出现异常问题，请联系**板卡厂商**申请技术支持与咨询。
 
 
 
