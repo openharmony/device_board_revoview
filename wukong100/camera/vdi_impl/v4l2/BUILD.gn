@@ -68,26 +68,12 @@ ohos_prebuilt_etc("config.c") {
   deps = [ ":copy_source" ]
   source =
       "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/config.c"
-  # exec_script(
-  #     "/usr/bin/env",
-  #     [
-  #       "touch",
-  #       rebase_path(
-  #           "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/config.c"),
-  #     ])
 }
 
 ohos_prebuilt_etc("params.c") {
   deps = [ ":copy_source" ]
   source =
       "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/params.c"
-  # exec_script(
-  #     "/usr/bin/env",
-  #     [
-  #       "touch",
-  #       rebase_path(
-  #           "$camera_path/pipeline_core/pipeline_impl/src/strategy/config/params.c"),
-  #     ])
 }
 
 hc_gen("build_ipp_algo_config") {
