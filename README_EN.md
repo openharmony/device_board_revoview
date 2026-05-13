@@ -6,7 +6,7 @@ This repository is used to store content related to development boards based on 
 
 |                          Board Name                          | SoC Model | System Type |   Domain   |
 | :----------------------------------------------------------: | :-----: | :------: | :------: |
-| [wukong100](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md) | UIS7885 | Standard System | Smart Media |
+| [wukong100](https://gitcode.com/openharmony/device_board_revoview/blob/master/wukong100/README_zh.md) | UIS7885 | Standard System | Smart Media |
 
 
 ## Directory
@@ -30,7 +30,7 @@ This repository is used to store content related to development boards based on 
 
 ## Build and Usage
 
-[WUKONG100开发板使用说明](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md)
+[WUKONG100开发板使用说明](https://gitcode.com/openharmony/device_board_revoview/blob/master/wukong100/README_zh.md)
 
 
 ## License
@@ -40,6 +40,6 @@ See the LICENSE file and code declarations in the corresponding directories.
 
 ## Related Repositories
 
-[device_soc_revoview](https://gitcode.com/openharmony-sig/device_soc_unisoc)
+[device_soc_revoview](https://gitcode.com/openharmony/device_soc_unisoc)
 
-[vendor_revoview](https://gitcode.com/openharmony-sig/vendor_revoview)
+[vendor_revoview](https://gitcode.com/openharmony/vendor_revoview)
