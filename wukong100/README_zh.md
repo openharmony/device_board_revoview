@@ -130,7 +130,7 @@ sudo update-alternatives --install /usr/bin/python3 python3 {Python 3.8 路径} 
 1） 通过repo + ssh 下载（需注册公钥，请参考码云帮助中心）。
 
 ```
-repo init -u git@gitcode.com:openharmony/manifest.git -b OpenHarmony_standard_p7885_rk3588_d3000m_20251124
+repo init -u git@gitcode.com:openharmony/manifest.git -b master
 
 repo sync -c
 
@@ -140,7 +140,7 @@ repo forall -c 'git lfs pull'
 2） 通过repo + https 下载。
 
 ```
-repo init -u https://gitcode.com/openharmony/manifest -b OpenHarmony_standard_p7885_rk3588_d3000m_20251124
+repo init -u https://gitcode.com/openharmony/manifest -b master
 
 repo sync -c
 
@@ -183,7 +183,7 @@ post_process
 
 3） 编译源码完成，请进行镜像烧录。
 
-[镜像烧录说明文档](https://gitcode.com/openharmony-sig/device_board_revoview/tree/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/tools)
+[镜像烧录说明文档](https://gitcode.com/openharmony/device_board_revoview/tree/master/wukong100/tools)
 
 4）板卡烧录过程中若出现异常问题，请联系**板卡厂商**申请技术支持与咨询。
 
