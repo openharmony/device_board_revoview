@@ -145,7 +145,7 @@ Perform the following operations in the Linux environment:
 
 1) Enter the source code root directory and execute the following command for version compilation.
 
-*./build.sh --product-name wukong100 --ccache --gn-args make_custom_image=true*
+*./build.sh --product-name wukong100 --ccache --gn-args make_pac_format_image=true*
 
 2) Check the compilation results. After compilation is complete, the log displays:
 

@@ -30,7 +30,7 @@ group("wukong100_group") {
 }
 
 # build a pac package
-action("make_custom_image") {
+action("make_pac_format_image") {
   script = "pac/uis7885_pac.sh"
   package_path = "${root_out_dir}/packages/phone/images"
   target_path = "always.build"
