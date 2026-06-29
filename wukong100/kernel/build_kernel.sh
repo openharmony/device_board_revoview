@@ -81,24 +81,24 @@ fi
 #fi
 #
 ##code sign
-#if [ -f $CODESIGN_PATCH_FILE ]; then
-#    bash $CODESIGN_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
-#fi
+if [ -f $CODESIGN_PATCH_FILE ]; then
+    bash $CODESIGN_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
+fi
 #
 ##xpm
-#if [ -f $XPM_PATCH_FILE ]; then
-#    bash $XPM_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
-#fi
+if [ -f $XPM_PATCH_FILE ]; then
+    bash $XPM_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
+fi
 #
 ##qos_auth
-#if [ -f $QOS_AUTH_PATCH_FILE ]; then
-#    bash $QOS_AUTH_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
-#fi
+if [ -f $QOS_AUTH_PATCH_FILE ]; then
+    bash $QOS_AUTH_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
+fi
 #
 ##ucollection
-#if [ -f $UNIFIED_COLLECTION_PATCH_FILE ]; then
-#    bash $UNIFIED_COLLECTION_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
-#fi
+if [ -f $UNIFIED_COLLECTION_PATCH_FILE ]; then
+    bash $UNIFIED_COLLECTION_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-5.15
+fi
 #selinux config patch
 #for arg in "$@"; do
 #    if [ "$arg" = "is_release" ]; then
