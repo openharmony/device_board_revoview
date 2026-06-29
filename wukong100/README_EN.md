@@ -110,7 +110,7 @@ pip3 install -i https://repo.huaweicloud.com/repository/pypi/simple requests
 1) Download via repo + ssh (requires public key registration, please refer to Gitee Help Center).
 
 ```
-repo init -u git@gitee.com:openharmony/manifest.git -b master --no-repo-verify
+repo init -u git@gitee.com:openharmony/manifest.git -b OpenHarmony-6.1-LTS --no-repo-verify
 
 repo sync -c
 
@@ -120,7 +120,7 @@ repo forall -c 'git lfs pull'
 2) Download via repo + https.
 
 ```
-repo init -u https://gitee.com/openharmony/manifest.git -b master --no-repo-verify
+repo init -u https://gitee.com/openharmony/manifest.git -b OpenHarmony-6.1-LTS --no-repo-verify
 
 repo sync -c
 

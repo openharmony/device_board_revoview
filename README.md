@@ -6,7 +6,7 @@
 
 |                          开发板名称                          | SoC型号 | 系统类型 |   领域   |
 | :----------------------------------------------------------: | :-----: | :------: | :------: |
-| [wukong100](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md) | UIS7885 | 标准系统 | 智慧媒体 |
+| [wukong100](https://gitcode.com/openharmony/device_board_revoview/blob/OpenHarmony-6.1-LTS/wukong100/README_zh.md) | UIS7885 | 标准系统 | 智慧媒体 |
 
 
 ## 目录
@@ -30,7 +30,7 @@
 
 ## 编译构建/使用方法
 
-[WUKONG100开发板使用说明](https://gitcode.com/openharmony-sig/device_board_revoview/blob/OpenHarmony_standard_p7885_rk3588_d3000m_20251103/wukong100/README_zh.md)
+[WUKONG100开发板使用说明](https://gitcode.com/openharmony/device_board_revoview/blob/OpenHarmony-6.1-LTS/wukong100/README_zh.md)
 
 
 ## 许可说明
@@ -40,6 +40,6 @@
 
 ## 相关仓
 
-[device_soc_revoview](https://gitcode.com/openharmony-sig/device_soc_unisoc)
+[device_soc_revoview](https://gitcode.com/openharmony/device_soc_unisoc)
 
-[vendor_revoview](https://gitcode.com/openharmony-sig/vendor_revoview)
+[vendor_revoview](https://gitcode.com/openharmony/vendor_revoview)
