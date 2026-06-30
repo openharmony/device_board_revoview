@@ -450,11 +450,14 @@ static int32_t RenderSetVolumeImpl(struct AlsaRender *renderIns, long volume)
     CHECK_NULL_PTR_RETURN_DEFAULT(cardIns);
     CHECK_NULL_PTR_RETURN_DEFAULT(priData);
 
-    float volumeHdi = (float)volume / AUDIO_VOLUME_TO_HDI_FLOAT_DIVISOR;
-    AUDIO_FUNC_LOGE("RenderSetVolumeImpl volume: %{public}ld, volumeHdi: %{public}f!", volume, volumeHdi);
-    ret = RenderSetVoiceVolumeImpl(renderIns, volumeHdi);
+    ret = SndElementWriteInt(cardIns, &priData->ctrlLeftVolume, volume);
     if (ret != HDF_SUCCESS) {
-        AUDIO_FUNC_LOGE("RenderSetVolumeImpl fail!");
+        AUDIO_FUNC_LOGE("Write left volume fail!");
+        return HDF_FAILURE;
+    }
+    ret = SndElementWriteInt(cardIns, &priData->ctrlRightVolume, volume);
+    if (ret != HDF_SUCCESS) {
+        AUDIO_FUNC_LOGE("Write right volume fail!");
         return HDF_FAILURE;
     }
     
