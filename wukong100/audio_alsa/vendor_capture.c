@@ -876,7 +876,7 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
     AUDIO_FUNC_LOGI("SetHWParamsVdi snd_pcm_hw_params end!");
-    cardIns->canPause = snd_pcm_hw_params_can_pause(hwParams);
+    cardIns->canPause = false;
     AUDIO_FUNC_LOGI("hardware driver %{public}s pause", cardIns->canPause ? "supports" : "does not support");
 
     return HDF_SUCCESS;
