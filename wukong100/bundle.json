@@ -17,7 +17,8 @@
         "device_wukong100_feature_preview_buffer_num",
         "device_wukong100_feature_photo_buffer_num",
         "device_wukong100_feature_buffer_partial_usage",
-        "device_wukong100_feature_return_timeout"
+        "device_wukong100_feature_return_timeout",
+        "device_wukong100_feature_stillcapture_discontinuous"
       ],
       "adapted_system_type": [ "standard" ],
       "hisysevent_config": [],
