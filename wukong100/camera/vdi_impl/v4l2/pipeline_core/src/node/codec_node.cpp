@@ -101,7 +101,7 @@ CodecNode::~CodecNode()
 
 RetCode CodecNode::Start(const int32_t streamId)
 {
-    CAMERA_LOGI("RKCodecNode::Start streamId = %{public}d\n", streamId);
+    CAMERA_LOGI("CodecNode::Start streamId = %{public}d\n", streamId);
     uint64_t bufferPoolId = 0;
     startflag = 0;
 
