@@ -165,7 +165,7 @@ bash build/prebuilts_download.sh
 
 1） 进入源码根目录，执行如下命令进行版本编译。
 
-*./build.sh --product-name wukong100 --ccache --gn-args make_custom_image=true*
+*./build.sh --product-name wukong100 --ccache --gn-args make_pac_format_image=true*
 
 2） 检查编译结果。编译完成后，log中显示如下：
 
