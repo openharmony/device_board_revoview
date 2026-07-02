@@ -1005,7 +1005,7 @@ static int32_t SetHWParamsVdi(struct AlsaSoundCard *cardIns)
         return HDF_FAILURE;
     }
 
-    cardIns->canPause = snd_pcm_hw_params_can_pause(hwParams);
+    cardIns->canPause = false;
     return HDF_SUCCESS;
 }
 
