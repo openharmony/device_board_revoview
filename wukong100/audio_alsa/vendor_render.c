@@ -383,18 +383,19 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
                 AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
                 return HDF_FAILURE;
             }
-            UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "update_device");
+            UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "UpdateDevice");
             if (updateDevice == NULL) {
-                AUDIO_FUNC_LOGE("update_device not defined or exported!");
+                AUDIO_FUNC_LOGE("UpdateDevice not defined or exported!");
                 return HDF_FAILURE;
             }
             ret = updateDevice(handleData->renderMode.hwInfo.deviceDescript.pins);
             if (ret < 0) {
-                AUDIO_FUNC_LOGE("render update_device failed");
+                AUDIO_FUNC_LOGE("render UpdateDevice failed");
                 return HDF_FAILURE;
             }
         }
     }
+    AUDIO_FUNC_LOGI("RenderSelectSceneImpl end");
     return HDF_SUCCESS;
 }
 
@@ -506,14 +507,14 @@ static int32_t UpdateDeviceSo(struct AlsaRender *renderIns)
         AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
         return HDF_FAILURE;
     }
-    UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "update_device");
+    UpdateFunc updateDevice = (UpdateFunc)dlsym(g_dlHandle, "UpdateDevice");
     if (updateDevice == NULL) {
-        AUDIO_FUNC_LOGE("update_device not defined or exported!");
+        AUDIO_FUNC_LOGE("UpdateDevice not defined or exported!");
         return HDF_FAILURE;
     }
     ret = updateDevice(renderIns->descPins);
     if (ret < 0) {
-        AUDIO_FUNC_LOGE("render update_device faild");
+        AUDIO_FUNC_LOGE("render UpdateDevice faild");
         return HDF_FAILURE;
     }
     return HDF_SUCCESS;
@@ -1149,9 +1150,9 @@ static int32_t RenderSetTurningImpl()
         AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
         return HDF_FAILURE;
     }
-    UploadFunc uploadAudio = (UploadFunc)dlsym(g_dlHandle, "upload_audio_profile_param_from_turnings");
+    UploadFunc uploadAudio = (UploadFunc)dlsym(g_dlHandle, "UploadAudioProfileParamFromTurnings");
     if (uploadAudio == NULL) {
-        AUDIO_FUNC_LOGE("upload_audio_profile_param_from_turnings not defined or exported!");
+        AUDIO_FUNC_LOGE("UploadAudioProfileParamFromTurnings not defined or exported!");
         return HDF_FAILURE;
     }
     ret = uploadAudio();
@@ -1177,9 +1178,9 @@ static int32_t RenderReadFromVoiceImpl(struct AlsaRender *renderIns, const char 
         AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
         return HDF_FAILURE;
     }
-    InitFunc deviceInit = (InitFunc)dlsym(g_dlHandle, "device_init");
+    InitFunc deviceInit = (InitFunc)dlsym(g_dlHandle, "DeviceInit");
     if (deviceInit == NULL) {
-        AUDIO_FUNC_LOGE("device_init not defined or exported!");
+        AUDIO_FUNC_LOGE("DeviceInit not defined or exported!");
         return HDF_FAILURE;
     }
 
@@ -1200,9 +1201,9 @@ static int32_t RenderCloseVoiceImpl(struct AlsaRender *renderIns)
         AUDIO_FUNC_LOGE("open libsprd_mock_effect_lib.z.so failed!");
         return HDF_FAILURE;
     }
-    CloseFunc deviceClose = (CloseFunc)dlsym(g_dlHandle, "device_close");
+    CloseFunc deviceClose = (CloseFunc)dlsym(g_dlHandle, "DeviceClose");
     if (deviceClose == NULL) {
-        AUDIO_FUNC_LOGE("device_close not defined or exported!");
+        AUDIO_FUNC_LOGE("DeviceClose not defined or exported!");
         return HDF_FAILURE;
     }
     AUDIO_FUNC_LOGE("RenderCloseVoiceImpl end");
