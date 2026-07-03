@@ -315,9 +315,7 @@ static int32_t ChangeScene(struct AlsaRender *renderIns, const struct AudioHwRen
     }
     PcmCloseHandle(&renderIns->soundCard);
     if (!SndisBusy(&renderIns->soundCard)) {
-        AUDIO_FUNC_LOGI("RenderSelectSceneImpl pcm is NULL");
-        AUDIO_FUNC_LOGI("ChangeScene g_currentScene: %{public}d", g_currentScene);
-        AUDIO_FUNC_LOGI("ChangeScene scene: %{public}d", scene);
+        AUDIO_FUNC_LOGI("ChangeScene g_currentScene: %{public}d, scene: %{public}d", g_currentScene, scene);
         g_currentScene = scene;
         if (scene == AUDIO_IN_CALL) {
             if (AudioMixerSetMuteOff(renderIns) < 0) {
@@ -395,7 +393,6 @@ static int32_t RenderSelectSceneImpl(struct AlsaRender *renderIns, const struct 
             }
         }
     }
-    AUDIO_FUNC_LOGI("RenderSelectSceneImpl end");
     return HDF_SUCCESS;
 }
 
