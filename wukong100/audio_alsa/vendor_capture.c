@@ -632,7 +632,11 @@ static int32_t SaveHwParams(struct AlsaSoundCard *cardIns, const struct AudioHwC
     cardIns->hwParams.format = handleData->frameCaptureMode.attrs.format;
     cardIns->hwParams.period = handleData->frameCaptureMode.attrs.period;
     cardIns->hwParams.frameSize = handleData->frameCaptureMode.attrs.frameSize;
-    cardIns->hwParams.isBigEndian = handleData->frameCaptureMode.attrs.isBigEndian;
+    if (handleData->frameCaptureMode.attrs.isBigEndian == true) {
+        cardIns->hwParams.isBigEndian = false;
+    } else {
+        cardIns->hwParams.isBigEndian = handleData->frameCaptureMode.attrs.isBigEndian;
+    }
     cardIns->hwParams.isSignedData = handleData->frameCaptureMode.attrs.isSignedData;
     cardIns->hwParams.startThreshold = handleData->frameCaptureMode.attrs.startThreshold;
     cardIns->hwParams.stopThreshold = handleData->frameCaptureMode.attrs.stopThreshold;
