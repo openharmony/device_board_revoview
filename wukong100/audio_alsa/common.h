@@ -61,6 +61,7 @@
 #define ALSA_CAP_BUFFER_SIZE                (2 * 2 * (CAPTURE_PERIOD_SIZE_DEFAULT))
 #define RATE_CALL                           8000
 #define CHANNEL_CALL                        1
+#define CHANNEL_DEFAULT                     2
 
 /* mute path */
 #define MIXER_MUTE_PATH_NUM                 4

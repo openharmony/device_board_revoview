@@ -766,6 +766,9 @@ static int32_t SetHWParamsSubVdi(
     }
 
     AUDIO_FUNC_LOGI("SetHWParamsSubVdi channels:%{public}d", cardIns->hwParams.channels);
+    if (cardIns->hwParams.channels != CHANNEL_CALL && cardIns->hwParams.channels != CHANNEL_DEFAULT) {
+        return HDF_FAILURE;
+    }
     ret = snd_pcm_hw_params_set_channels(handle, params, CHANNEL_CALL);
     if (ret < 0) {
         AUDIO_FUNC_LOGE("Channels count (%{public}u) not available for capture: %{public}s", cardIns->hwParams.channels,
