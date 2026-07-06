@@ -634,7 +634,7 @@ static int32_t SaveHwParams(struct AlsaSoundCard *cardIns, const struct AudioHwC
     cardIns->hwParams.period = handleData->frameCaptureMode.attrs.period;
     cardIns->hwParams.frameSize = handleData->frameCaptureMode.attrs.frameSize;
     if (handleData->frameCaptureMode.attrs.isBigEndian == true) {
-        cardIns->hwParams.isBigEndian = false;
+        return HDF_ERR_NOT_SUPPORT;
     } else {
         cardIns->hwParams.isBigEndian = handleData->frameCaptureMode.attrs.isBigEndian;
     }
