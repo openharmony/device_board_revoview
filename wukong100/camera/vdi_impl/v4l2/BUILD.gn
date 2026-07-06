@@ -22,7 +22,6 @@ declare_args() {
   device_wukong100_feature_photo_buffer_num = 3
   device_wukong100_feature_buffer_partial_usage = false
   device_wukong100_feature_return_timeout = 300
-  device_wukong100_feature_stillcapture_discontinuous = true
 }
 
 hc_gen("build_camera_host_config") {
@@ -217,10 +216,6 @@ ohos_shared_library("camera_host_vdi_impl_1.0") {
   }
   if (drivers_peripheral_camera_feature_usb) {
     defines += [ "CAMERA_BUILT_ON_USB" ]
-  }
-
-  if (device_wukong100_feature_stillcapture_discontinuous) {
-    defines += [ "STILLCAPTURE_DISCONTINUOUS" ]
   }
 
   if ((device_wukong100_feature_preview_buffer_num > 3) && (device_wukong100_feature_preview_buffer_num <= 8)) {
