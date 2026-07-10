@@ -231,7 +231,6 @@ static int32_t CaptureSelectSceneImpl(struct AlsaCapture *captureIns, const stru
             if (captureIns->soundCard.pcmHandle != NULL) {
                 snd_pcm_drop(captureIns->soundCard.pcmHandle);
             }
-            PcmCloseHandle(&captureIns->soundCard);
             if (!SndisBusy(&captureIns->soundCard)) {
                 AUDIO_FUNC_LOGI("CaptureSelectSceneImpl pcm is NULL");
                 g_currentScene = scene;
