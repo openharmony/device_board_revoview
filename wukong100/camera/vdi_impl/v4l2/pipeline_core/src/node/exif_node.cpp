@@ -52,14 +52,7 @@ void ExifNode::DeliverBuffer(std::shared_ptr<IBuffer> &buffer)
         return;
     }
 
-    int32_t id = buffer->GetStreamId();
-    outPutPorts_ = GetOutPorts();
-    for (auto &it : outPutPorts_) {
-        if (it->format_.streamId_ == id) {
-            it->DeliverBuffer(buffer);
-            return;
-        }
-    }
+    NodeBase::DeliverBuffer(buffer);
 }
 
 RetCode ExifNode::Config(const int32_t streamId, const CaptureMeta &meta)
