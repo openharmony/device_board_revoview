@@ -70,6 +70,8 @@ class CodecNode : public NodeBase {
     uint32_t jpegQuality_;
     u_char* bufferRotate_ = nullptr;
     int startflag = 0;
+    std::mutex stillcaptureMutex_;
+    int stillcaptureok_ = 0;
 };
 }  // namespace OHOS::Camera
 #endif
