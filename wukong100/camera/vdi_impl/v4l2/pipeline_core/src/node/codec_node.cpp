@@ -77,6 +77,10 @@ CodecNode::CodecNode(const std::string& name, const std::string& type,
                      const std::string& cameraId)
     : NodeBase(name, type, cameraId)
 {
+    {
+        std::lock_guard<std::mutex> guard(stillcaptureMutex_);
+        stillcaptureok_ = 0;
+    }
     if (bufferRotate_ != nullptr) {
         free(bufferRotate_);
         bufferRotate_ = nullptr;
@@ -90,6 +94,10 @@ CodecNode::CodecNode(const std::string& name, const std::string& type,
 
 CodecNode::~CodecNode()
 {
+    {
+        std::lock_guard<std::mutex> guard(stillcaptureMutex_);
+        stillcaptureok_ = 0;
+    }
     if (bufferRotate_ != nullptr) {
         free(bufferRotate_);
         bufferRotate_ = nullptr;
@@ -101,9 +109,13 @@ CodecNode::~CodecNode()
 
 RetCode CodecNode::Start(const int32_t streamId)
 {
-    CAMERA_LOGI("RKCodecNode::Start streamId = %{public}d\n", streamId);
+    CAMERA_LOGI("CodecNode::Start streamId = %{public}d\n", streamId);
     uint64_t bufferPoolId = 0;
     startflag = 0;
+    {
+        std::lock_guard<std::mutex> guard(stillcaptureMutex_);
+        stillcaptureok_ = 0;
+    }
 
     outPutPorts_ = GetOutPorts();
     for (auto& out : outPutPorts_) {
@@ -132,6 +144,10 @@ RetCode CodecNode::Stop(const int32_t streamId)
 {
     CAMERA_LOGI("CodecNode::Stop streamId = %{public}d\n", streamId);
     startflag = 0;
+    {
+        std::lock_guard<std::mutex> guard(stillcaptureMutex_);
+        stillcaptureok_ = 0;
+    }
     if (bufferRotate_ != nullptr) {
         free(bufferRotate_);
         bufferRotate_ = nullptr;
@@ -495,8 +511,7 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     mean.qualityLevel = HIGHQUALITYJPEG;
     mean.mirror = 0;
     mean.flip = 0;
-    CameraId cameraId = ConvertCameraId(cameraId_);
-    if (cameraId == CAMERA_FIRST) {
+    if (ConvertCameraId(cameraId_) == CAMERA_FIRST) {
         mean.rotation = 1;
     } else {
         mean.flip = 1;
@@ -518,10 +533,11 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
         dst.size.width = buffer->GetHeight();
         dst.size.height = buffer->GetWidth();
     }
-
     int jpegLength = 0;
     if (jpegencodecfunc(mean, src, dst, buffer->GetVirAddress()) == 0) {
         jpegLength = dst.bufSize;
+    } else {
+        buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
     }
     buffer->SetSize(jpegLength);
     buffer->SetEsFrameSize(jpegLength);
@@ -613,15 +629,22 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         CAMERA_LOGE("CodecNode::DeliverBuffer frameSpec is null");
         return;
     }
-
     int32_t id = buffer->GetStreamId();
-    CAMERA_LOGD("CodecNode::DeliverBuffer StreamId %{public}d, encode type : %{public}d", id, buffer->GetEncodeType());
+    CAMERA_LOGD("CodecNode::DeliverBuffer StreamId %{public}d, encodetype=%{public}d", id, buffer->GetEncodeType());
     if (buffer->GetBufferStatus() != CAMERA_BUFFER_STATUS_OK) {
         CAMERA_LOGE("CodecNode BufferStatus() != CAMERA_BUFFER_STATUS_OK StreamId %{public}d", id);
         return NodeBase::DeliverBuffer(buffer);
     }
     if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_JPEG) {
-        Yuv420ToJpegWithUnisoc(buffer);
+        {
+            std::lock_guard<std::mutex> guard(stillcaptureMutex_);
+            if (stillcaptureok_ == 0) {
+                Yuv420ToJpegWithUnisoc(buffer);
+                stillcaptureok_ = (buffer->GetBufferStatus() == CAMERA_BUFFER_STATUS_OK) ? 1 : 0;
+            } else {
+                buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
+            }
+        }
         CAMERA_LOGI("CodecNode::node codec enter jpeg,%{public}d", (int)buffer->GetSize());
         return NodeBase::DeliverBuffer(buffer);
     } else if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_H264) {
@@ -632,7 +655,6 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         buffer->SetEsTimestamp(GetPts());
         return NodeBase::DeliverBuffer(buffer);
     }
-
     CAMERA_LOGI("CodecNode::node buffer format = %{public}d", buffer->GetFormat());
     const int yuV420SizeUp = 3;
     const int yuV420SizeDown = 2;
@@ -649,7 +671,6 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         Yuv420spRot180(bufferRotate_, (u_char*)buffer->GetVirAddress(), buffer->GetWidth(), buffer->GetHeight());
         memcpy_s((void*)buffer->GetVirAddress(), buffer->GetSize(), (void*)bufferRotate_, yuvLength);
     }
-
     NodeBase::DeliverBuffer(buffer);
 }
 
@@ -657,7 +678,7 @@ RetCode CodecNode::Capture(const int32_t streamId, const int32_t captureId)
 {
     (void)streamId;
     (void)captureId;
-    CAMERA_LOGV("CodecNode::Capture");
+    CAMERA_LOGV("CodecNode::Capture streamid = %{public}d, captureid = %{public}d", streamId, captureId);
     return RC_OK;
 }
 
@@ -680,6 +701,10 @@ RetCode CodecNode::CancelCapture(const int32_t streamId)
                         streamId);
         }
         nodestatus = 0;
+    }
+    {
+        std::lock_guard<std::mutex> guard(stillcaptureMutex_);
+        stillcaptureok_ = 0;
     }
     return ret;
 }
