@@ -186,6 +186,7 @@ post_process
 [镜像烧录说明文档](https://gitcode.com/openharmony/device_board_revoview/tree/master/wukong100/tools)
 
 4）板卡烧录过程中若出现异常问题，请联系**板卡厂商**申请技术支持与咨询。
+5）设备内核源码仓：https://gitcode.com/oh-devboard-sig/linux-5.15
 
 
 
