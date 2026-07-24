@@ -483,6 +483,11 @@ RetCode HosV4L2Dev::StopStream(const std::string& cameraID)
     return RC_OK;
 }
 
+RetCode HosV4L2Dev::ProbeStreamOn(const std::string& cameraId)
+{
+    return RC_OK;   // no need to probe yet
+}
+
 RetCode HosV4L2Dev::FlashControl(const char* cmd, int cmd_len)
 {
     CAMERA_LOGI("HosV4L2Dev::FlashControl %{public}s", cmd);
