@@ -483,6 +483,31 @@ RetCode HosV4L2Dev::StopStream(const std::string& cameraID)
     return RC_OK;
 }
 
+RetCode HosV4L2Dev::ProbeStreamOn(const std::string& cameraId)
+{
+    CAMERA_LOGI("ProbeStreamOn enter, cameraID = %{public}s", cameraId.c_str());
+    int fd = GetCurrentFd(cameraId);
+    if (fd < 0) {
+        CAMERA_LOGE("ProbeStreamOn: GetCurrentFd error");
+        return RC_ERROR;
+    }
+    if (myStreams_ == nullptr) {
+        myStreams_ = std::make_shared<HosV4L2Streams>(bufferType_);
+        if (myStreams_ == nullptr) {
+            CAMERA_LOGE("ProbeStreamOn: myStreams_ make_shared failed");
+            return RC_ERROR;
+        }
+    }
+    RetCode rc = myStreams_->V4L2StreamOn(fd);
+    if (rc == RC_OK) {
+        myStreams_->V4L2StreamOff(fd);
+        CAMERA_LOGI("ProbeStreamOn success, cameraID = %{public}s", cameraId.c_str());
+    } else {
+        CAMERA_LOGE("ProbeStreamOn failed, cameraID = %{public}s", cameraId.c_str());
+    }
+    return rc;
+}
+
 RetCode HosV4L2Dev::FlashControl(const char* cmd, int cmd_len)
 {
     CAMERA_LOGI("HosV4L2Dev::FlashControl %{public}s", cmd);
