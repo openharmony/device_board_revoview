@@ -186,5 +186,5 @@ post_process
 [镜像烧录说明文档](https://gitcode.com/openharmony/device_board_revoview/tree/OpenHarmony-6.1-LTS/wukong100/tools)
 
 
-
+4）内核源码仓：https://gitcode.com/oh-devboard-sig/linux-5.15
 
