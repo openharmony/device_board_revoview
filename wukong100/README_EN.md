@@ -72,7 +72,7 @@ Table 2: WUKONG100 Development Kit Interface Specifications
 
 ### Operating System
 
-- Ubuntu 20.04 and above, X86_64 architecture, 16 GB or more memory recommended.
+- Ubuntu 22.04 and above, X86_64 architecture, 16 GB or more memory recommended.
 
 - Ubuntu system username cannot contain Chinese characters.
 
@@ -130,7 +130,7 @@ sudo update-alternatives --install /usr/bin/python3 python3 {Python 3.8 path} 1 
 1) Download via repo + ssh (requires public key registration, please refer to the GitCode Help Center).
 
 ```
-repo init -u git@gitcode.com:openharmony/manifest.git -b master
+repo init -u git@gitcode.com:openharmony/manifest.git -b OpenHarmony-6.1-LTS
 
 repo sync -c
 
@@ -140,7 +140,7 @@ repo forall -c 'git lfs pull'
 2) Download via repo + https.
 
 ```
-repo init -u https://gitcode.com/openharmony/manifest -b master
+repo init -u https://gitcode.com/openharmony/manifest -b OpenHarmony-6.1-LTS
 
 repo sync -c
 
@@ -183,6 +183,4 @@ Images are output in the out/wukong100/packages/phone/images/ directory.
 
 3) After source code compilation is complete, please proceed with image flashing.
 
-[Image Flashing Documentation](https://gitcode.com/openharmony/device_board_revoview/tree/master/wukong100/tools)
-
-4) If any abnormal issues occur during board flashing, please contact the **board manufacturer** for technical support and consultation.
+[Image Flashing Documentation](https://gitcode.com/openharmony/device_board_revoview/tree/OpenHarmony-6.1-LTS/wukong100/tools)
