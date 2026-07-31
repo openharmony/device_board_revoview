@@ -130,7 +130,7 @@ sudo update-alternatives --install /usr/bin/python3 python3 {Python 3.8 路径} 
 1） 通过repo + ssh 下载（需注册公钥，请参考码云帮助中心）。
 
 ```
-repo init -u git@gitcode.com:openharmony/manifest.git -b master
+repo init -u git@gitcode.com:openharmony/manifest.git -b OpenHarmony-7.0-Release
 
 repo sync -c
 
@@ -140,7 +140,7 @@ repo forall -c 'git lfs pull'
 2） 通过repo + https 下载。
 
 ```
-repo init -u https://gitcode.com/openharmony/manifest -b master
+repo init -u https://gitcode.com/openharmony/manifest -b OpenHarmony-7.0-Release
 
 repo sync -c
 

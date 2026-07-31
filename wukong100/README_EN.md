@@ -130,7 +130,7 @@ sudo update-alternatives --install /usr/bin/python3 python3 {Python 3.8 path} 1 
 1) Download via repo + ssh (requires public key registration, please refer to the GitCode Help Center).
 
 ```
-repo init -u git@gitcode.com:openharmony/manifest.git -b master
+repo init -u git@gitcode.com:openharmony/manifest.git -b OpenHarmony-7.0-Release
 
 repo sync -c
 
@@ -140,7 +140,7 @@ repo forall -c 'git lfs pull'
 2) Download via repo + https.
 
 ```
-repo init -u https://gitcode.com/openharmony/manifest -b master
+repo init -u https://gitcode.com/openharmony/manifest -b OpenHarmony-7.0-Release
 
 repo sync -c
 
