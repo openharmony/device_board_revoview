@@ -507,8 +507,96 @@ JpegEncodecFunc* CodecNode::DlDlsymJpegEncodecFunc()
     return jpegencodecfunctmp;
 }
 
+void CodecNode::SetJpegTransformParams(CameraId cameraId, JpgOpMean& mean)
+{
+    constexpr int ROTATION_90 = 90;
+    constexpr int ROTATION_180 = 180;
+    constexpr int ROTATION_270 = 270;
+    constexpr int ROTATION_NONE = 0;
+
+    if (cameraId == CAMERA_FIRST) {
+        // Front camera transformation
+        if (jpegRotation_ == ROTATION_90) {
+            mean.rotation = 1;
+        } else if (jpegRotation_ == ROTATION_180) {
+            mean.rotation = ROTATION_NONE;
+        } else if (jpegRotation_ == ROTATION_270) {
+            mean.flip = 1;
+            mean.mirror = 1;
+            mean.rotation = 1;
+        } else {
+            mean.flip = 1;
+            mean.rotation = ROTATION_NONE;
+            mean.mirror = 1;
+        }
+    } else {
+        // Back camera transformation
+        if (jpegMirror_) {
+            SetJpegTransformWithMirror(mean);
+        } else {
+            SetJpegTransformWithoutMirror(mean);
+        }
+    }
+}
+
+void CodecNode::SetJpegTransformWithMirror(JpgOpMean& mean)
+{
+    constexpr int ROTATION_90 = 90;
+    constexpr int ROTATION_180 = 180;
+    constexpr int ROTATION_270 = 270;
+    constexpr int ROTATION_NONE = 0;
+
+    if (jpegRotation_ == ROTATION_90) {
+        mean.flip = 1;
+        mean.rotation = 1;
+        mean.mirror = 0;
+    } else if (jpegRotation_ == ROTATION_180) {
+        mean.flip = 0;
+        mean.rotation = ROTATION_NONE;
+        mean.mirror = 1;
+    } else if (jpegRotation_ == ROTATION_270) {
+        mean.flip = 0;
+        mean.rotation = 1;
+        mean.mirror = 1;
+    } else {
+        mean.flip = 1;
+        mean.rotation = ROTATION_NONE;
+        mean.mirror = 0;
+    }
+}
+
+void CodecNode::SetJpegTransformWithoutMirror(JpgOpMean& mean)
+{
+    constexpr int ROTATION_90 = 90;
+    constexpr int ROTATION_180 = 180;
+    constexpr int ROTATION_270 = 270;
+    constexpr int ROTATION_NONE = 0;
+
+    if (jpegRotation_ == ROTATION_90) {
+        mean.flip = 1;
+        mean.rotation = 1;
+        mean.mirror = 1;
+    } else if (jpegRotation_ == ROTATION_180) {
+        mean.flip = 0;
+        mean.rotation = ROTATION_NONE;
+        mean.mirror = 0;
+    } else if (jpegRotation_ == ROTATION_270) {
+        mean.flip = 0;
+        mean.rotation = 1;
+        mean.mirror = 0;
+    } else {
+        mean.flip = 1;
+        mean.rotation = ROTATION_NONE;
+        mean.mirror = 1;
+    }
+}
+
 void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
 {
+    if (buffer == nullptr) {
+        return;
+    }
+
     if (jpegencodecfunc == nullptr) {
         jpegencodecfunc = DlDlsymJpegEncodecFunc();
         if (jpegencodecfunc == nullptr) {
@@ -516,9 +604,12 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
             return;
         }
     }
-    struct JpgOpMean mean;
-    struct YuvbufFrm src;
-    struct YuvbufFrm dst;
+
+    JpgOpMean mean = {};
+    YuvbufFrm src = {};
+    YuvbufFrm dst = {};
+
+    // Initialize JPG encoding parameters
     mean.sliceHeight = 0;
     mean.sliceMode = 0;
     mean.isThumb = 0;
@@ -526,62 +617,14 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     mean.qualityLevel = HIGHQUALITYJPEG;
     mean.mirror = 0;
     mean.flip = 0;
+
     CameraId cameraId = ConvertCameraId(cameraId_);
-    CAMERA_LOGE("Yuv420ToJpegWithUnisoc cameraId=%{public}d, jpegRotation_=%{public}d, jpegMirror_=%{public}d", 
+    CAMERA_LOGE("Yuv420ToJpegWithUnisoc cameraId=%{public}d, jpegRotation_=%{public}d, jpegMirror_=%{public}d",
         cameraId, jpegRotation_, jpegMirror_);
-    if (cameraId == CAMERA_FIRST) {
-        if (jpegRotation_ == 90) {
-            mean.rotation = 1;
-        } else if (jpegRotation_ == 180) {
-            mean.rotation = 0;
-        } else if (jpegRotation_ == 270) {
-            mean.flip = 1;
-            mean.mirror = 1;
-            mean.rotation = 1;
-        } else {
-            mean.flip = 1;
-            mean.rotation = 0;
-            mean.mirror = 1;
-        }
-    }  else {
-        if (jpegMirror_) {
-            if (jpegRotation_ == 90) {
-                mean.flip = 1;
-                mean.rotation = 1;
-                mean.mirror = 0;
-            } else if (jpegRotation_ == 180) {
-                mean.flip = 0;
-                mean.rotation = 0;
-                mean.mirror = 1;
-            } else if (jpegRotation_ == 270) {
-                mean.flip = 0;
-                mean.rotation = 1;
-                mean.mirror = 1;
-            } else {
-                mean.flip = 1;
-                mean.rotation = 0;
-                mean.mirror = 0;
-            }
-        } else {
-            if (jpegRotation_ == 90) {
-                mean.flip = 1;
-                mean.rotation = 1;
-                mean.mirror = 1;
-            } else if (jpegRotation_ == 180) {
-                mean.flip = 0;
-                mean.rotation = 0;
-                mean.mirror = 0;
-            } else if (jpegRotation_ == 270) {
-                mean.flip = 0;
-                mean.rotation = 1;
-                mean.mirror = 0;
-            } else {
-                mean.flip = 1;
-                mean.rotation = 0;
-                mean.mirror = 1;
-            }
-        }
-    }
+
+    SetJpegTransformParams(cameraId, mean);
+
+    // Configure source YUV frame
     src.fmt = JPEGENC_YUV_420;
     src.size.width = buffer->GetWidth();
     src.size.height = buffer->GetHeight();
@@ -589,8 +632,11 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
     src.addrPhy.addrU = buffer->GetWidth() * buffer->GetHeight();
     src.dataEnd.yEndian = 1;
     src.dataEnd.uvEndian = YUV420UVENDIAN;
+
+    // Configure destination frame
     dst.addrPhy.addrY = 0;
     dst.bufSize = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
+
     if (mean.rotation == 0) {
         dst.size.width = buffer->GetWidth();
         dst.size.height = buffer->GetHeight();
@@ -598,12 +644,15 @@ void CodecNode::Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer)
         dst.size.width = buffer->GetHeight();
         dst.size.height = buffer->GetWidth();
     }
+
+    // Perform JPEG encoding
     int jpegLength = 0;
     if (jpegencodecfunc(mean, src, dst, buffer->GetVirAddress()) == 0) {
         jpegLength = dst.bufSize;
     } else {
         buffer->SetBufferStatus(CAMERA_BUFFER_STATUS_INVALID);
     }
+
     buffer->SetSize(jpegLength);
     buffer->SetEsFrameSize(jpegLength);
 }
@@ -688,7 +737,7 @@ static uint64_t GetPts()
     return time;
 }
 
-void dumpBuffer(const void *bufStart, const uint32_t size, const char *name)
+void DumpBuffer(const void *bufStart, const uint32_t size, const char *name)
 {
     constexpr uint32_t pathLen = 128;
     char path[pathLen] = {0};
@@ -699,23 +748,19 @@ void dumpBuffer(const void *bufStart, const uint32_t size, const char *name)
 
     struct timeval start = {};
     gettimeofday(&start, nullptr);
-    // ret = sprintf_s(path, sizeof(path), "%s1.raw", prefix);
     ret = sprintf_s(path, sizeof(path), "%s%s%ld.raw", prefix, name, start.tv_usec);
-    // ret = sprintf_s(path, sizeof(path), "%sIMG_2023825_172509.jpg", prefix, start.tv_usec);
-    if ( ret < 0) {
+
+    if (ret < 0) {
         CAMERA_LOGE("demo test:sprintf_s error .....\n");
         return;
     }
-
-    int ERRnum = 0;    
-    imgFD = fopen(path,"wb");
-    // imgFD = open(path, O_RDWR | O_CREAT, 00766); // 00766:file operate permission
-    if (imgFD == NULL) {
-        ERRnum = errno;
-        CAMERA_LOGE("demo test:fopen image file [%{public}s] error %{public}s.....\n",path, strerror(ERRnum));
+  
+    imgFD = fopen(path, "wb");
+    if (imgFD == nullptr) {
+        ret = errno;
+        CAMERA_LOGE("demo test:fopen image file [%{public}s] error %{public}s.....\n", path, strerror(ret));
         return;
     }
-    CAMERA_LOGE("demo test: chenliu: read ok .....\n");
     CAMERA_LOGD("demo test:dumpImage %{public}s buf_start == %{public}p size == %{public}d\n", path, bufStart, size);
 
     ret = fwrite(bufStart, size, 1, imgFD);
@@ -723,7 +768,7 @@ void dumpBuffer(const void *bufStart, const uint32_t size, const char *name)
         CAMERA_LOGE("demo test:write image file error %{public}s.....\n", strerror(errno));
     }
 
-    fclose(imgFD);
+    ret = fclose(imgFD);
 }
 
 void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
@@ -739,7 +784,7 @@ void CodecNode::DeliverBuffer(std::shared_ptr<IBuffer>& buffer)
         return NodeBase::DeliverBuffer(buffer);
     }
     if (buffer->GetEncodeType() == VDI::Camera::V1_0::ENCODE_TYPE_JPEG) {
-        dumpBuffer((void*)buffer->GetVirAddress(), buffer->GetSize(), "dump_before_picture_");
+        DumpBuffer((void*)buffer->GetVirAddress(), buffer->GetSize(), "dump_before_picture_");
         {
             std::lock_guard<std::mutex> guard(stillcaptureMutex_);
             if (stillcaptureok_ == 0) {
