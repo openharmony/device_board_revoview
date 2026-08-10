@@ -512,21 +512,21 @@ void CodecNode::SetJpegTransformParams(CameraId cameraId, JpgOpMean& mean)
     constexpr int ROTATION_90 = 90;
     constexpr int ROTATION_180 = 180;
     constexpr int ROTATION_270 = 270;
-    constexpr int ROTATION_NONE = 0;
+    constexpr int ROTATION_0 = 0;
 
     if (cameraId == CAMERA_FIRST) {
         // Front camera transformation
         if (jpegRotation_ == ROTATION_90) {
             mean.rotation = 1;
         } else if (jpegRotation_ == ROTATION_180) {
-            mean.rotation = ROTATION_NONE;
+            mean.rotation = ROTATION_0;
         } else if (jpegRotation_ == ROTATION_270) {
             mean.flip = 1;
             mean.mirror = 1;
             mean.rotation = 1;
         } else {
             mean.flip = 1;
-            mean.rotation = ROTATION_NONE;
+            mean.rotation = ROTATION_0;
             mean.mirror = 1;
         }
     } else {
@@ -544,7 +544,7 @@ void CodecNode::SetJpegTransformWithMirror(JpgOpMean& mean)
     constexpr int ROTATION_90 = 90;
     constexpr int ROTATION_180 = 180;
     constexpr int ROTATION_270 = 270;
-    constexpr int ROTATION_NONE = 0;
+    constexpr int ROTATION_0 = 0;
 
     if (jpegRotation_ == ROTATION_90) {
         mean.flip = 1;
@@ -552,7 +552,7 @@ void CodecNode::SetJpegTransformWithMirror(JpgOpMean& mean)
         mean.mirror = 0;
     } else if (jpegRotation_ == ROTATION_180) {
         mean.flip = 0;
-        mean.rotation = ROTATION_NONE;
+        mean.rotation = ROTATION_0;
         mean.mirror = 1;
     } else if (jpegRotation_ == ROTATION_270) {
         mean.flip = 0;
@@ -560,7 +560,7 @@ void CodecNode::SetJpegTransformWithMirror(JpgOpMean& mean)
         mean.mirror = 1;
     } else {
         mean.flip = 1;
-        mean.rotation = ROTATION_NONE;
+        mean.rotation = ROTATION_0;
         mean.mirror = 0;
     }
 }
@@ -570,7 +570,7 @@ void CodecNode::SetJpegTransformWithoutMirror(JpgOpMean& mean)
     constexpr int ROTATION_90 = 90;
     constexpr int ROTATION_180 = 180;
     constexpr int ROTATION_270 = 270;
-    constexpr int ROTATION_NONE = 0;
+    constexpr int ROTATION_0 = 0;
 
     if (jpegRotation_ == ROTATION_90) {
         mean.flip = 1;
@@ -578,7 +578,7 @@ void CodecNode::SetJpegTransformWithoutMirror(JpgOpMean& mean)
         mean.mirror = 1;
     } else if (jpegRotation_ == ROTATION_180) {
         mean.flip = 0;
-        mean.rotation = ROTATION_NONE;
+        mean.rotation = ROTATION_0;
         mean.mirror = 0;
     } else if (jpegRotation_ == ROTATION_270) {
         mean.flip = 0;
@@ -586,7 +586,7 @@ void CodecNode::SetJpegTransformWithoutMirror(JpgOpMean& mean)
         mean.mirror = 0;
     } else {
         mean.flip = 1;
-        mean.rotation = ROTATION_NONE;
+        mean.rotation = ROTATION_0;
         mean.mirror = 1;
     }
 }
@@ -742,19 +742,16 @@ void DumpBuffer(const void *bufStart, const uint32_t size, const char *name)
     constexpr uint32_t pathLen = 128;
     char path[pathLen] = {0};
     char prefix[] = "/data/";
-
-    FILE *imgFD = 0;
+    FILE *imgFD = nullptr;
     int ret;
 
     struct timeval start = {};
     gettimeofday(&start, nullptr);
     ret = sprintf_s(path, sizeof(path), "%s%s%ld.raw", prefix, name, start.tv_usec);
-
     if (ret < 0) {
         CAMERA_LOGE("demo test:sprintf_s error .....\n");
         return;
     }
-  
     imgFD = fopen(path, "wb");
     if (imgFD == nullptr) {
         ret = errno;
