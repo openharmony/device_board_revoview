@@ -55,6 +55,7 @@ class CodecNode : public NodeBase {
     unsigned char Clip(const int value) const;
     RetCode ConfigJpegOrientation(common_metadata_header_t* data);
     RetCode ConfigJpegQuality(common_metadata_header_t* data);
+    RetCode ConfigJpegMirror(common_metadata_header_t* data);
     RetCode Config(const int32_t streamId, const CaptureMeta& meta);
     void Yuv420ToJpegWithUnisoc(std::shared_ptr<IBuffer>& buffer);
     int Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
@@ -68,6 +69,7 @@ class CodecNode : public NodeBase {
     std::shared_ptr<IBufferPool> bufferPool_ = nullptr;
     uint32_t jpegRotation_;
     uint32_t jpegQuality_;
+    uint8_t jpegMirror_ = 0;
     u_char* bufferRotate_ = nullptr;
     int startflag = 0;
     std::mutex stillcaptureMutex_;
