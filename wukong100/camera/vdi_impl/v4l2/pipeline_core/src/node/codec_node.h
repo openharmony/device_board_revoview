@@ -61,6 +61,10 @@ class CodecNode : public NodeBase {
     int Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer,
                                const uint32_t& frameSize);
 
+    void SetJpegTransformParams(CameraId cameraId, JpgOpMean& mean);
+    void SetJpegTransformWithMirror(JpgOpMean& mean);
+    void SetJpegTransformWithoutMirror(JpgOpMean& mean);
+
     unsigned char* previewTempBuff_ = nullptr;
 
     std::atomic<unsigned int> status{0};
