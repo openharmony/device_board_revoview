@@ -15,8 +15,11 @@
 
 #include "alsa_snd_render.h"
 #include "common.h"
+#include <unistd.h>
 
 #define HDF_LOG_TAG HDF_AUDIO_HAL_RENDER
+#define CALL_CAPTURE_RETRY_COUNT 5
+#define CALL_CAPTURE_RETRY_DELAY_US (100 * 1000)
 
 static enum AudioCategory g_currentScene = AUDIO_MMAP_NOIRQ; // render the current scene
 void *g_dlHandle;
@@ -236,26 +239,38 @@ static int32_t ReOpenPcmAndSetParams(struct AlsaRender *renderIns, const struct 
 static int32_t OpenCapturePcmAndSetParams()
 {
     int32_t ret;
-    AUDIO_FUNC_LOGI("snd_pcm_open capture hw:0,5 !");
-    ret = snd_pcm_open(&CaptureHandle, SND_CALL_CAPTURE_DEV, SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("Open Capture hw:0,5 fail");
-        return HDF_FAILURE;
+    for (int32_t i = 0; i < CALL_CAPTURE_RETRY_COUNT; i++) {
+        AUDIO_FUNC_LOGI("snd_pcm_open capture hw:0,5 !");
+        ret = snd_pcm_open(&CaptureHandle, SND_CALL_CAPTURE_DEV, SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
+        if (ret < 0) {
+            AUDIO_FUNC_LOGE("Open Capture hw:0,5 fail");
+            CaptureHandle = NULL;
+            break;
+        }
+
+        ret = SetHWParamsCapture(CaptureHandle);
+        if (ret < 0) {
+            AUDIO_FUNC_LOGE("SetHWParamsCapture fail");
+        } else {
+            ret = snd_pcm_prepare(CaptureHandle);
+            if (ret < 0) {
+                AUDIO_FUNC_LOGE("snd_pcm_prepare fail: %{public}s", snd_strerror(ret));
+            }
+        }
+
+        if (ret >= 0) {
+            return HDF_SUCCESS;
+        }
+
+        /* capture BE 路由未就绪时 hw params 会失败，关闭句柄后延时重试 */
+        snd_pcm_close(CaptureHandle);
+        CaptureHandle = NULL;
+        if (i < CALL_CAPTURE_RETRY_COUNT - 1) {
+            usleep(CALL_CAPTURE_RETRY_DELAY_US);
+        }
     }
 
-    ret = SetHWParamsCapture(CaptureHandle);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("SetHWParamsCapture fail");
-        return HDF_FAILURE;
-    }
-
-    ret = snd_pcm_prepare(CaptureHandle);
-    if (ret < 0) {
-        AUDIO_FUNC_LOGE("snd_pcm_prepare fail: %{public}s", snd_strerror(ret));
-        return HDF_FAILURE;
-    }
-
-    return HDF_SUCCESS;
+    return HDF_FAILURE;
 }
 
 static int32_t RenderInitImpl(struct AlsaRender *renderIns)
