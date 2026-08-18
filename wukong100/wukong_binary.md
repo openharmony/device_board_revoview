@@ -227,7 +227,7 @@
     <td>libsprd7885_tele_<br>adapter_1.0.z.so</td>
     <td>\device_soc_unisoc\p7885\hardware\modem\telephony\<br>lib64\libsprd7885_tele_adapter_1.0.z.so</td>
     <td>电话服务或 Modem 适配工具库</td>
-    <td>后续将ril相关的标准接口实现并开源，7月8号前在OH7.0版本中完成</td>
+    <td>后续将ril相关的标准接口实现并开源。</td>
   </tr>
   <!-- NPU 组（7行合并） -->
   <tr>
@@ -338,7 +338,7 @@
     <td>agdsp_pd.ko</td>
     <td>\device_soc_unisoc\p7885\modules\audio\<br>agdsp_pd.ko</td>
     <td rowspan="27">内核模块，音频驱动，DSP或功放</td>
-    <td rowspan="30">内核6.6适配完成后，将删除ko。7月8号前在OH7.0版本中完成</td>
+    <td rowspan="30">内核6.6适配完成后，将删除ko。</td>
   </tr>
   <tr>
     <td>audio-dsp-dump.ko</td>
@@ -486,13 +486,13 @@
     <td>boot.img</td>
     <td>\device_soc_unisoc\p7885\pac\ImageFiles\<br>boot.img</td>
     <td>内核镜像</td>
-    <td>在内核6.6适配完成后，删除img，7月8号前在OH7.0版本中完成</td>
+    <td>在内核6.6适配完成后，删除img。</td>
   </tr>
   <tr>
     <td>dtbo.img</td>
     <td>\device_soc_unisoc\p7885\pac\ImageFiles\<br>dtbo.img</td>
     <td>DTBO镜像</td>
-    <td>在内核6.6适配完成后，删除img，7月8号前在OH7.0版本中完成</td>
+    <td>在内核6.6适配完成后，删除img。</td>
   </tr>
   <!-- PAC 镜像组 -->
   <tr>
@@ -539,7 +539,7 @@
     <td>libgralloctypes.z.so</td>
     <td>\device_soc_unisoc\p7885\unisoc_wrapper\frameworks\<br>native\libs\gralloc\types\lib64\libgralloctypes.z.so</td>
     <td rowspan="3">Unisoc需要配合OHOS接口</td>
-    <td rowspan="3">后续删除so，7月8号前在OH7.0版本中完成</td>
+    <td rowspan="3">后续删除so。</td>
   </tr>
   <tr>
     <td>libnativewindow.z.so</td>
@@ -553,7 +553,7 @@
     <td>liballocator2.0.z.so</td>
     <td>\device_soc_unisoc\p7885\unisoc_wrapper\hardware\<br>interfaces\graphics\allocator\2.0\lib64\liballocator2.0.z.so</td>
     <td rowspan="11">Unisoc图形显示、内存分配 (Gralloc) ，Mapper的关联支持库</td>
-    <td rowspan="11">需要配合mali库做统一整改，整改后删除so，7月8号前在OH7.0版本中完成</td>
+    <td rowspan="11">需要配合mali库做统一整改，整改后删除so。</td>
   </tr>
   <tr>
     <td>liballocator3.0.z.so</td>
@@ -612,13 +612,13 @@
     <td>libgrallocusage.z.so</td>
     <td>\device_soc_unisoc\p7885\unisoc_wrapper\system\core\<br>libgrallocusage\lib64\libgrallocusage.z.so</td>
     <td>buffer usage转换</td>
-    <td>Unisoc需要配合OHOS接口整改，整改后删除so，7月8号前在OH7.0版本中完成</td>
+    <td>Unisoc需要配合OHOS接口整改，整改后删除so。</td>
   </tr>
   <tr>
     <td>libsync_adapter.z.so</td>
     <td>\device_soc_unisoc\p7885\unisoc_wrapper\system\<br>core\libsync\lib64\libsync_adapter.z.so</td>
     <td rowspan="4">支撑工具</td>
-    <td rowspan="4">整改后删除，7月8号前在OH7.0版本中完成</td>
+    <td rowspan="4">整改后删除。</td>
   </tr>
   <tr>
     <td>libhidlbase.z.so</td>
