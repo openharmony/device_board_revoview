@@ -101,9 +101,13 @@ static int32_t UpdateAudioRenderRoute(struct AlsaRender *renderIns, const struct
     int32_t devCount = handleData->renderMode.hwInfo.pathSelect.deviceInfo.deviceNum;
 
     AUDIO_FUNC_LOGI("UpdateAudioRenderRoute devCount:%{public}d!", devCount);
-    if (devCount <= 0 || devCount > PATHPLAN_COUNT) {
+    if (devCount <= 0) {
         AUDIO_FUNC_LOGE("devCount is error!");
         return HDF_FAILURE;
+    }
+    if (devCount > PATHPLAN_COUNT) {
+        AUDIO_FUNC_LOGW("devCount exceeds PATHPLAN_COUNT, clamp to %{public}d!", PATHPLAN_COUNT);
+        devCount = PATHPLAN_COUNT;
     }
 
     struct AlsaMixerCtlElement elems[devCount];
