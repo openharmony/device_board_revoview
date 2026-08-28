@@ -679,7 +679,12 @@ static void SetInput(MMInputParams &input, int width, int height)
 
 int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, const uint32_t& frameSize)
 {
-    unsigned int size = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
+
+    uint32_t width = buffer->GetWidth();
+    uint32_t height = buffer->GetHeight();
+    unsigned int size = width * height * YUV420SIZEUP / YUV420SIZEDOWN;
+    CAMERA_LOGI("H264 buf=%{public}u*%{public}u, size=%{public}u",
+        width, height, size);
     if (bufferRotate_ == nullptr) {
         bufferRotate_ = (u_char*)malloc(size);
         if (!bufferRotate_) {
@@ -687,10 +692,35 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, const ui
         }
     }
 
+    constexpr int ROTATION_90 = 90;
+    constexpr int ROTATION_180 = 180;
+    constexpr int ROTATION_270 = 270;
+    constexpr int ROTATION_0 = 0;
+
+    CAMERA_LOGI("aaaaaa Yuv420ToH264WithUnisoc cameraId=%{public}s, jpegRotation_=%{public}d, jpegMirror_=%{public}d",
+        cameraId_.c_str(), jpegRotation_, jpegMirror_);
+
     if (ConvertCameraId(cameraId_) != CAMERA_FIRST) {
-        Yuv420RotVMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(), buffer->GetWidth(), buffer->GetHeight());
-        if (memcpy_s((void*)buffer->GetVirAddress(), size, (void*)bufferRotate_, size) != 0) {
-            return -1;
+        if (jpegMirror_) {
+            if (jpegRotation_ == ROTATION_90 || jpegRotation_ == ROTATION_270) {
+                Yuv420RotVMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(), width, height);
+                if (memcpy_s((void*)buffer->GetVirAddress(), size, (void*)bufferRotate_, size) != 0) {
+                    return -1;
+                }
+            } else {
+                Yuv420RotHMirror(bufferRotate_, (u_char*)buffer->GetVirAddress(), width, height);
+                if (memcpy_s((void*)buffer->GetVirAddress(), size, (void*)bufferRotate_, size) != 0) {
+                    return -1;
+                }
+            }
+            
+        } else {
+            if (jpegRotation_ != ROTATION_270 && jpegRotation_ != ROTATION_90) {
+                Yuv420spRot180(bufferRotate_, (u_char*)buffer->GetVirAddress(), width, height);
+                if (memcpy_s((void*)buffer->GetVirAddress(), size, (void*)bufferRotate_, size) != 0) {
+                    return -1;
+                }
+            }
         }
     }
 
