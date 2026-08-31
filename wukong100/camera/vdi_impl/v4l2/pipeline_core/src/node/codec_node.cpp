@@ -665,8 +665,9 @@ static void SetInput(MMInputParams &input, int width, int height)
     return;
 }
 
-RetCode CodecNode::ApplyH264Transform(std::unique_ptr<u_char[]>& bufferRotate, std::shared_ptr<IBuffer>& buffer, 
-                           int32_t rotation, bool mirror, const std::string& cameraId) {
+RetCode CodecNode::ApplyH264Transform(std::unique_ptr<u_char[]>& bufferRotate, std::shared_ptr<IBuffer>& buffer,
+                           int32_t rotation, bool mirror, const std::string& cameraId)
+{
     uint32_t bufferSize = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
 
     if (!bufferRotate) {
@@ -683,14 +684,14 @@ RetCode CodecNode::ApplyH264Transform(std::unique_ptr<u_char[]>& bufferRotate, s
 
     if (mirror) {
         if (rotation == ROTATION_90 || rotation == ROTATION_270) {
-            Yuv420RotVMirror(bufferRotate.get(), static_cast<u_char*>(buffer->GetVirAddress()), 
+            Yuv420RotVMirror(bufferRotate.get(), static_cast<u_char*>(buffer->GetVirAddress()),
                              buffer->GetWidth(), buffer->GetHeight());
         } else {
-            Yuv420RotHMirror(bufferRotate.get(), static_cast<u_char*>(buffer->GetVirAddress()), 
+            Yuv420RotHMirror(bufferRotate.get(), static_cast<u_char*>(buffer->GetVirAddress()),
                              buffer->GetWidth(), buffer->GetHeight());
         }
     } else if (rotation != ROTATION_270 && rotation != ROTATION_90) {
-        Yuv420spRot180(bufferRotate.get(), static_cast<u_char*>(buffer->GetVirAddress()), 
+        Yuv420spRot180(bufferRotate.get(), static_cast<u_char*>(buffer->GetVirAddress()),
                        buffer->GetWidth(), buffer->GetHeight());
     } else {
         // 不需要变换的情况
@@ -736,10 +737,8 @@ int CodecNode::Yuv420ToH264WithUnisoc(std::shared_ptr<IBuffer>& buffer, const ui
         }
         startflag = 1;
     }
-
     int type = 0;
     int ret = h264Encoder->VspEnc(&input, reinterpret_cast<char*>(buffer->GetVirAddress()), frameSize, type);
-
     if (ret == 0) {
         if (type == 0) {
             buffer->SetEsKeyFrame(1);
