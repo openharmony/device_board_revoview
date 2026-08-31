@@ -64,7 +64,7 @@ class CodecNode : public NodeBase {
     void SetJpegTransformParams(CameraId cameraId, JpgOpMean& mean);
     void SetJpegTransformWithMirror(JpgOpMean& mean);
     void SetJpegTransformWithoutMirror(JpgOpMean& mean);
-    RetCode ApplyH264Transform(std::unique_ptr<u_char[]>& bufferRotate, std::shared_ptr<IBuffer>& buffer, 
+    RetCode ApplyH264Transform(std::unique_ptr<u_char[]>& bufferRotate, std::shared_ptr<IBuffer>& buffer,
                            int32_t rotation, bool mirror, const std::string& cameraId);
 
     unsigned char* previewTempBuff_ = nullptr;
