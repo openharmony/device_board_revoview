@@ -666,7 +666,7 @@ static void SetInput(MMInputParams &input, int width, int height)
 }
 
 RetCode CodecNode::ApplyH264Transform(std::unique_ptr<u_char[]>& bufferRotate, std::shared_ptr<IBuffer>& buffer,
-                           int32_t rotation, bool mirror, const std::string& cameraId)
+    int32_t rotation, bool mirror, const std::string& cameraId)
 {
     uint32_t bufferSize = buffer->GetWidth() * buffer->GetHeight() * YUV420SIZEUP / YUV420SIZEDOWN;
 
