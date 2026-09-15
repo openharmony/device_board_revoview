@@ -21,6 +21,8 @@ curr=$(pwd -P)
 basepath=$2
 script_path=$2/Script
 secboot=0
+bin_out_dir=""
+
 # args from build.sh or from bash execue
 if [[ $# -ge 1 ]]; then
 package_path=$1
@@ -28,12 +30,17 @@ else
 package_path=`cd ../../../../../out/wukong100/packages/phone/images; pwd`
 fi
 
-# secboot
-if [[ $# -ge 3 ]]; then
-  if [[ $3 -eq "secboot" ]]; then
+# Parse arguments:
+#   $1: package_path (required)
+#   $2: script_path/ImageFiles dir (required)
+#   remaining: "secboot" flag and/or bin_out_dir path
+for arg in "${@:3}"; do
+  if [[ "$arg" == "secboot" ]]; then
     secboot=1
+  elif [[ -n "$arg" ]]; then
+    bin_out_dir="$arg"
   fi
-fi
+done
 
 # some prebuild img here
 if [ $secboot -eq 1 ]; then
@@ -60,11 +67,11 @@ fi
 
 # cp image to work path
 cp $package_path/*.img $work_path -rfv
-#if [ $secboot -eq 1 ]; then
-#    cp $package_path/*.bin $work_path/secboot_img -rfv
-#else
-#    cp $package_path/*.bin $work_path -rfv
-#fi
+
+# cp decrypted .bin firmware from output dir to work path
+if [[ -n "$bin_out_dir" ]]; then
+    cp $bin_out_dir/*.bin $work_path -rfv
+fi
 
 # hvbtool sign image
 if [ $secboot -eq 1 ]; then

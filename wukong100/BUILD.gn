@@ -31,24 +31,31 @@ action("make_pac_format_image") {
   package_path = "${root_out_dir}/packages/phone/images"
   target_path = "always.build"
   script_path = "//device/soc/unisoc/p7885/pac/ImageFiles"
+  bin_out_dir = get_label_info(
+    "//device/soc/unisoc/p7885/pac:encrypt_uboot_image",
+    "target_out_dir")
 
   if (defined(global_parts_info.startup_hvb)) {
     args = [
       rebase_path(package_path),
       rebase_path(script_path),
-      "secboot"
+      "secboot",
+      rebase_path(bin_out_dir, root_build_dir),
     ]
   }
   else {
     args = [
       rebase_path(package_path),
-      rebase_path(script_path)
+      rebase_path(script_path),
+      rebase_path(bin_out_dir, root_build_dir),
     ]
   }
   outputs = [ "${package_path}/${target_path}" ]
 
-  # must build after make_images
+  # build after make_images (generate .img files) and
+  # encrypt_uboot_image (GPG-decrypt uboot.tar.gz.gpg -> .bin into output dir)
   deps = [
     "//build/ohos/images:make_images",
+    "//device/soc/unisoc/p7885/pac:encrypt_uboot_image",
   ]
 }
