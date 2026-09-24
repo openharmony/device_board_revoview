@@ -19,6 +19,10 @@ group("wukong100_group") {
   deps = [
     "cfg:init_configs",
     "distributedhardware:distributedhardware",
+    #"lk:lk",
+    "kernel:kernel",
+    "//vendor/revoview/wukong100/modules:modules",
+    #"updater:updater_files",
     "//device/board/revoview/wukong100/camera/vdi_impl/v4l2:camera_board_vdi_impl",
     "//third_party/alsa-lib:libasound",
     "//third_party/alsa-utils:entry",
@@ -57,5 +61,7 @@ action("make_pac_format_image") {
   deps = [
     "//build/ohos/images:make_images",
     "//device/soc/unisoc/p7885/pac:encrypt_uboot_image",
+    "kernel:make_boot_updater_image",
+    "kernel:make_boot_image",
   ]
 }
