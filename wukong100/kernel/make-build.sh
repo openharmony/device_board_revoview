@@ -17,7 +17,7 @@ set -e
 set -x
 # ${1} is root_build_dir from BUILD.gn
 echo root_build_dir give us '${1}'
-KERNEL_PATH=${1}/kernel/src_tmp/linux-5.15
+KERNEL_PATH=${1}/kernel/src_tmp/linux-6.6
 
 cp -f ${1}/packages/phone/images/${2}.img ${KERNEL_PATH}/mkboot/dist/
 cd ${KERNEL_PATH}

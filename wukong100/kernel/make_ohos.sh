@@ -22,7 +22,7 @@ echo kernel TARGET_BUILD_VARIANT is $TARGET_BUILD_VARIANT
 
 export PATH=$DIR/../../../../../prebuilts/clang/ohos/linux-x86_64/llvm/bin/:$DIR/../../../../../prebuilts/develop_tools/pahole/bin/:$PATH
 export PRODUCT_PATH=vendor/revoview/wukong100 
-export KBUILD_OUTPUT=../../OBJ/linux-5.15
+export KBUILD_OUTPUT=../../OBJ/linux-6.6
 
 CPUs=`sed -n "N;/processor/p" /proc/cpuinfo|wc -l`
 MAKE="make LLVM=1 LLVM_IAS=1 CROSS_COMPILE=aarch64-linux-gnu-"
