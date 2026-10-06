@@ -25,10 +25,7 @@ ohos_prebuilt_etc("init.uis7885.usb.cfg") {
   source = "init.uis7885.usb.cfg"
   part_name = "device_wukong100"
   subsystem_name = "device_wukong100"
-  install_images = [
-    chipset_base_dir,
-    "updater",
-  ]
+  install_images = [ chipset_base_dir ]
   install_enable = true
 }
 
