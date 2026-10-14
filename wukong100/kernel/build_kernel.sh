@@ -67,8 +67,11 @@ cp -rf ${ROOT_DIR}/device/board/revoview/${2}/kernel/make-build.sh ${KERNEL_SRC_
 
 mkdir -p ${KERNEL_SRC_TMP_PATH}/mkboot/dist
 
+#kernel patch
+    patch -p1 < ${KERNEL_PATCH}
+
 #HDF patch
-bash ${ROOT_DIR}/drivers/hdf_core/adapter/khdf/linux/patch_hdf.sh ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${KERNEL_PATCH_PATH} wukong100
+bash ${ROOT_DIR}/drivers/hdf_core/adapter/khdf/linux/patch_hdf.sh ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${HDF_PATCH} wukong100
 
     #update linux-6.6 kernel stdarg.h path to linux/stdarg.h
           sed -i 's/<stdarg.h>/<linux\/stdarg.h>/' ${KERNEL_SRC_TMP_PATH}/bounds_checking_function/include/securec.h
@@ -78,10 +81,6 @@ bash ${ROOT_DIR}/drivers/hdf_core/adapter/khdf/linux/patch_hdf.sh ${ROOT_DIR} ${
 if [ -f $DEC_PATCH_FILE ]; then
     bash $DEC_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-6.6
 fi
-
-#kernel patch
-    patch -p1 < ${KERNEL_PATCH}
-
 #newip
 if [ -f $NEWIP_PATCH_FILE ]; then
     bash $NEWIP_PATCH_FILE ${ROOT_DIR} ${KERNEL_SRC_TMP_PATH} ${DEVICE_NAME} linux-6.6
