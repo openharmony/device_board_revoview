@@ -35,6 +35,13 @@ ohos_prebuilt_etc("updater_init_uis7885_usb.cfg") {
   part_name = "device_wukong100"
 }
 
+ohos_prebuilt_etc("updater_init_usb_configfs.cfg") {
+  source = "//drivers/peripheral/usb/cfg/init.usb.configfs.cfg"
+  install_images = [ "updater" ]
+  part_name = "device_wukong100"
+  subsystem_name = "device_wukong100"
+}
+
 ohos_prebuilt_etc("signing_cert.crt") {
   source = "config/signing_cert.crt"
   module_install_dir = "etc/certificate"
@@ -67,6 +74,7 @@ group("updater_files") {
     ":signing_cert.crt",
     ":updater_init.cfg",
     ":updater_ueventd.cfg",
-    ":updater_init_uis7885_usb.cfg"
+    ":updater_init_uis7885_usb.cfg",
+    ":updater_init_usb_configfs.cfg"
   ]
 }
