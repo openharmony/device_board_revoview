@@ -19,13 +19,14 @@ group("wukong100_group") {
   deps = [
     "cfg:init_configs",
     "distributedhardware:distributedhardware",
+
     #"lk:lk",
     "kernel:kernel",
-    "//vendor/revoview/wukong100/modules:modules",
     "updater:updater_files",
     "//device/board/revoview/wukong100/camera/vdi_impl/v4l2:camera_board_vdi_impl",
     "//third_party/alsa-lib:libasound",
     "//third_party/alsa-utils:entry",
+    "//vendor/revoview/wukong100/modules",
   ]
 }
 
@@ -33,35 +34,68 @@ group("wukong100_group") {
 action("make_pac_format_image") {
   script = "pac/uis7885_pac.sh"
   package_path = "${root_out_dir}/packages/phone/images"
-  target_path = "always.build"
   script_path = "//device/soc/unisoc/p7885/pac/ImageFiles"
-  bin_out_dir = get_label_info(
-    "//device/soc/unisoc/p7885/pac:encrypt_uboot_image",
-    "target_out_dir")
+  bin_out_dir =
+      get_label_info("//device/soc/unisoc/p7885/pac:encrypt_uboot_image",
+                     "target_out_dir")
 
+  inputs = [
+    "$script_path/Script/mkpac.pl",
+    "$script_path/Script/UpdatedPacCRC_Linux",
+    "$script_path/logo.bin",
+    "$script_path/prodnv.img",
+  ]
   if (defined(global_parts_info.startup_hvb)) {
+    pac_variant = "sec"
+    inputs += [
+      "$script_path/flash_secboot.cfg",
+      "$script_path/uis7885_2h10_secboot.xml",
+      "$script_path/vendor_boot_sec.img",
+      "pac/create_sign_img_all.sh",
+      "//base/startup/hvb/tools/hvbtool.py",
+    ]
+    foreach(key,
+            [
+              "",
+              "_boot",
+              "_vendor_boot",
+              "_system",
+              "_vendor",
+            ]) {
+      inputs += [
+        "pac/secureboot_key/config/rsa2048_public${key}.pem",
+        "pac/secureboot_key/config/rsa2048_private${key}.pem",
+      ]
+    }
     args = [
       rebase_path(package_path),
       rebase_path(script_path),
       "secboot",
       rebase_path(bin_out_dir, root_build_dir),
     ]
-  }
-  else {
+  } else {
+    pac_variant = "nosec"
+    inputs += [
+      "$script_path/flash.cfg",
+      "$script_path/uis7885_2h10.xml",
+    ]
     args = [
       rebase_path(package_path),
       rebase_path(script_path),
       rebase_path(bin_out_dir, root_build_dir),
     ]
   }
-  outputs = [ "${package_path}/${target_path}" ]
+  outputs = [
+    "$package_path/wukong100_${pac_variant}_userdebug.pac",
+    "$package_path/wukong100_${pac_variant}_userdebug.tar.gz",
+  ]
 
   # build after make_images (generate .img files) and
   # encrypt_uboot_image (GPG-decrypt uboot.tar.gz.gpg -> .bin into output dir)
   deps = [
+    "kernel:make_boot_image",
+    "kernel:make_boot_updater_image",
     "//build/ohos/images:make_images",
     "//device/soc/unisoc/p7885/pac:encrypt_uboot_image",
-    "kernel:make_boot_updater_image",
-    "kernel:make_boot_image",
   ]
 }

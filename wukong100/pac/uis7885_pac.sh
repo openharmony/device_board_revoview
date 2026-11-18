@@ -87,10 +87,11 @@ else
     perl $script_path/mkpac.pl "$pac_path" "flash.cfg" "FlashParam"
 fi
 
-if [ $secboot -eq 1 ]; then
-    tar -czf $target_path -C $package_path wukong100_sec_userdebug.pac
+# Use parallel gzip when available; keep gzip archives and the same PAC bytes.
+if command -v pigz >/dev/null 2>&1; then
+    tar -I pigz -cf "$target_path" -C "$package_path" "$(basename "$pac_path")"
 else
-    tar -czf $target_path -C $package_path wukong100_nosec_userdebug.pac
+    tar -czf "$target_path" -C "$package_path" "$(basename "$pac_path")"
 fi
 
 # check if pac is done
